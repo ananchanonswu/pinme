@@ -197,12 +197,12 @@ flowchart TB
 
 ## 11) Sprint backlog
 
-# sprint 1 (Due Feb 5th)
+sprint 1 (Due Feb 5th)
 
-# เป้าหมาย
+เป้าหมาย
 เพื่อวิเคราะห์ความต้องการของระบบและจัดทำเอกสารที่เกี่ยวข้องก่อนเริ่มพัฒนาระบบจริง
 
-# Issue ที่อยู่ใน Sprint 1
+Issue ที่อยู่ใน Sprint 1
 - ทำ Report และกำหนด Requirement
 
  
