@@ -219,4 +219,5 @@ Issue ที่อยู่ใน Sprint 1 :
 
  ![Sprint Backlog](sprint_1.png)
 
-- sprint 2 - 4 : เพิ่มเติม Features หรือแก้ไข
+---
+
