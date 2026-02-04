@@ -174,7 +174,7 @@ flowchart TB
 
 ## 8) Summary Requirement
 
-[https://youtu.be/yf1TyKvzm6Q](https://youtu.be/yf1TyKvzm6Q)
+[hRequirement Video](https://youtu.be/yf1TyKvzm6Q)
 
 -  หลังจากที่ได้อธิบายรายละเอียดของโปรเจกต์ให้กับกลุ่มอื่นรับฟัง ก็ได้รับผลตอบรับที่ดี และในส่วนของ requirement ก็ไม่มีประเด็นปัญหาที่ต้องแก้ไขมากนัก
 -  ส่วนใหของ requirement 
@@ -191,7 +191,7 @@ flowchart TB
   
 ## 9) Summary Retrospective
 
-[https://studio.youtube.com/video/FMwXFTwsZNE/edit](https://youtu.be/FMwXFTwsZNE)
+[Retrospective Video](https://youtu.be/FMwXFTwsZNE)
 
 -  ปัญหาเริ่มมาจากการมองภาพของโปรเจคนี้และscoopไม่ตรงกัน ทำให้เกิดปัญหาความขัดแย้ง ดังนั้นจึงแก้ปัญหาด้วยการสร้างprototype เพื่อปรับความเข้าใจกันทำให้มุมมองตรงกันและช่วยกันแก้ไขจนได้versionในปัจจุบัน และ อีกปัญหาคือการไม่คุ้นชินกับเครื่องมือที่ใช้เกียวกับการทำงาน
 
