@@ -187,7 +187,7 @@ flowchart TB
 ## 9) Summary Retrospective
 -  ปัญหาเริ่มมาจากการมองภาพของโปรเจคนี้และscoopไม่ตรงกัน ทำให้เกิดปัญหาความขัดแย้ง ดังนั้นจึงแก้ปัญหาด้วยการสร้างprototype เพื่อปรับความเข้าใจกันทำให้มุมมองตรงกันและช่วยกันแก้ไขจนได้versionในปัจจุบัน และ อีกปัญหาคือการไม่คุ้นชินกับเครื่องมือที่ใช้เกียวกับการทำงาน
 
-## 10) Product backlog: Work items ที่มีการใช้ issue (User Story)
+## 10) Product backlog
 
 ![Product Backlog](sprint_1.png)
 
