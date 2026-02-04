@@ -189,6 +189,10 @@ flowchart TB
 
 ## 10) Product backlog: Work items ที่มีการใช้ issue (User Story)
 
+![Product Backlog](sprint_1.png)
+
+---
+
 ![Product Backlog](product_backlog1.png)
 
 ---
