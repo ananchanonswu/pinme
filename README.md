@@ -188,4 +188,9 @@ flowchart TB
 -  ปัญหาเริ่มมาจากการมองภาพของโปรเจคนี้และscoopไม่ตรงกัน ทำให้เกิดปัญหาความขัดแย้ง ดังนั้นจึงแก้ปัญหาด้วยการสร้างprototype เพื่อปรับความเข้าใจกันทำให้มุมมองตรงกันและช่วยกันแก้ไขจนได้versionในปัจจุบัน และ อีกปัญหาคือการไม่คุ้นชินกับเครื่องมือที่ใช้เกียวกับการทำงาน
 
 ## 10) Product backlog: Work items ที่มีการใช้ issue (User Story)
+
 ![Product Backlog](product_backlog1.png)
+
+![Product Backlog](product_backlog2.png)
+
+![Product Backlog](product_backlog3.png)
