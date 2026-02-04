@@ -197,7 +197,7 @@ flowchart TB
 
 ## 11) Sprint backlog
 
-## sprint 1 (Due Feb 5th)
+### sprint 1 (Due Feb 5th)
 
 เป้าหมาย
 
@@ -207,7 +207,7 @@ Issue ที่อยู่ใน Sprint 1 :
 
 - ทำ Report และกำหนด Requirement
 
- ![Sprint Backlog](sprint1.png)
+ ![Sprint Backlog](sprint_1.png)
 
 - sprint 2 - 4 : เพิ่มเติม Features หรือแก้ไข
 
