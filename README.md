@@ -197,6 +197,8 @@ flowchart TB
 
 ## 11) Sprint backlog
 
+![Sprint Backlog](milestone_sprint_1-4.png)
+
 ### sprint 1 (Due Feb 5th)
 
 เป้าหมาย
@@ -210,5 +212,3 @@ Issue ที่อยู่ใน Sprint 1 :
  ![Sprint Backlog](sprint_1.png)
 
 - sprint 2 - 4 : เพิ่มเติม Features หรือแก้ไข
-
-![Sprint Backlog](milestone_sprint_1-4.png)
