@@ -194,3 +194,7 @@ flowchart TB
 ![Product Backlog](product_backlog2.png)
 
 ![Product Backlog](product_backlog3.png)
+
+## 11) Sprint backlog
+
+![Sprint Backlog](milestone_sprint_1-4.png)
