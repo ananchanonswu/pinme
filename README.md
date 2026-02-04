@@ -174,7 +174,7 @@ flowchart TB
 
 ## 8) Summary Requirement
 
-[hRequirement Video](https://youtu.be/yf1TyKvzm6Q)
+[Requirement Video](https://youtu.be/yf1TyKvzm6Q)
 
 -  หลังจากที่ได้อธิบายรายละเอียดของโปรเจกต์ให้กับกลุ่มอื่นรับฟัง ก็ได้รับผลตอบรับที่ดี และในส่วนของ requirement ก็ไม่มีประเด็นปัญหาที่ต้องแก้ไขมากนัก
 -  ส่วนใหของ requirement 
