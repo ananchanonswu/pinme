@@ -199,15 +199,9 @@ flowchart TB
 
 ![Product Backlog](sprint_1.png)
 
----
-
 ![Product Backlog](product_backlog1.png)
 
----
-
 ![Product Backlog](product_backlog2.png)
-
----
 
 ![Product Backlog](product_backlog3.png)
 
