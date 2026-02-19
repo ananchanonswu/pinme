@@ -234,7 +234,7 @@ Issue ที่อยู่ใน Sprint 1 :
 
 ---
 ### 12) New functional/non-functional requirement
-- Functional Requirements (FR)**
+### Functional Requirements (FR)**
 - **FR-01** ผู้ใช้สามารถเลือกจุดตั้งต้นและกำหนดรัศมีค้นหาได้  
 - **FR-02** ระบบสามารถค้นหาและแสดงสถานที่ภายในรัศมีที่กำหนดได้  
 - **FR-03** ระบบสามารถแยกผลลัพธ์ตามหมวดหมู่ (โรงแรม/ร้านอาหาร/สนามกีฬา/ท่องเที่ยว) ได้  
@@ -245,12 +245,49 @@ Issue ที่อยู่ใน Sprint 1 :
 - **FR-08** ผู้ใช้สามารถกำหนดเวลาเริ่มต้น–สิ้นสุดของแต่ละสถานที่ในทริปได้  
 - **FR-09** ระบบต้องตรวจสอบและแจ้งเตือนเมื่อเวลาของกิจกรรมในทริปทับซ้อนกัน  
 - **FR-10** ระบบสามารถแสดงทริปเป็น timeline หรือปฏิทินรายวันได้
-- Non-Functional Requirements (NFR)**
+### Non-Functional Requirements (NFR)**
 - **NFR-01 Usability:** ผู้ใช้สามารถสแกนสถานที่ได้ภายในไม่เกิน 3–4 ขั้นตอน  
 - **NFR-02 Performance:** แสดงผลการสแกนภายใน 2 วินาที เมื่อจำนวนข้อมูลอยู่ในขอบเขตที่กำหนด  
 - **NFR-03 Accuracy:** การคำนวณระยะทางต้องถูกต้องตามสูตรที่ใช้ (เช่น Haversine Formula)  
 - **NFR-04 Reliability:** ผลลัพธ์ต้องสม่ำเสมอเมื่อใช้ input เดิม และการตรวจสอบเวลาทับซ้อนต้องเชื่อถือได้  
 - **NFR-05 Maintainability:** โครงสร้างระบบแยกโมดูล (Scan / Filter / Trip / Bookmark) เพื่อให้แก้ไขและต่อยอดได้ง่าย  
-- **NFR-06 Compatibility:** ระบบสามารถใช้งานผ่านเว็บเบราว์เซอร์ทั่วไปได้  
+- **NFR-06 Compatibility:** ระบบสามารถใช้งานผ่านเว็บเบราว์เซอร์ทั่วไปได้
+### 13) Architectural design
+```mermaid
+flowchart LR
+    User[User Browser]
+
+    subgraph Frontend
+        UI[Web UI]
+        Map[Map Component]
+    end
+
+    subgraph Backend
+        API[REST API Server]
+        Scan[Scan Service]
+        Trip[Trip Planner Service]
+        Bookmark[Bookmark Service]
+        Filter[Filter & Sort Engine]
+    end
+
+    subgraph Data
+        DB[(Database)]
+        Geo[(Location/Geo Data)]
+    end
+
+    User --> UI
+    UI --> API
+    Map --> API
+
+    API --> Scan
+    API --> Trip
+    API --> Bookmark
+    API --> Filter
+
+    Scan --> Geo
+    Filter --> Geo
+
+    Trip --> DB
+    Bookmark --> DB
 
 
