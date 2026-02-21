@@ -233,7 +233,7 @@ Issue ที่อยู่ใน Sprint 1 :
  ![Sprint Backlog](sprint_1.png)
 
 ---
-### 12) New functional/non-functional requirement
+## 12) New functional/non-functional requirement
 ### Functional Requirements (FR)**
 - **FR-01** ผู้ใช้สามารถเลือกจุดตั้งต้นและกำหนดรัศมีค้นหาได้  
 - **FR-02** ระบบสามารถค้นหาและแสดงสถานที่ภายในรัศมีที่กำหนดได้  
@@ -252,7 +252,7 @@ Issue ที่อยู่ใน Sprint 1 :
 - **NFR-04 Reliability:** ผลลัพธ์ต้องสม่ำเสมอเมื่อใช้ input เดิม และการตรวจสอบเวลาทับซ้อนต้องเชื่อถือได้  
 - **NFR-05 Maintainability:** โครงสร้างระบบแยกโมดูล (Scan / Filter / Trip / Bookmark) เพื่อให้แก้ไขและต่อยอดได้ง่าย  
 - **NFR-06 Compatibility:** ระบบสามารถใช้งานผ่านเว็บเบราว์เซอร์ทั่วไปได้
-### 13) Architectural design
+## 13) Architectural design
 ```mermaid
 flowchart LR
     User[User Browser]
@@ -291,3 +291,20 @@ flowchart LR
     Bookmark --> DB
 ```
 
+## 14) Website screenshot
+
+![Website Screenshot]()
+
+![Website Screenshot]()
+
+![Website Screenshot]()
+
+![Website Screenshot]()
+
+![Website Screenshot]()
+
+![Website Screenshot]()
+
+![Website Screenshot]()
+
+![Website Screenshot]()
