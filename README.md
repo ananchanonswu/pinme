@@ -293,14 +293,17 @@ flowchart LR
 
 ## 14) Website screenshot
 
+### Page 1
 ![Page 1](Website_Screenshot_Figma/page1.png)
 
+### Page 2
 ![Page 2](Website_Screenshot_Figma/page2.png)
 
+### Page 3
 ![Page 3](Website_Screenshot_Figma/page3.png)
 
+### Page 4
 ![Page 4](Website_Screenshot_Figma/page4.png)
 
+### Page 5
 ![Page 5](Website_Screenshot_Figma/page5.png)
-
-![Page 6](Website_Screenshot_Figma/page6.png)
