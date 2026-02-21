@@ -307,3 +307,9 @@ flowchart LR
 
 ### Page 5
 ![Page 5](Website_Screenshot_Figma/page5.png)
+
+### page 6
+![Page 6](Website_Screenshot_Figma/scan_result1.png)
+
+### page 7
+![Page 7](Website_Screenshot_Figma/scan_result2.png)
