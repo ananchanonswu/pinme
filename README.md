@@ -290,7 +290,95 @@ flowchart LR
     Trip --> DB
     Bookmark --> DB
 ```
+Use Case Diagram
 
+Actors
+ • User (ผู้ใช้งานทั่วไป)
+
+Mermaid: Use Case Diagram 
+```mermaid
+flowchart TB
+  user([User])
+
+  uc1((Select location & radius))
+  uc2((Scan nearby places))
+  uc3((Filter & sort results))
+  uc4((View place detail))
+  uc5((Pin/Unpin place))
+  uc6((View pinned places))
+  uc7((Create 1-day trip))
+  uc8((Set time for trip activities))
+  uc9((Validate time conflicts))
+  uc10((View trip timeline/calendar))
+
+  user --> uc1
+  user --> uc2
+  user --> uc3
+  user --> uc4
+  user --> uc5
+  user --> uc6
+  user --> uc7
+  user --> uc8
+  user --> uc9
+  user --> uc10
+```
+
+Other Designs (Optional but Recommended)
+
+A) Sequence Diagram: Nearby Scan
+```mermaid
+sequenceDiagram
+  actor User
+  participant UI as Web UI
+  participant API as Backend API
+  participant S as Scan Service
+  participant DB as Database
+
+  User->>UI: Enter location/radius/categories
+  UI->>API: POST /scan (input)
+  API->>S: scanNearby(input)
+  S->>DB: query places (by category)
+  DB-->>S: places list
+  S-->>API: filtered/sorted/grouped results
+  API-->>UI: results
+  UI-->>User: show categorized place cards
+```
+B) Sequence Diagram: Trip Validate (กันเวลาทับซ้อน)
+```mermaid
+sequenceDiagram
+  actor User
+  participant UI as Web UI
+  participant API as Backend API
+  participant T as Trip Planner Service
+  participant DB as Database
+
+  User->>UI: Set start/end time for activities
+  UI->>API: POST /trip/validate (events)
+  API->>T: validate(events)
+  T->>T: check time overlaps
+  alt conflict found
+    T-->>API: invalid + conflict details
+    API-->>UI: show warning message
+  else no conflict
+    T->>DB: save events
+    DB-->>T: ok
+    T-->>API: valid
+    API-->>UI: show success + timeline/calendar
+  end
+```
+
+C) Activity Diagram: Trip Planner Flow
+```mermaid
+flowchart TD
+  A[Start] --> B[Select places]
+  B --> C[Set start/end time]
+  C --> D[Validate time conflicts]
+  D -->|Conflict| E[Show warning and adjust time]
+  E --> C
+  D -->|No conflict| F[Save trip events]
+  F --> G[Display timeline/calendar]
+  G --> H[End]
+```
 ## 14) Website screenshot
 
 ### Page 1
@@ -404,3 +492,5 @@ flowchart LR
 - ตรวจสอบกิจกรรมทั้งหมดภายในทริปเดียวกัน
 - เปรียบเทียบช่วงเวลาเริ่มต้นและสิ้นสุด
 - หากพบช่วงเวลาทับซ้อนกัน → แสดงข้อความ Error และไม่บันทึกข้อมูล
+
+
