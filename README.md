@@ -493,4 +493,8 @@ flowchart TD
 - เปรียบเทียบช่วงเวลาเริ่มต้นและสิ้นสุด
 - หากพบช่วงเวลาทับซ้อนกัน → แสดงข้อความ Error และไม่บันทึกข้อมูล
 
+## Summary Retrospective Phase 2
 
+
+
+[Requirement Video](https://youtu.be/1FdYNd2XVNs)
