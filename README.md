@@ -495,7 +495,7 @@ flowchart TD
 
 ## Summary Retrospective Phase 2
 
-[Requirement Video](https://youtu.be/1FdYNd2XVNs)
+[Retrospective Video Phase 2](https://youtu.be/1FdYNd2XVNs)
 
 ใน Phase 2 ได้ออกแบบระบบ (Architecture, Use Case, Workflow) และพัฒนา Prototype ด้วย Figma และเว็บไซต์เบื้องต้น ทำให้เห็นภาพระบบชัดเจนมากขึ้นและลดความคลาดเคลื่อนจาก Phase 1
 
