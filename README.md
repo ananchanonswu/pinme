@@ -612,3 +612,5 @@ flowchart TD
 ![website_page](Website_Screenshot/web_withTH_lan.png)
 
 ในหน้าของ Website จะมีแผนที่แสดงตำแหน่งของตัวเรา , สถานที่ต่างๆในบริเวณของเรา และ รัศมีการค้นหาที่เราเลือกไว้ข้างต้น โดยตัวแผนที่สามารถกดบวกและลบเพื่อขยายขนาดของแผนที่ได้ และสามารถกดซ่อนแผนที่ได้
+
+![website_page](Website_Screenshot/Map.png)
