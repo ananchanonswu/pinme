@@ -504,3 +504,37 @@ flowchart TD
 ปัญหาที่พบ: ยังไม่คุ้นชินกับเครื่องมือบางอย่าง และมีความเข้าใจ flow บางส่วนไม่ตรงกัน
 
 แนวทางปรับปรุง: เพิ่มการสื่อสารระหว่างทีม กำหนดมาตรฐานการทำงานให้ชัดเจน และปรับ Design ให้สอดคล้องกับ Implementation มากขึ้น
+
+# Phase 3
+
+## การทำงานของ Program
+1. HTTP Methods ที่ใช้ (GET และ POST)
+
+- GET Methods (การดึงข้อมูล):
+	- Backend Serve Files: Server (server.js) ใช้รับ request แบบ GET สำหรับให้บริการ	ไฟล์ Static ของ Frontend ทั้งหมดแบบอัตโนมัติ (เช่น /, index.html, js/..., 	css/...)
+	- External API Call: Backend ทำการสร้าง request แบบ GET เพื่อไปขอข้อมูลจาก 	SerpAPI (Google Maps Engine)
+- POST Methods (การส่งข้อมูล):
+	- มี 1 Method คือ /scan: เป็น Frontend API Endpoint ที่รับข้อมูลพิกัด 	(Latitude/Longitude), รัศมี (Radius) และ หมวดหมู่ (Category) จากผู้ใช้ (Frontend) 	เพื่อส่งให้ Backend ประมวลผลค้นหาสถานที่
+2. การใช้ Template
+
+- No Server-Side Templating: โปรเจคนี้ ไม่ได้ใช้ Template Engine บน Backend (เช่น EJS หรือ Pug)
+- Client-Side Rendering (DOM Manipulation): ใช้ Client-Side Rendering สถาปัตยกรรมแบบ 	Single Page Application (SPA) โครงสร้างหลักอยู่ใน index.html และใช้ JavaScript 	(front_end/js/app.js) รูปแบบ **Template Literals (Backticks )** ในการสร้าง 	HTML Component แบบไดนามิก (เช่น การสร้างการ์ดผลลัพธ์result-card` แต่ละใบ และสร้าง	รายการ Trip Planner) ตามข้อมูล JSON ที่ได้รับกลับมาจาก Backend
+3. การเรียก API (API Integration)
+- Internal API: Frontend สื่อสารกับ Backend ผ่านการเรียก fetch แบบ POST ไปยัง Endpoint /scan
+- External API (Third-party): Backend เมื่อได้รับข้อมูลจากผู้ใช้ จะทำการเรียก SerpAPI (Google Maps API) โดยส่ง Parameters ไปยัง https://serpapi.com/search.json แบบ GET Request เพื่อดึงข้อมูลสถานที่รอบตัว แล้วจึงนำ Response ที่เป็น JSON มากรอง (Filter) และเรียบเรียงใหม่ (Normalize) ก่อนส่งข้อมูลง่ายๆ กลับไปให้ Frontend
+
+4. การคำนวณที่สำคัญ (Calculations)
+- Haversine Formula (การคำนวณระยะทางบนพื้นผิวโลก):
+	- เป็น Core Logic สำคัญที่สุดของแอป อยู่ในโหนด Backend (server.js และ 	models/Place.js)
+	- เนื่องจาก API ภายนอกอาจคืนค่าสถานที่ที่ไกลเกินกำหนด โปรแกรมจึงนำพิกัดเส้นรุ้งเส้นแวงของจุด	ศูนย์กลาง (ผู้ใช้) และตำแหน่งสถานที่เป้าหมาย มาเข้าสูตร Haversine คำนวณออกมาเป็นระยะทาง	แบบ "กิโลเมตร" ที่แม่นยำ เพื่อใช้ในการกรอง (Filter) สถานที่ให้อยู่ใน "รัศมี (Radius)" ที่ผู้ใช้	กำหนด
+- Time & Overlap Calculation (ระบบวางแผนทริป):
+	- แปลง String รูปแบบเวลา HH:MM ให้เป็นหน่วย นาที (Minutes)
+	- คำนวณระยะเวลา (Duration) และมี Algorithm ในการเช็คเวลาที่ทับซ้อนกัน (Overlap 	Detection) ของกิจกรรมที่ผู้ใช้พยามยามแอดเข้าใน Timeline ของวัน
+
+5. Graph หรือ การแสดงผลเชิงภาพ (Visualizations)
+- ไม่มีกราฟแบบดั้งเดิม (เช่น กราฟแท่ง กราฟเส้น)
+- ใช้ Interactive Map (แผนที่แบบตอบโต้ได้) ดึงจาก Leaflet.js และ OpenStreetMap (OSM) แทน Graph หลัก
+- มีการนำข้อมูลที่ได้มาพล็อต (Plot) ลงบนแกน X/Y ของพิกัดแผนที่:
+	- วาดรัศมีวงกลม (Radius Circle) ปรับขนาดตามกิโลเมตร
+	- พล็อตหมุด (Place Markers) สีและไอคอนแยกตามหมวดหมู่
+	- พล็อตหมุดตำแหน่งผู้ใช้ปัจจุบันแบบมี Animation (Pulsing Marker)
