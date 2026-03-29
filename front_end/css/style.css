@@ -23,6 +23,16 @@
   --warning: #f59e0b;
 }
 
+html.light-theme {
+  --bg-dark: #f0fdfa; /* A very light teal tint for background */
+  --bg-card: rgba(255, 255, 255, 0.7);
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-color: rgba(13, 148, 136, 0.15);
+  --primary-glow: rgba(13, 148, 136, 0.15);
+}
+
 /* --- Base Reset & Globals --- */
 * {
   margin: 0;
@@ -130,9 +140,38 @@ body {
   box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
+html.light-theme .form-select option {
+  background: #ffffff;
+  color: var(--text-primary);
+}
 .form-select option {
   background: #1e293b;
   color: var(--text-primary);
+}
+
+/* --- Control Buttons (Theme/Lang) --- */
+.control-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.control-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  color: var(--primary-light);
 }
 
 /* --- GPS Button --- */

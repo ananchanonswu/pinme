@@ -24,6 +24,16 @@
   <!-- Animated Background -->
   <div class="bg-gradient"></div>
 
+  <!-- Top Right Controls -->
+  <div class="fixed top-4 right-4 z-50 flex gap-2">
+    <button id="langToggleBtn" class="control-btn" aria-label="Toggle Language" title="Change Language">
+      🇹🇭 TH
+    </button>
+    <button id="themeToggleBtn" class="control-btn" aria-label="Toggle Theme" title="Toggle Light/Dark Theme">
+      🌓
+    </button>
+  </div>
+
   <!-- Main Container -->
   <main class="relative z-10 min-h-screen flex flex-col items-center px-4 py-8 sm:py-12">
 
@@ -35,7 +45,7 @@
           Pin<span class="text-teal-400">Me</span>
         </h1>
       </div>
-      <p class="text-sm text-slate-400">ค้นหาสถานที่รอบตัวคุณ</p>
+      <p class="text-sm text-slate-400" data-i18n="subtitle">ค้นหาสถานที่รอบตัวคุณ</p>
     </header>
 
     <!-- ===================== SEARCH FORM ===================== -->
@@ -45,10 +55,10 @@
         <!-- Section: Coordinates -->
         <div class="mb-5">
           <div class="flex items-center justify-between mb-3">
-            <label class="form-label mb-0">📌 พิกัดตำแหน่ง</label>
+            <label class="form-label mb-0">📌 <span data-i18n="label_coords">พิกัดตำแหน่ง</span></label>
             <button type="button" id="gpsBtn" class="gps-btn">
               <span class="gps-icon">🎯</span>
-              <span class="gps-text">ใช้ตำแหน่งปัจจุบัน</span>
+              <span class="gps-text" data-i18n="btn_gps">ใช้ตำแหน่งปัจจุบัน</span>
             </button>
           </div>
           <div class="grid grid-cols-2 gap-3">
@@ -83,11 +93,11 @@
 
         <!-- Section: Radius -->
         <div class="mb-5">
-          <label class="form-label">📏 รัศมีการค้นหา</label>
+          <label class="form-label">📏 <span data-i18n="label_radius">รัศมีการค้นหา</span></label>
           <div class="radius-chips">
-            <button type="button" class="radius-chip" data-value="1">1 กม.</button>
-            <button type="button" class="radius-chip active" data-value="3">3 กม.</button>
-            <button type="button" class="radius-chip" data-value="5">5 กม.</button>
+            <button type="button" class="radius-chip" data-value="1">1 <span data-i18n="unit_km">กม.</span></button>
+            <button type="button" class="radius-chip active" data-value="3">3 <span data-i18n="unit_km">กม.</span></button>
+            <button type="button" class="radius-chip" data-value="5">5 <span data-i18n="unit_km">กม.</span></button>
           </div>
         </div>
 
@@ -95,19 +105,19 @@
 
         <!-- Section: Category -->
         <div class="mb-6">
-          <label class="form-label">🏷️ หมวดหมู่</label>
+          <label class="form-label">🏷️ <span data-i18n="label_category">หมวดหมู่</span></label>
           <div class="category-pills">
-            <button type="button" class="category-pill active" data-value="all">🌐 ทั้งหมด</button>
-            <button type="button" class="category-pill" data-value="hotel">🏨 โรงแรม</button>
-            <button type="button" class="category-pill" data-value="restaurant">🍽️ ร้านอาหาร</button>
-            <button type="button" class="category-pill" data-value="sport">⚽ สนามกีฬา</button>
-            <button type="button" class="category-pill" data-value="tourist">🏛️ ท่องเที่ยว</button>
+            <button type="button" class="category-pill active" data-value="all"><span data-i18n="cat_all">🌐 ทั้งหมด</span></button>
+            <button type="button" class="category-pill" data-value="hotel"><span data-i18n="cat_hotel">🏨 โรงแรม</span></button>
+            <button type="button" class="category-pill" data-value="restaurant"><span data-i18n="cat_restaurant">🍽️ ร้านอาหาร</span></button>
+            <button type="button" class="category-pill" data-value="sport"><span data-i18n="cat_sport">⚽ สนามกีฬา</span></button>
+            <button type="button" class="category-pill" data-value="tourist"><span data-i18n="cat_tourist">🏛️ ท่องเที่ยว</span></button>
           </div>
         </div>
 
         <!-- Submit Button -->
         <button type="submit" id="submitBtn" class="submit-btn">
-          <span id="submitBtnText">🔍 สแกนสถานที่</span>
+          <span id="submitBtnText" data-i18n="btn_submit">🔍 สแกนสถานที่</span>
           <span id="submitSpinner" class="spinner" style="display:none; width:1.3rem; height:1.3rem; border-width:2px; margin:0 auto;"></span>
         </button>
       </form>
@@ -117,10 +127,10 @@
     <section id="mapSection" class="glass-card w-full max-w-md mb-6 map-section">
       <div class="flex items-center justify-between p-4 pb-0">
         <h2 class="text-base font-bold flex items-center gap-2">
-          🗺️ แผนที่
+          🗺️ <span data-i18n="title_map">แผนที่</span>
           <span id="mapRadiusBadge" class="text-xs font-normal text-slate-400">รัศมี 3 กม.</span>
         </h2>
-        <button type="button" id="mapToggleBtn" class="gps-btn" style="padding: 0.4rem 0.75rem; font-size: 0.78rem;">
+        <button type="button" id="mapToggleBtn" class="gps-btn" style="padding: 0.4rem 0.75rem; font-size: 0.78rem;" data-i18n="btn_hide_map">
           🔽 ซ่อนแผนที่
         </button>
       </div>
@@ -132,23 +142,23 @@
     <!-- ===================== MINI TRIP PLANNER ===================== -->
     <section class="glass-card w-full max-w-md p-6 sm:p-7 mb-6">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-bold">📅 แผนการเดินทาง 1 วัน</h2>
+        <h2 class="text-lg font-bold" data-i18n="title_trip">📅 แผนการเดินทาง 1 วัน</h2>
       </div>
       <form id="tripForm" class="mb-4">
         <div class="mb-3">
-          <input type="text" id="tripActivityName" class="form-input" placeholder="ชื่อกิจกรรม (เช่น วัดพระแก้ว)" required>
+          <input type="text" id="tripActivityName" class="form-input" placeholder="ชื่อกิจกรรม (เช่น วัดพระแก้ว)" data-i18n-ph="ph_trip_name" required>
         </div>
         <div class="grid grid-cols-2 gap-3 mb-4">
           <div>
-            <label class="form-label text-[0.7rem] opacity-80 mb-1">เวลาเริ่ม</label>
+            <label class="form-label text-[0.7rem] opacity-80 mb-1" data-i18n="label_trip_start">เวลาเริ่ม</label>
             <input type="time" id="tripStartTime" class="form-input" required>
           </div>
           <div>
-            <label class="form-label text-[0.7rem] opacity-80 mb-1">เวลาสิ้นสุด</label>
+            <label class="form-label text-[0.7rem] opacity-80 mb-1" data-i18n="label_trip_end">เวลาสิ้นสุด</label>
             <input type="time" id="tripEndTime" class="form-input" required>
           </div>
         </div>
-        <button type="submit" class="submit-btn" style="padding: 0.7rem; font-size: 0.9rem;">
+        <button type="submit" class="submit-btn" style="padding: 0.7rem; font-size: 0.9rem;" data-i18n="btn_add_trip">
           ➕ เพิ่มลงทริป
         </button>
       </form>
@@ -156,7 +166,7 @@
       <!-- Timeline Display -->
       <div class="divider mt-2 mb-4"></div>
       <div id="tripTimeline" class="flex flex-col gap-3 relative border-l-2 border-teal-500/30 ml-2 pl-4">
-        <p class="text-sm text-slate-400 py-2 -ml-4 pl-0 text-center w-full" id="emptyTripState">ยังไม่มีกิจกรรมในแผน</p>
+        <p class="text-sm text-slate-400 py-2 -ml-4 pl-0 text-center w-full" id="emptyTripState" data-i18n="empty_trip">ยังไม่มีกิจกรรมในแผน</p>
       </div>
     </section>
 
@@ -165,21 +175,21 @@
 
       <!-- Results Header -->
       <div class="flex items-center justify-between mb-4 px-1">
-        <h2 class="text-lg font-bold">📋 ผลลัพธ์</h2>
+        <h2 class="text-lg font-bold" data-i18n="title_results">📋 ผลลัพธ์</h2>
         <span id="resultsCount" class="text-sm text-slate-400">0 สถานที่</span>
       </div>
 
       <!-- Loading Skeleton -->
       <div id="loadingState" style="display:none;" class="flex flex-col items-center gap-4 py-10">
         <div class="spinner"></div>
-        <p class="text-sm text-slate-400">กำลังค้นหาสถานที่...</p>
+        <p class="text-sm text-slate-400" data-i18n="loading_places">กำลังค้นหาสถานที่...</p>
       </div>
 
       <!-- Empty State -->
       <div id="emptyState" style="display:none;" class="flex flex-col items-center gap-3 py-12 text-center">
         <div class="text-5xl mb-1">🗺️</div>
-        <p class="empty-title text-base font-semibold text-slate-300">ไม่พบสถานที่</p>
-        <p class="empty-desc text-sm text-slate-500">ลองเปลี่ยนรัศมีหรือหมวดหมู่แล้วค้นหาอีกครั้ง</p>
+        <p class="empty-title text-base font-semibold text-slate-300" data-i18n="empty_res_title">ไม่พบสถานที่</p>
+        <p class="empty-desc text-sm text-slate-500" data-i18n="empty_res_desc">ลองเปลี่ยนรัศมีหรือหมวดหมู่แล้วค้นหาอีกครั้ง</p>
       </div>
 
       <!-- Results Grid -->

@@ -91,9 +91,119 @@ const tripTimeline = document.getElementById('tripTimeline');
 // --- State ---
 let selectedRadius = '3';
 let selectedCategory = 'all';
+let currentLang = localStorage.getItem('pinme_lang') || 'th';
+let isDarkTheme = localStorage.getItem('pinme_theme') !== 'light'; // Default to dark
+
+// --- Translation Dictionary ---
+const TRANSLATIONS = {
+  th: {
+    subtitle: 'ค้นหาสถานที่รอบตัวคุณ',
+    label_coords: 'พิกัดตำแหน่ง',
+    btn_gps: 'ใช้ตำแหน่งปัจจุบัน',
+    label_radius: 'รัศมีการค้นหา',
+    unit_km: 'กม.',
+    label_category: 'หมวดหมู่',
+    cat_all: '🌐 ทั้งหมด',
+    cat_hotel: '🏨 โรงแรม',
+    cat_restaurant: '🍽️ ร้านอาหาร',
+    cat_sport: '⚽ สนามกีฬา',
+    cat_tourist: '🏛️ ท่องเที่ยว',
+    btn_submit: '🔍 สแกนสถานที่',
+    title_map: 'แผนที่',
+    btn_hide_map: '🔽 ซ่อนแผนที่',
+    btn_show_map: '🔼 แสดงแผนที่',
+    title_trip: '📅 แผนการเดินทาง 1 วัน',
+    ph_trip_name: 'ชื่อกิจกรรม (เช่น วัดพระแก้ว)',
+    label_trip_start: 'เวลาเริ่ม',
+    label_trip_end: 'เวลาสิ้นสุด',
+    btn_add_trip: '➕ เพิ่มลงทริป',
+    empty_trip: 'ยังไม่มีกิจกรรมในแผน',
+    title_results: '📋 ผลลัพธ์',
+    loading_places: 'กำลังค้นหาสถานที่...',
+    empty_res_title: 'ไม่พบสถานที่',
+    empty_res_desc: 'ลองเปลี่ยนรัศมีหรือหมวดหมู่แล้วค้นหาอีกครั้ง',
+    toast_gps_wait: 'กำลังหาตำแหน่ง...',
+    toast_gps_success: '✅ ได้รับพิกัดตำแหน่งแล้ว',
+    toast_gps_fail: 'เบราว์เซอร์ไม่รองรับ Geolocation',
+    toast_fill_coords: '⚠️ กรุณากรอกพิกัด Latitude และ Longitude',
+    toast_lat_err: '⚠️ Latitude ต้องอยู่ระหว่าง -90 ถึง 90',
+    toast_lng_err: '⚠️ Longitude ต้องอยู่ระหว่าง -180 ถึง 180',
+    toast_server_err: '❌ ไม่สามารถเชื่อมต่อ Server ได้',
+    toast_found: '✅ พบ',
+    toast_places: 'สถานที่',
+    res_badge_hotel: 'โรงแรม',
+    res_badge_restaurant: 'ร้านอาหาร',
+    res_badge_sport: 'สนามกีฬา',
+    res_badge_tourist: 'ท่องเที่ยว',
+    res_cat_hotel: '🏨 โรงแรม',
+    res_cat_restaurant: '🍽️ ร้านอาหาร',
+    res_cat_sport: '⚽ สนามกีฬา',
+    res_cat_tourist: '🏛️ ท่องเที่ยว',
+    res_cat_place: '📍 สถานที่',
+    btn_detail: '🔎 ดูรายละเอียด',
+    btn_pin: '📌 ปักหมุด (Pin)',
+    btn_pinned: '📍 ปักหมุดแล้ว',
+    map_you_are_here: '📍 คุณอยู่ที่นี่',
+    unknown_name: 'ไม่ทราบชื่อ'
+  },
+  en: {
+    subtitle: 'Find places around you',
+    label_coords: 'Coordinates',
+    btn_gps: 'Use Current Location',
+    label_radius: 'Search Radius',
+    unit_km: 'km',
+    label_category: 'Category',
+    cat_all: '🌐 All',
+    cat_hotel: '🏨 Hotel',
+    cat_restaurant: '🍽️ Restaurant',
+    cat_sport: '⚽ Sport',
+    cat_tourist: '🏛️ Tourist',
+    btn_submit: '🔍 Scan Places',
+    title_map: 'Map',
+    btn_hide_map: '🔽 Hide Map',
+    btn_show_map: '🔼 Show Map',
+    title_trip: '📅 1-Day Trip Plan',
+    ph_trip_name: 'Activity Name (e.g., Grand Palace)',
+    label_trip_start: 'Start Time',
+    label_trip_end: 'End Time',
+    btn_add_trip: '➕ Add to Trip',
+    empty_trip: 'No activities in plan yet',
+    title_results: '📋 Results',
+    loading_places: 'Searching for places...',
+    empty_res_title: 'No places found',
+    empty_res_desc: 'Try changing the radius or category and search again',
+    toast_gps_wait: 'Locating...',
+    toast_gps_success: '✅ Location acquired',
+    toast_gps_fail: 'Browser does not support Geolocation',
+    toast_fill_coords: '⚠️ Please fill in Latitude and Longitude',
+    toast_lat_err: '⚠️ Latitude must be between -90 and 90',
+    toast_lng_err: '⚠️ Longitude must be between -180 and 180',
+    toast_server_err: '❌ Cannot connect to Server',
+    toast_found: '✅ Found',
+    toast_places: 'places',
+    res_badge_hotel: 'Hotel',
+    res_badge_restaurant: 'Restaurant',
+    res_badge_sport: 'Sport',
+    res_badge_tourist: 'Tourist',
+    res_cat_hotel: '🏨 Hotel',
+    res_cat_restaurant: '🍽️ Restaurant',
+    res_cat_sport: '⚽ Sport',
+    res_cat_tourist: '🏛️ Tourist',
+    res_cat_place: '📍 Place',
+    btn_detail: '🔎 Details',
+    btn_pin: '📌 Pin',
+    btn_pinned: '📍 Pinned',
+    map_you_are_here: '📍 You are here',
+    unknown_name: 'Unknown name'
+  }
+};
+
+const langToggleBtn = document.getElementById('langToggleBtn');
+const themeToggleBtn = document.getElementById('themeToggleBtn');
 
 // --- Map State ---
 let map = null;
+let tileLayer = null;
 let userMarker = null;
 let radiusCircle = null;
 let placeMarkersLayer = null;
@@ -119,8 +229,11 @@ function initMap(lat, lng) {
       attributionControl: true,
     }).setView([lat, lng], 13);
 
-    // Dark-toned tile layer
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    const tileUrl = isDarkTheme 
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+    tileLayer = L.tileLayer(tileUrl, {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
       subdomains: 'abcd',
       maxZoom: 19,
@@ -472,14 +585,14 @@ function renderPlaces(places) {
   resultsGrid.innerHTML = '';
 
   places.forEach((place, index) => {
-    const name        = place.name     || 'ไม่ทราบชื่อ';
+    const name        = place.name     || TRANSLATIONS[currentLang].unknown_name;
     const category    = place.category || place.type || 'other';
     const distanceRaw = place.distance;
 
     const distanceText = distanceRaw != null
       ? (distanceRaw < 1
-          ? `${(distanceRaw * 1000).toFixed(0)} ม.`
-          : `${distanceRaw.toFixed(1)} กม.`)
+          ? `${(distanceRaw * 1000).toFixed(0)} ม.` // Could translate to 'm'
+          : `${distanceRaw.toFixed(1)} ${TRANSLATIONS[currentLang].unit_km}`)
       : null;
 
     const categoryBadge = getCategoryBadge(category);
@@ -660,23 +773,25 @@ tripForm.addEventListener('submit', (e) => {
 // Helpers
 // ==========================================
 function getCategoryBadge(category) {
+  const dict = TRANSLATIONS[currentLang];
   const map = {
-    hotel: '<span class="badge badge-hotel">โรงแรม</span>',
-    restaurant: '<span class="badge badge-restaurant">ร้านอาหาร</span>',
-    sport: '<span class="badge badge-sport">สนามกีฬา</span>',
-    tourist: '<span class="badge badge-tourist">ท่องเที่ยว</span>',
+    hotel: `<span class="badge badge-hotel">${dict.res_badge_hotel}</span>`,
+    restaurant: `<span class="badge badge-restaurant">${dict.res_badge_restaurant}</span>`,
+    sport: `<span class="badge badge-sport">${dict.res_badge_sport}</span>`,
+    tourist: `<span class="badge badge-tourist">${dict.res_badge_tourist}</span>`,
   };
   return map[category] || '';
 }
 
 function getCategoryBadgeText(category) {
+  const dict = TRANSLATIONS[currentLang];
   const map = {
-    hotel: '🏨 โรงแรม',
-    restaurant: '🍽️ ร้านอาหาร',
-    sport: '⚽ สนามกีฬา',
-    tourist: '🏛️ ท่องเที่ยว',
+    hotel: dict.res_cat_hotel,
+    restaurant: dict.res_cat_restaurant,
+    sport: dict.res_cat_sport,
+    tourist: dict.res_cat_tourist,
   };
-  return map[category] || '📍 สถานที่';
+  return map[category] || dict.res_cat_place;
 }
 
 function getCategoryIcon(category) {
@@ -753,3 +868,76 @@ function showToast(message, type = 'success') {
   // ปักหมุดสถานที่ Mock ลงบนแผนที่
   addPlaceMarkers(MOCK_PLACES);
 })();
+
+// ==========================================
+// Theme & Language Initialization
+// ==========================================
+
+function applyTranslations() {
+  const dict = TRANSLATIONS[currentLang];
+  
+  // Update innerHTML/textContent for data-i18n attributes
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) {
+      el.innerHTML = dict[key];
+    }
+  });
+
+  // Update placeholders
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    if (dict[key]) {
+      el.setAttribute('placeholder', dict[key]);
+    }
+  });
+
+  // Update toggle button text
+  langToggleBtn.innerHTML = currentLang === 'th' ? '🇬🇧 EN' : '🇹🇭 TH';
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === 'th' ? 'en' : 'th';
+  localStorage.setItem('pinme_lang', currentLang);
+  
+  applyTranslations();
+
+  // If results are visible, rerender them to translate badges
+  if (resultsContainer.classList.contains('visible') && !loadingState.style.display.includes('flex')) {
+    // A quick hack is just re-trigger search if we have the results stored, but for now just update static 
+    // Usually we would abstract the current searched results into state array `let currentResults = []` 
+    // so we can call `renderPlaces(currentResults)` here.
+  }
+}
+
+function applyTheme() {
+  if (isDarkTheme) {
+    document.documentElement.classList.remove('light-theme');
+    themeToggleBtn.innerHTML = '☀️';
+  } else {
+    document.documentElement.classList.add('light-theme');
+    themeToggleBtn.innerHTML = '🌙';
+  }
+
+  // Update Leaflet tile layer if the map has been initialized
+  if (map && tileLayer) {
+    const tileUrl = isDarkTheme 
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+    tileLayer.setUrl(tileUrl);
+  }
+}
+
+function toggleTheme() {
+  isDarkTheme = !isDarkTheme;
+  localStorage.setItem('pinme_theme', isDarkTheme ? 'dark' : 'light');
+  applyTheme();
+}
+
+// Hook up event listeners for toggles
+langToggleBtn.addEventListener('click', toggleLanguage);
+themeToggleBtn.addEventListener('click', toggleTheme);
+
+// Initialize visual state
+applyTheme();
+applyTranslations();
