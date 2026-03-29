@@ -592,3 +592,5 @@ flowchart TD
 5. การจัดการข้อผิดพลาดจาก External API (Third-party API Error Handling)
 รายละเอียด: หาก Quota ของ SerpAPI หมด หรือรหัส API Key มีปัญหา ระบบ Backend จะไม่สามารถดึงข้อมูลได้ 
 ผลกระทบ: แม้จะมีการทำ Try-Catch ไว้ แต่ Error Message ที่ส่งไปให้ Frontend อาจจะยังเป็น Error ทั่วไป (เช่น "เกิดข้อผิดพลาดในการเชื่อมต่อ") แทนที่จะระบุชัดเจนว่า "ระบบ API ภายนอกขัดข้อง"
+
+## Website Screenshot
