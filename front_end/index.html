@@ -103,6 +103,24 @@
 
         <div class="divider"></div>
 
+        <!-- ===================== MAP ===================== -->
+        <div id="mapSection" class="w-full mb-2 map-section">
+          <div class="flex items-center justify-between mb-3">
+            <label class="form-label mb-0 flex items-center gap-2">
+              🗺️ <span data-i18n="title_map">แผนที่</span>
+              <span id="mapRadiusBadge" class="text-xs font-normal text-slate-400" style="text-transform: none; letter-spacing: normal;">รัศมี 3 กม.</span>
+            </label>
+            <button type="button" id="mapToggleBtn" class="gps-btn" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" data-i18n="btn_hide_map">
+              🔽 ซ่อนแผนที่
+            </button>
+          </div>
+          <div id="mapWrapper" class="map-wrapper" style="padding: 0;">
+            <div id="map"></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
         <!-- Section: Category -->
         <div class="mb-6">
           <label class="form-label">🏷️ <span data-i18n="label_category">หมวดหมู่</span></label>
@@ -123,21 +141,6 @@
       </form>
     </section>
 
-    <!-- ===================== MAP ===================== -->
-    <section id="mapSection" class="glass-card w-full max-w-md mb-6 map-section">
-      <div class="flex items-center justify-between p-4 pb-0">
-        <h2 class="text-base font-bold flex items-center gap-2">
-          🗺️ <span data-i18n="title_map">แผนที่</span>
-          <span id="mapRadiusBadge" class="text-xs font-normal text-slate-400">รัศมี 3 กม.</span>
-        </h2>
-        <button type="button" id="mapToggleBtn" class="gps-btn" style="padding: 0.4rem 0.75rem; font-size: 0.78rem;" data-i18n="btn_hide_map">
-          🔽 ซ่อนแผนที่
-        </button>
-      </div>
-      <div id="mapWrapper" class="map-wrapper">
-        <div id="map"></div>
-      </div>
-    </section>
 
     <!-- ===================== MINI TRIP PLANNER ===================== -->
     <section class="glass-card w-full max-w-md p-6 sm:p-7 mb-6">
