@@ -602,3 +602,11 @@ flowchart TD
 ตัว website สามารถเปลี่ยน Theme ได้ (มี Light theme กับ Dark theme) และสามารถเปลี่ยนภาษาได้ (ภาษาไทย TH และ English US)
 
 ![website_page](Website_Screenshot/lan_and_theme.png)
+
+หน้า Website ที่เปลี่ยน Theme เป็น Light theme :
+
+![website_page](Website_Screenshot/web_with_light_theme.png)
+
+หน้า Website ที่เปลี่ยนภาษาจาก English US เป็น ภาษาไทย :
+
+![website_page](Website_Screenshot/web_withTH_lan.png)
