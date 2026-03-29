@@ -1,0 +1,21 @@
+{
+  "name": "pinme",
+  "version": "1.0.0",
+  "description": "PinMe - Location Scanner Application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest --verbose",
+    "test:coverage": "jest --coverage --verbose"
+  },
+  "keywords": [
+    "location",
+    "scanner",
+    "maps"
+  ],
+  "author": "PinMe Team",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^30.3.0"
+  }
+}
