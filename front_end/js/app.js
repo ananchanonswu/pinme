@@ -4,7 +4,7 @@
 
 import { MOCK_PLACES } from './data/mockData.js';
 import { TRANSLATIONS } from './data/translations.js';
-import { getCategoryBadge, getCategoryIcon, escapeHtml, showToast } from './utils/helpers.js';
+import { getCategoryBadge, getCategoryBadgeText, getCategoryIcon, escapeHtml, showToast } from './utils/helpers.js';
 import { initMap, addPlaceMarkers, flyToPlaceAndOpenPopup, invalidateMapSize, updateRadiusCircleAndMap, setMapTheme } from './modules/map.js';
 import { renderTripPlan, addTripActivity } from './modules/tripPlanner.js';
 
@@ -27,6 +27,20 @@ const emptyState = document.getElementById('emptyState');
 const mapToggleBtn = document.getElementById('mapToggleBtn');
 const mapWrapper = document.getElementById('mapWrapper');
 const mapRadiusBadge = document.getElementById('mapRadiusBadge');
+
+// --- Detail Modal Elements ---
+const detailModal = document.getElementById('detailModal');
+const modalBackdrop = document.getElementById('modalBackdrop');
+const modalContent = document.getElementById('modalContent');
+const modalTitle = document.getElementById('modalTitle');
+const modalCategoryBadge = document.getElementById('modalCategoryBadge');
+const modalAddress = document.getElementById('modalAddress');
+const modalRating = document.getElementById('modalRating');
+const modalRatingContainer = document.getElementById('modalRatingContainer');
+const modalImage = document.getElementById('modalImage');
+const modalImageContainer = document.getElementById('modalImageContainer');
+const modalCloseBtnTop = document.getElementById('modalCloseBtnTop');
+const modalCloseBtnBottom = document.getElementById('modalCloseBtnBottom');
 
 // --- Trip Planner Elements ---
 const tripForm = document.getElementById('tripForm');
@@ -167,13 +181,14 @@ document.querySelectorAll('.category-pill').forEach(pill => {
 });
 
 gpsBtn.addEventListener('click', () => {
+  const dict = TRANSLATIONS[currentLang];
   if (!navigator.geolocation) {
-    showToast('เบราว์เซอร์ไม่รองรับ Geolocation', 'error');
+    showToast(dict.toast_gps_fail, 'error');
     return;
   }
 
   gpsBtn.classList.add('loading');
-  gpsBtn.querySelector('.gps-text').textContent = TRANSLATIONS[currentLang].toast_gps_wait;
+  gpsBtn.querySelector('.gps-text').textContent = dict.toast_gps_wait;
 
   navigator.geolocation.getCurrentPosition(
     (position) => {
@@ -200,12 +215,13 @@ gpsBtn.addEventListener('click', () => {
       gpsBtn.classList.remove('loading');
       gpsBtn.querySelector('.gps-text').textContent = TRANSLATIONS[currentLang].btn_gps;
 
+      const gpsDict = TRANSLATIONS[currentLang];
       const messages = {
-        1: 'ไม่ได้รับอนุญาตให้เข้าถึงตำแหน่ง',
-        2: 'ไม่สามารถหาตำแหน่งได้',
-        3: 'หมดเวลาในการหาตำแหน่ง',
+        1: gpsDict.toast_gps_denied,
+        2: gpsDict.toast_gps_unavail,
+        3: gpsDict.toast_gps_timeout,
       };
-      showToast(messages[error.code] || 'เกิดข้อผิดพลาด', 'error');
+      showToast(messages[error.code] || gpsDict.toast_gps_fail, 'error');
     },
     { enableHighAccuracy: true, timeout: 10000 }
   );
@@ -284,8 +300,8 @@ searchForm.addEventListener('submit', async (e) => {
     loadingState.style.display = 'none';
     resultsGrid.innerHTML = '';
     emptyState.style.display = 'flex';
-    emptyState.querySelector('.empty-title').textContent = 'เชื่อมต่อไม่สำเร็จ';
-    emptyState.querySelector('.empty-desc').textContent = 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง';
+    emptyState.querySelector('.empty-title').textContent = dict.toast_conn_fail;
+    emptyState.querySelector('.empty-desc').textContent = dict.toast_conn_fail_desc;
   } finally {
     setLoadingState(false);
   }
@@ -363,17 +379,14 @@ function renderPlaces(places) {
     const pinBtn = card.querySelector('.card-btn-pin');
 
     detailBtn.addEventListener('click', () => {
-      const placeLat = place.lat ?? place.latitude;
-      const placeLng = place.lng ?? place.longitude;
-      flyToPlaceAndOpenPopup(placeLat, placeLng);
-      showToast(`📋 ${escapeHtml(name)} — ดูตำแหน่งบนแผนที่`, 'success');
+      openDetailModal(place, dict);
     });
 
     pinBtn.addEventListener('click', () => {
       const isPinned = pinBtn.classList.toggle('pinned');
       pinBtn.innerHTML = isPinned ? dict.btn_pinned : dict.btn_pin;
       showToast(
-        isPinned ? `📍 ปักหมุด "${escapeHtml(name)}" แล้ว` : `❌ ยกเลิกหมุด "${escapeHtml(name)}"`,
+        isPinned ? `📍 ${dict.toast_pinned} "${escapeHtml(name)}"` : `❌ ${dict.toast_unpinned} "${escapeHtml(name)}"`,
         isPinned ? 'success' : 'warning'
       );
     });
@@ -381,6 +394,67 @@ function renderPlaces(places) {
     resultsGrid.appendChild(card);
   });
 }
+
+// ==========================================
+// Detail Modal Logic
+// ==========================================
+
+function openDetailModal(place, dict) {
+  const name = place.name || dict.unknown_name;
+  const category = place.category || 'other';
+
+  // Populate modal content
+  modalTitle.textContent = name;
+  modalCategoryBadge.innerHTML = getCategoryBadge(category, dict);
+  modalAddress.textContent = place.address || dict.modal_no_address;
+
+  if (place.rating) {
+    modalRatingContainer.style.display = 'flex';
+    modalRating.textContent = `${place.rating} / 5.0`;
+  } else {
+    modalRatingContainer.style.display = 'none';
+  }
+
+  if (place.thumbnail) {
+    modalImageContainer.classList.remove('hidden');
+    modalImage.src = place.thumbnail;
+    modalImage.alt = name;
+  } else {
+    modalImageContainer.classList.add('hidden');
+  }
+
+  // Show modal with animation
+  detailModal.classList.remove('hidden');
+  detailModal.classList.add('flex');
+  requestAnimationFrame(() => {
+    modalContent.classList.remove('scale-95', 'opacity-0');
+    modalContent.classList.add('scale-100', 'opacity-100');
+  });
+
+  // Also fly to the place on the map
+  const placeLat = place.lat ?? place.latitude;
+  const placeLng = place.lng ?? place.longitude;
+  flyToPlaceAndOpenPopup(placeLat, placeLng);
+}
+
+function closeDetailModal() {
+  modalContent.classList.remove('scale-100', 'opacity-100');
+  modalContent.classList.add('scale-95', 'opacity-0');
+  setTimeout(() => {
+    detailModal.classList.add('hidden');
+    detailModal.classList.remove('flex');
+  }, 200);
+}
+
+// Modal close event listeners
+modalCloseBtnTop.addEventListener('click', closeDetailModal);
+modalCloseBtnBottom.addEventListener('click', closeDetailModal);
+modalBackdrop.addEventListener('click', closeDetailModal);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !detailModal.classList.contains('hidden')) {
+    closeDetailModal();
+  }
+});
 
 // ==========================================
 // Demo Data (on startup)
