@@ -596,7 +596,9 @@ flowchart TD
 ## Website Screenshot
 
 หน้าหลักของ website :
+
 ![website_page](Website_Screenshot/main_page.png)
 
 ตัว website สามารถเปลี่ยน Theme ได้ (มี Light theme กับ Dark theme) และสามารถเปลี่ยนภาษาได้ (ภาษาไทย TH และ English US)
+
 ![website_page](Website_Screenshot/lan_and_theme.png)
