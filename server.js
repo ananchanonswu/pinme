@@ -164,6 +164,8 @@ async function handleScan(req, res) {
           name: place.title || 'Unknown',
           category: cat,
           distance: parseFloat(distance.toFixed(2)),
+          lat: lat,
+          lng: lng,
           address: place.address || '',
           rating: place.rating || null,
           type: place.type || '',

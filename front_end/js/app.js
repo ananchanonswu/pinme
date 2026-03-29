@@ -88,7 +88,7 @@ function applyTranslations() {
     }
   });
 
-  langToggleBtn.innerHTML = currentLang === 'th' ? '🇬🇧 EN' : '🇹🇭 TH';
+  langToggleBtn.innerHTML = currentLang === 'th' ? '🇹🇭 TH' : '🇬🇧 EN';
 }
 
 function toggleLanguage() {
@@ -98,8 +98,7 @@ function toggleLanguage() {
   applyTranslations();
 
   if (resultsContainer.classList.contains('visible') && !loadingState.style.display.includes('flex')) {
-    renderPlaces(currentResults);
-    addPlaceMarkers(currentResults, TRANSLATIONS[currentLang]);
+    renderResults(currentResults);
   }
   
   mapRadiusBadge.textContent = TRANSLATIONS[currentLang].map_radius.replace('{val}', selectedRadius);

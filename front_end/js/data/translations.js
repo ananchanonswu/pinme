@@ -53,7 +53,11 @@ export const TRANSLATIONS = {
     btn_pin: '📌 ปักหมุด (Pin)',
     btn_pinned: '📍 ปักหมุดแล้ว',
     map_you_are_here: '📍 คุณอยู่ที่นี่',
-    unknown_name: 'ไม่ทราบชื่อ'
+    unknown_name: 'ไม่ทราบชื่อ',
+    modal_title: 'รายละเอียดสถานที่',
+    modal_address: 'ที่อยู่',
+    modal_rating: 'คะแนน',
+    modal_close: 'ปิด',
   },
   en: {
     subtitle: 'Find places around you',
@@ -105,6 +109,10 @@ export const TRANSLATIONS = {
     btn_pin: '📌 Pin',
     btn_pinned: '📍 Pinned',
     map_you_are_here: '📍 You are here',
-    unknown_name: 'Unknown name'
+    unknown_name: 'Unknown name',
+    modal_title: 'Place Details',
+    modal_address: 'Address',
+    modal_rating: 'Rating',
+    modal_close: 'Close',
   }
 };

@@ -60,7 +60,7 @@ export function initMap(lat, lng, radiusKm, isDarkTheme, dict, mapRadiusBadge) {
         <strong>${dict.map_you_are_here}</strong>
         <span class="popup-distance">${lat.toFixed(4)}, ${lng.toFixed(4)}</span>
       </div>
-    `)
+    `, { className: 'white-popup' })
     .openPopup();
 
   radiusCircle = L.circle([lat, lng], {
