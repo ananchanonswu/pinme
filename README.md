@@ -538,3 +538,8 @@ flowchart TD
 	- วาดรัศมีวงกลม (Radius Circle) ปรับขนาดตามกิโลเมตร
 	- พล็อตหมุด (Place Markers) สีและไอคอนแยกตามหมวดหมู่
 	- พล็อตหมุดตำแหน่งผู้ใช้ปัจจุบันแบบมี Animation (Pulsing Marker)
+
+## Test Case
+### ตาราง Unit Test Cases
+
+![ตาราง Unit Test Cases](TestCase_Table.png)
