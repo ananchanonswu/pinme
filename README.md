@@ -577,7 +577,7 @@ flowchart TD
 
 ผลลัพธ์การรัน Coverage แสดงให้เห็นว่ากลุ่มของเรามีค่า **Statement Coverage ภาพรวมสูงถึง 97.33%** (โดยมีบางไฟล์เช่น `SearchQuery.js` สามารถทำ Coverage ได้ถึง 100%) ซึ่งผลลัพธ์นี้ผ่านเกณฑ์ที่กำหนดไว้ว่าต้องมากกว่า 80% อย่างสมบูรณ์ เป็นการยืนยันว่าโครงสร้างพื้นฐานของระบบได้รับการทดสอบอย่างครอบคลุมและมีความเสถียรสูง
 
-![Test Coverage_Report]()
+![Test Coverage_Report](TestCoverage/TestCoverage.png)
 
 ## สิ่งที่ยังไม่เสร็จสมบูรณ์ (bugs and limitations)
 
