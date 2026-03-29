@@ -622,3 +622,15 @@ flowchart TD
 สามารถเลือกหมวดหมู (category) ของสถานที่ได้ และมีปุ่มสแกนเพื่อค้นหาสถานที่ที่อยู่ภายในบริเวณรัศมีที่เราเลือกไว้ได้
 
 ![website_page](Website_Screenshot/Category_and_scan.png)
+
+สามารถกำหนดแผนการเดินทางเบื้องต้นของเราได้ โดบการกำหนดชื่อสถานที่ จากนั้นก็เลือกเวลาที่เราจะเดินทางกี่โมงถึงกี่โมง
+
+![website_page](Website_Screenshot/tripplanner1.png)
+
+ตัวอย่าง :
+
+![website_page](Website_Screenshot/tripplanner2.png)
+
+หลังจากที่เรากดบันทึกไว้ :
+
+![website_page](Website_Screenshot/tripplanner3.png)
