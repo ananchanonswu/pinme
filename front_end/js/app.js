@@ -4,6 +4,54 @@
 
 const API_ENDPOINT = 'http://localhost:3000/scan';
 
+// ==========================================
+// Mock Data (สำหรับทดสอบ)
+// ==========================================
+const MOCK_PLACES = [
+  {
+    name: 'โรงแรมริเวอร์ไซด์ กรุงเทพ',
+    category: 'hotel',
+    distance: 1.2,
+    address: '257/1-3 ถ.เจริญนคร แขวงสำเหร่ เขตธนบุรี กรุงเทพฯ',
+    rating: 4.5,
+  },
+  {
+    name: 'ร้านครัวบ้านย่า',
+    category: 'restaurant',
+    distance: 0.8,
+    address: '12 ซอยสุขุมวิท 26 แขวงคลองตัน เขตคลองเตย กรุงเทพฯ',
+    rating: 4.7,
+  },
+  {
+    name: 'สนามกีฬาราชมังคลากีฬาสถาน',
+    category: 'sport',
+    distance: 3.5,
+    address: 'ถ.รามคำแหง แขวงหัวหมาก เขตบางกะปิ กรุงเทพฯ',
+    rating: 4.2,
+  },
+  {
+    name: 'วัดพระแก้ว',
+    category: 'tourist',
+    distance: 5.0,
+    address: 'ถ.หน้าพระลาน แขวงพระบรมมหาราชวัง เขตพระนคร กรุงเทพฯ',
+    rating: 4.9,
+  },
+  {
+    name: 'Café Amazon สาขาสยามสแควร์',
+    category: 'restaurant',
+    distance: 2.1,
+    address: 'สยามสแควร์ ซอย 3 แขวงปทุมวัน เขตปทุมวัน กรุงเทพฯ',
+    rating: 4.0,
+  },
+  {
+    name: 'โรงแรมเดอะสุโขทัย',
+    category: 'hotel',
+    distance: 4.3,
+    address: '13/3 ถ.สาทรใต้ แขวงทุ่งมหาเมฆ เขตสาทร กรุงเทพฯ',
+    rating: 4.8,
+  },
+];
+
 // --- DOM Elements ---
 const searchForm = document.getElementById('searchForm');
 const latInput = document.getElementById('latitude');
@@ -170,7 +218,7 @@ searchForm.addEventListener('submit', async (e) => {
 });
 
 // ==========================================
-// Render Results
+// Render Results (wrapper for API response)
 // ==========================================
 function renderResults(data) {
   const results = data.results || data || [];
@@ -188,43 +236,109 @@ function renderResults(data) {
   }
 
   emptyState.style.display = 'none';
-  resultsCount.textContent = `${results.length} สถานที่`;
+  renderPlaces(results);
+}
 
-  resultsGrid.innerHTML = results.map((place, i) => {
-    const categoryBadge = getCategoryBadge(place.category || place.type || 'other');
-    const distance = place.distance
-      ? `${place.distance < 1 ? (place.distance * 1000).toFixed(0) + ' ม.' : place.distance.toFixed(1) + ' กม.'}`
-      : '';
+// ==========================================
+// renderPlaces — สร้าง Card จาก Array of Places
+// ==========================================
+/**
+ * รับ Array of Objects ที่มี:
+ *   - name       (string)  ชื่อสถานที่
+ *   - category   (string)  หมวดหมู่ เช่น hotel, restaurant, sport, tourist
+ *   - distance   (number)  ระยะทาง (กม.)
+ *   - address?   (string)  ที่อยู่ (optional)
+ *   - rating?    (number)  คะแนน (optional)
+ *
+ * แล้ว render เป็น Card พร้อมปุ่ม "ดูรายละเอียด" และ "ปักหมุด (Pin)"
+ * แทรกลงใน #resultsGrid
+ */
+function renderPlaces(places) {
+  // อัปเดตจำนวนผลลัพธ์
+  resultsCount.textContent = `${places.length} สถานที่`;
 
-    return `
-      <div class="result-card" style="animation-delay: ${i * 0.05}s">
-        <div style="display: flex; align-items: flex-start; gap: 0.85rem;">
-          <div style="
-            width: 3rem; height: 3rem;
-            background: linear-gradient(135deg, rgba(13,148,136,0.2), rgba(13,148,136,0.05));
-            border-radius: 0.75rem;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.3rem; flex-shrink: 0;
-          ">
-            ${getCategoryIcon(place.category || place.type)}
+  // เคลียร์ผลลัพธ์เดิม
+  resultsGrid.innerHTML = '';
+
+  places.forEach((place, index) => {
+    // --- ข้อมูลที่ต้องแสดง ---
+    const name        = place.name     || 'ไม่ทราบชื่อ';
+    const category    = place.category || place.type || 'other';
+    const distanceRaw = place.distance;
+
+    // แปลงระยะทาง: < 1 กม. แสดงเป็น เมตร
+    const distanceText = distanceRaw != null
+      ? (distanceRaw < 1
+          ? `${(distanceRaw * 1000).toFixed(0)} ม.`
+          : `${distanceRaw.toFixed(1)} กม.`)
+      : null;
+
+    const categoryBadge = getCategoryBadge(category);
+    const categoryIcon  = getCategoryIcon(category);
+
+    // --- สร้าง DOM Element ---
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.style.animationDelay = `${index * 0.06}s`;
+
+    card.innerHTML = `
+      <div class="card-body">
+        <!-- Icon -->
+        <div class="card-icon">
+          ${categoryIcon}
+        </div>
+
+        <!-- Content -->
+        <div class="card-content">
+          <div class="card-header">
+            <h3 class="card-title">${escapeHtml(name)}</h3>
+            ${categoryBadge}
           </div>
-          <div style="flex: 1; min-width: 0;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;">
-              <h3 style="font-size: 0.95rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                ${escapeHtml(place.name || 'ไม่ทราบชื่อ')}
-              </h3>
-              ${categoryBadge}
-            </div>
-            ${place.address ? `<p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(place.address)}</p>` : ''}
-            <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.78rem; color: var(--text-secondary);">
-              ${distance ? `<span>📍 ${distance}</span>` : ''}
-              ${place.rating ? `<span>⭐ ${place.rating}</span>` : ''}
-            </div>
+          ${place.address
+            ? `<p class="card-address">${escapeHtml(place.address)}</p>`
+            : ''}
+          <div class="card-meta">
+            ${distanceText ? `<span>📍 ${distanceText}</span>` : ''}
+            ${place.rating  ? `<span>⭐ ${place.rating}</span>` : ''}
           </div>
         </div>
       </div>
+
+      <!-- Action Buttons -->
+      <div class="card-actions">
+        <button class="card-btn card-btn-detail" data-place-index="${index}">
+          🔎 ดูรายละเอียด
+        </button>
+        <button class="card-btn card-btn-pin" data-place-index="${index}">
+          📌 ปักหมุด (Pin)
+        </button>
+      </div>
     `;
-  }).join('');
+
+    // --- Event Listeners ---
+    const detailBtn = card.querySelector('.card-btn-detail');
+    const pinBtn    = card.querySelector('.card-btn-pin');
+
+    detailBtn.addEventListener('click', () => {
+      showToast(`📋 ${escapeHtml(name)} — รายละเอียดจะเปิดเร็ว ๆ นี้`, 'success');
+      console.log('🔎 ดูรายละเอียด:', place);
+    });
+
+    pinBtn.addEventListener('click', () => {
+      // Toggle pin state
+      const isPinned = pinBtn.classList.toggle('pinned');
+      pinBtn.innerHTML = isPinned ? '📍 ปักหมุดแล้ว' : '📌 ปักหมุด (Pin)';
+      showToast(
+        isPinned
+          ? `📍 ปักหมุด "${escapeHtml(name)}" แล้ว`
+          : `❌ ยกเลิกหมุด "${escapeHtml(name)}"`,
+        isPinned ? 'success' : 'warning'
+      );
+      console.log(isPinned ? '📍 Pinned:' : '❌ Unpinned:', place);
+    });
+
+    resultsGrid.appendChild(card);
+  });
 }
 
 // ==========================================
@@ -292,3 +406,12 @@ function showToast(message, type = 'success') {
     setTimeout(() => toast.remove(), 400);
   }, 3500);
 }
+
+// ==========================================
+// Demo: แสดง Mock Data เมื่อเปิดหน้าเว็บ
+// ==========================================
+(function showDemoData() {
+  resultsContainer.classList.add('visible');
+  emptyState.style.display = 'none';
+  renderPlaces(MOCK_PLACES);
+})();

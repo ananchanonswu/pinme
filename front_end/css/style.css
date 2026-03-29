@@ -326,6 +326,134 @@ body {
 .result-card:nth-child(7) { animation-delay: 0.35s; }
 .result-card:nth-child(8) { animation-delay: 0.4s; }
 
+/* --- Card Inner Layout --- */
+.card-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.card-icon {
+  width: 3rem;
+  height: 3rem;
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.2), rgba(13, 148, 136, 0.05));
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-address {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.35rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+/* --- Card Action Buttons --- */
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.card-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: inherit;
+}
+
+.card-btn:hover {
+  transform: translateY(-1px);
+}
+
+.card-btn:active {
+  transform: translateY(0);
+}
+
+/* Detail button */
+.card-btn-detail {
+  border-color: rgba(99, 102, 241, 0.3);
+  color: #818cf8;
+}
+
+.card-btn-detail:hover {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.15);
+}
+
+/* Pin button */
+.card-btn-pin {
+  border-color: rgba(13, 148, 136, 0.3);
+  color: var(--primary-light);
+}
+
+.card-btn-pin:hover {
+  background: rgba(13, 148, 136, 0.12);
+  border-color: var(--primary);
+  box-shadow: 0 2px 10px var(--primary-glow);
+}
+
+/* Pinned state */
+.card-btn-pin.pinned {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.08));
+  border-color: rgba(245, 158, 11, 0.5);
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.card-btn-pin.pinned:hover {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(245, 158, 11, 0.12));
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
+}
+
 /* --- Status / Toast Messages --- */
 .toast {
   position: fixed;
