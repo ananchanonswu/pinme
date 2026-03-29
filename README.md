@@ -553,3 +553,53 @@ flowchart TD
 3.TripPlanner Model : เป็นหัวใจสำคัญของฟีเจอร์จัดทริป จึงเน้นทดสอบลอจิกการคำนวณเวลา โดยทดสอบทั้งการแปลง String เป็นนาที, การแปลงนาทีกลับเป็นรูปแบบเวลา (HH:MM) และการหาระยะเวลาระหว่างช่วงเวลา รวมถึงมีการทดสอบกรณีขอบ (Edge Cases) เช่น การกรอกเวลาที่เกิน 24 ชั่วโมง ซึ่งระบบต้องคืนค่าเป็น NaN ได้อย่างถูกต้อง
 
 การทดสอบทั้ง 10 กรณีนี้ ครอบคลุมทั้งกรณีที่ข้อมูลถูกต้อง (Happy Path) และกรณีที่ข้อมูลผิดปกติ (Error Handling) เพื่อให้มั่นใจว่ารากฐานข้อมูลของระบบมีความเสถียรและพร้อมนำไปใช้งานต่อในส่วนอื่นๆ
+
+## ตัวอย่าง Test Case Code
+
+### ตัวอย่างที่ 1: การทดสอบ Haversine Formula (จากไฟล์ Place.test.js)
+ใช้ทดสอบว่าระบบสามารถคำนวณระยะทางจาก Latitude/Longitude 2 จุดบนโลกได้แม่นยำหรือไม่
+
+test('TC-P07: should calculate distance correctly (Bangkok to Pattaya ~101 km)', () => {
+  // พิกัด กทม. (13.7563, 100.5018) และ พัทยา (12.9236, 100.8825)
+  const dist = Place.calculateDistance(13.7563, 100.5018, 12.9236, 100.8825);
+  
+  // ผลลัพธ์ต้องออกมาอยู่ระหว่าง 95 ถึง 110 กิโลเมตร
+  expect(dist).toBeGreaterThan(95);
+  expect(dist).toBeLessThan(110);
+});
+
+test('TC-P07b: should return 0 for same coordinates', () => {
+  // หากเป็นพิกัดเดียวกัน ระยะทางต้องเป็น 0 กิโลเมตร
+  const dist = Place.calculateDistance(13.7563, 100.5018, 13.7563, 100.5018);
+  expect(dist).toBe(0);
+});
+
+### ตัวอย่างที่ 2: การทดสอบเพิ่มกิจกรรมและเช็คเวลาทับซ้อน (จากไฟล์ TripPlanner.test.js)
+ใช้ทดสอบว่าคลาสผู้เชี่ยวชาญการจัดทริป สามารถตรวจจับว่าคุณไม่สามารถเพิ่มกิจกรรมที่เวลาทับซ้อนกับกิจกรรมอื่นที่มีอยู่แล้วได้
+
+test('TC-T07: should detect overlapping activities', () => {
+  const planner = new TripPlanner();
+  
+  // เพิ่มกิจกรรมแรกเวลา 09:00 - 11:00
+  planner.addActivity('Activity 1', '09:00', '11:00');
+  
+  // พยายามเช็คว่าถ้ามีกิจกรรม 10:00 - 12:00 จะทับซ้อนไหม?
+  const overlap = planner.checkOverlap('10:00', '12:00');
+  
+  // ต้องตอบว่าทับซ้อน (overlaps เป็น true) และชนกับ Activity 1
+  expect(overlap.overlaps).toBe(true);
+  expect(overlap.conflictWith.name).toBe('Activity 1');
+});
+
+### ตัวอย่างที่ 3: การทดสอบ Validation (จากไฟล์ SearchQuery.test.js)
+ใช้ทดสอบว่าผู้ใช้อาจเผลอป้อน Latitude หรือ Longitude ผิดพลาด ระบบต้องจับผิดได้
+
+test('TC-S04: should validate latitude in range [-90, 90]', () => {
+  // ค่า latitude ที่ถูกต้องให้อนุญาต (true)
+  expect(new SearchQuery({ latitude: 13.7 }).isValidLatitude()).toBe(true);
+  
+  // ตัวเลขเกินพิกเซลโลก (-90 ถึง 90) ต้องจับผิดได้ (false)
+  expect(new SearchQuery({ latitude: 91 }).isValidLatitude()).toBe(false);
+  expect(new SearchQuery({ latitude: -91 }).isValidLatitude()).toBe(false);
+  expect(new SearchQuery({ latitude: null }).isValidLatitude()).toBe(false);
+});
