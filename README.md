@@ -634,3 +634,11 @@ flowchart TD
 หลังจากที่เรากดบันทึกไว้ :
 
 ![website_page](Website_Screenshot/tripplanner3.png)
+
+หลังจากที่เราได้สแกนเพื่อค้นหาสถานที่โดยรอบแล้ว ตัว website ก็จะแสดงผลลัพธ์โดยมีสถานที่ต่างๆออกมา ตามหมวดหมู่ที่เราเลือกไว้ข้างต้น
+
+![website_page](Website_Screenshot/scan_result.png)
+
+สามารถเลือกดูลายละเอียดของสถานที่ต่างได้และสามารถกดปักหมุดได้
+
+![website_page](Website_Screenshot/place_description.png)
