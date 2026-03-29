@@ -625,7 +625,7 @@ flowchart TD
 
 สามารถกำหนดแผนการเดินทางเบื้องต้นของเราได้ โดบการกำหนดชื่อสถานที่ จากนั้นก็เลือกเวลาที่เราจะเดินทางกี่โมงถึงกี่โมง
 
-![website_page](Website_Screenshot/tripplanner1.png)
+![website_page](Website_Screenshot/tripplanner.png)
 
 ตัวอย่าง :
 
