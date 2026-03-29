@@ -93,6 +93,7 @@ let selectedRadius = '3';
 let selectedCategory = 'all';
 let currentLang = localStorage.getItem('pinme_lang') || 'th';
 let isDarkTheme = localStorage.getItem('pinme_theme') !== 'light'; // Default to dark
+let currentResults = [];
 
 // --- Translation Dictionary ---
 const TRANSLATIONS = {
@@ -102,6 +103,8 @@ const TRANSLATIONS = {
     btn_gps: 'ใช้ตำแหน่งปัจจุบัน',
     label_radius: 'รัศมีการค้นหา',
     unit_km: 'กม.',
+    unit_m: 'ม.',
+    map_radius: 'รัศมี {val} กม.',
     label_category: 'หมวดหมู่',
     cat_all: '🌐 ทั้งหมด',
     cat_hotel: '🏨 โรงแรม',
@@ -152,6 +155,8 @@ const TRANSLATIONS = {
     btn_gps: 'Use Current Location',
     label_radius: 'Search Radius',
     unit_km: 'km',
+    unit_m: 'm',
+    map_radius: 'Radius {val} km',
     label_category: 'Category',
     cat_all: '🌐 All',
     cat_hotel: '🏨 Hotel',
@@ -287,7 +292,7 @@ function initMap(lat, lng) {
   }).addTo(map);
 
   // อัปเดต badge
-  mapRadiusBadge.textContent = `รัศมี ${radiusKm} กม.`;
+  mapRadiusBadge.textContent = TRANSLATIONS[currentLang].map_radius.replace('{val}', radiusKm);
 
   // Fit bounds ให้เห็นวงกลมทั้งหมด
   map.fitBounds(radiusCircle.getBounds(), { padding: [30, 30] });
@@ -372,7 +377,7 @@ function addPlaceMarkers(placesArray) {
 // ==========================================
 mapToggleBtn.addEventListener('click', () => {
   const isCollapsed = mapWrapper.classList.toggle('collapsed');
-  mapToggleBtn.textContent = isCollapsed ? '🔼 แสดงแผนที่' : '🔽 ซ่อนแผนที่';
+  mapToggleBtn.textContent = isCollapsed ? TRANSLATIONS[currentLang].btn_show_map : TRANSLATIONS[currentLang].btn_hide_map;
 
   // Leaflet ต้อง invalidateSize เมื่อแสดง
   if (!isCollapsed && map) {
@@ -402,7 +407,7 @@ document.querySelectorAll('.radius-chip').forEach(chip => {
         dashArray: '6 4',
       }).addTo(map);
       map.fitBounds(radiusCircle.getBounds(), { padding: [30, 30] });
-      mapRadiusBadge.textContent = `รัศมี ${selectedRadius} กม.`;
+      mapRadiusBadge.textContent = TRANSLATIONS[currentLang].map_radius.replace('{val}', selectedRadius);
     }
   });
 });
@@ -557,6 +562,7 @@ searchForm.addEventListener('submit', async (e) => {
 // ==========================================
 function renderResults(data) {
   const results = data.results || data || [];
+  currentResults = results;
   resultsContainer.classList.add('visible');
   loadingState.style.display = 'none';
 
@@ -625,10 +631,10 @@ function renderPlaces(places) {
       <!-- Action Buttons -->
       <div class="card-actions">
         <button class="card-btn card-btn-detail" data-place-index="${index}">
-          🔎 ดูรายละเอียด
+          ${TRANSLATIONS[currentLang].btn_detail}
         </button>
         <button class="card-btn card-btn-pin" data-place-index="${index}">
-          📌 ปักหมุด (Pin)
+          ${TRANSLATIONS[currentLang].btn_pin}
         </button>
       </div>
     `;
@@ -659,7 +665,7 @@ function renderPlaces(places) {
 
     pinBtn.addEventListener('click', () => {
       const isPinned = pinBtn.classList.toggle('pinned');
-      pinBtn.innerHTML = isPinned ? '📍 ปักหมุดแล้ว' : '📌 ปักหมุด (Pin)';
+      pinBtn.innerHTML = isPinned ? TRANSLATIONS[currentLang].btn_pinned : TRANSLATIONS[currentLang].btn_pin;
       showToast(
         isPinned
           ? `📍 ปักหมุด "${escapeHtml(name)}" แล้ว`
@@ -707,7 +713,7 @@ function checkTimeOverlap(startStr, endStr) {
 
 function renderTripPlan() {
   if (tripPlan.length === 0) {
-    tripTimeline.innerHTML = '<p class="text-sm text-slate-400 py-2 -ml-4 pl-0 text-center w-full" id="emptyTripState">ยังไม่มีกิจกรรมในแผน</p>';
+    tripTimeline.innerHTML = `<p class="text-sm text-slate-400 py-2 -ml-4 pl-0 text-center w-full" id="emptyTripState" data-i18n="empty_trip">${TRANSLATIONS[currentLang].empty_trip}</p>`;
     return;
   }
 
@@ -904,10 +910,15 @@ function toggleLanguage() {
 
   // If results are visible, rerender them to translate badges
   if (resultsContainer.classList.contains('visible') && !loadingState.style.display.includes('flex')) {
-    // A quick hack is just re-trigger search if we have the results stored, but for now just update static 
-    // Usually we would abstract the current searched results into state array `let currentResults = []` 
-    // so we can call `renderPlaces(currentResults)` here.
+    renderPlaces(currentResults);
+    addPlaceMarkers(currentResults);
   }
+  
+  // Update other dynamic language elements
+  mapRadiusBadge.textContent = TRANSLATIONS[currentLang].map_radius.replace('{val}', selectedRadius);
+  const isCollapsed = mapWrapper.classList.contains('collapsed');
+  mapToggleBtn.textContent = isCollapsed ? TRANSLATIONS[currentLang].btn_show_map : TRANSLATIONS[currentLang].btn_hide_map;
+  renderTripPlan();
 }
 
 function applyTheme() {
