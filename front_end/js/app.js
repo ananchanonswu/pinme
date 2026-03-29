@@ -102,7 +102,7 @@ function applyTranslations() {
     }
   });
 
-  langToggleBtn.innerHTML = currentLang === 'th' ? '🇹🇭 TH' : '🇬🇧 EN';
+  langToggleBtn.innerHTML = currentLang === 'th' ? '🇹🇭 TH' : '🇺🇸 EN';
 }
 
 function toggleLanguage() {
