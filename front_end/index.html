@@ -129,6 +129,37 @@
       </div>
     </section>
 
+    <!-- ===================== MINI TRIP PLANNER ===================== -->
+    <section class="glass-card w-full max-w-md p-6 sm:p-7 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold">📅 แผนการเดินทาง 1 วัน</h2>
+      </div>
+      <form id="tripForm" class="mb-4">
+        <div class="mb-3">
+          <input type="text" id="tripActivityName" class="form-input" placeholder="ชื่อกิจกรรม (เช่น วัดพระแก้ว)" required>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <label class="form-label text-[0.7rem] opacity-80 mb-1">เวลาเริ่ม</label>
+            <input type="time" id="tripStartTime" class="form-input" required>
+          </div>
+          <div>
+            <label class="form-label text-[0.7rem] opacity-80 mb-1">เวลาสิ้นสุด</label>
+            <input type="time" id="tripEndTime" class="form-input" required>
+          </div>
+        </div>
+        <button type="submit" class="submit-btn" style="padding: 0.7rem; font-size: 0.9rem;">
+          ➕ เพิ่มลงทริป
+        </button>
+      </form>
+
+      <!-- Timeline Display -->
+      <div class="divider mt-2 mb-4"></div>
+      <div id="tripTimeline" class="flex flex-col gap-3 relative border-l-2 border-teal-500/30 ml-2 pl-4">
+        <p class="text-sm text-slate-400 py-2 -ml-4 pl-0 text-center w-full" id="emptyTripState">ยังไม่มีกิจกรรมในแผน</p>
+      </div>
+    </section>
+
     <!-- ===================== RESULTS ===================== -->
     <section id="resultsContainer" class="results-container w-full max-w-md">
 

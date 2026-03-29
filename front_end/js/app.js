@@ -81,6 +81,13 @@ const mapToggleBtn = document.getElementById('mapToggleBtn');
 const mapWrapper = document.getElementById('mapWrapper');
 const mapRadiusBadge = document.getElementById('mapRadiusBadge');
 
+// --- Trip Planner Elements ---
+const tripForm = document.getElementById('tripForm');
+const tripActivityName = document.getElementById('tripActivityName');
+const tripStartTime = document.getElementById('tripStartTime');
+const tripEndTime = document.getElementById('tripEndTime');
+const tripTimeline = document.getElementById('tripTimeline');
+
 // --- State ---
 let selectedRadius = '3';
 let selectedCategory = 'all';
@@ -90,6 +97,9 @@ let map = null;
 let userMarker = null;
 let radiusCircle = null;
 let placeMarkersLayer = null;
+
+// --- Trip Planner State ---
+let tripPlan = []; // Array of { name, start, end }
 
 // ==========================================
 // initMap — สร้างแผนที่เริ่มต้น + ปักหมุดผู้ใช้
@@ -551,6 +561,102 @@ function renderPlaces(places) {
 }
 
 // ==========================================
+// Mini Trip Planner (เช็คเวลาทับซ้อน & วาด Timeline)
+// ==========================================
+
+function parseTime(timeStr) {
+  const [h, m] = timeStr.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function checkTimeOverlap(startStr, endStr) {
+  const newStart = parseTime(startStr);
+  const newEnd = parseTime(endStr);
+
+  if (newStart >= newEnd) {
+    return 'เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม';
+  }
+
+  for (const item of tripPlan) {
+    const itemStart = parseTime(item.start);
+    const itemEnd = parseTime(item.end);
+
+    // เช็คกรณีทับซ้อน (Overlap)
+    // เงื่อนไข: เวลาเริ่มของจุดหมายใหม่ น้อยกว่าเวลาสิ้นสุดอันเก่า
+    //          และ เวลาสิ้นสุดของจุดหมายใหม่ มากกว่าเวลาเริ่มของอันเก่า
+    if (newStart < itemEnd && newEnd > itemStart) {
+      return `เวลาทับซ้อนกับกิจกรรม "${item.name}" (${item.start} - ${item.end})`;
+    }
+  }
+
+  return null; // ไม่มีทับซ้อน
+}
+
+function renderTripPlan() {
+  if (tripPlan.length === 0) {
+    tripTimeline.innerHTML = '<p class="text-sm text-slate-400 py-2 -ml-4 pl-0 text-center w-full" id="emptyTripState">ยังไม่มีกิจกรรมในแผน</p>';
+    return;
+  }
+
+  // เรียงลำดับตามเวลาเริ่ม
+  tripPlan.sort((a, b) => parseTime(a.start) - parseTime(b.start));
+
+  tripTimeline.innerHTML = '';
+  tripPlan.forEach((item) => {
+    tripTimeline.innerHTML += `
+      <div class="relative flex flex-col mb-3 last:mb-0 group cursor-default">
+        <!-- Bullet -->
+        <div class="absolute -left-[1.35rem] top-1.5 w-[11px] h-[11px] rounded-full bg-teal-500 border-2 border-slate-900 group-hover:bg-teal-300 transition-colors z-10"></div>
+        <!-- Time -->
+        <div class="text-[0.65rem] text-teal-400 font-mono mb-0.5 leading-none bg-slate-900/50 inline-block w-fit px-1.5 py-0.5 rounded">
+          🕒 ${item.start} - ${item.end}
+        </div>
+        <!-- Content -->
+        <div class="bg-white/5 p-2.5 rounded-lg border border-white/10 hover:border-teal-500/30 transition-colors ml-1 mt-1">
+          <p class="text-sm font-semibold text-slate-100 leading-snug">${escapeHtml(item.name)}</p>
+        </div>
+      </div>
+    `;
+  });
+}
+
+tripForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const nameInput = tripActivityName.value.trim();
+  const startTime = tripStartTime.value;
+  const endTime = tripEndTime.value;
+
+  if (!nameInput || !startTime || !endTime) {
+    alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+    return;
+  }
+
+  const overlapError = checkTimeOverlap(startTime, endTime);
+  if (overlapError) {
+    alert('⚠️ ขัดข้อง: ' + overlapError);
+    return;
+  }
+
+  // ไม่ทับซ้อน เพิ่มลง Array
+  tripPlan.push({
+    name: nameInput,
+    start: startTime,
+    end: endTime
+  });
+
+  // อัปเดต UI
+  renderTripPlan();
+  
+  // ล้างฟอร์ม
+  tripActivityName.value = '';
+  tripStartTime.value = '';
+  tripEndTime.value = '';
+  
+  showToast(`✅ เพิ่ม "${nameInput}" ลงแผนทริปแล้ว`, 'success');
+});
+
+// ==========================================
 // Helpers
 // ==========================================
 function getCategoryBadge(category) {
@@ -584,6 +690,7 @@ function getCategoryIcon(category) {
 }
 
 function escapeHtml(text) {
+  if (!text) return '';
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
