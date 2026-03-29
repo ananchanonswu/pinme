@@ -1,8 +1,8 @@
 // ==========================================
-// PinMe - Simple API Server
+// PinMe - Full Stack Server
 // ==========================================
-// Receives scan requests from the front-end
-// and proxies them to SerpAPI (Google Maps)
+// Serves static front-end files AND handles
+// /scan API proxy requests to SerpAPI.
 // ==========================================
 
 const http = require('http');
@@ -11,22 +11,42 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 
-// --- Load API Key from .env.local ---
-const envPath = path.join(__dirname, '.env.local');
+// --- Setup Paths ---
+const PORT = 3000;
+const FRONTEND_DIR = path.join(__dirname, 'front_end');
+// Try loading .env.local from back_end folder first, then root
+const envPathBack = path.join(__dirname, 'back_end', '.env.local');
+const envPathRoot = path.join(__dirname, '.env.local');
+let envPath = fs.existsSync(envPathBack) ? envPathBack : envPathRoot;
+
 let SERPAPI_KEY = '';
 try {
-  const envContent = fs.readFileSync(envPath, 'utf-8');
-  const match = envContent.match(/SERPAPI_KEY=(.+)/);
-  if (match) SERPAPI_KEY = match[1].trim();
-} catch {
-  console.warn('⚠️  .env.local not found — SerpAPI key missing');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf-8');
+    const match = envContent.match(/SERPAPI_KEY=(.+)/);
+    if (match) SERPAPI_KEY = match[1].trim();
+  } else {
+    console.warn('⚠️  .env.local not found — SerpAPI key missing');
+  }
+} catch (err) {
+  console.warn('⚠️  Could not read .env.local —', err.message);
 }
 
-const PORT = 3000;
 const SERPAPI_BASE = 'https://serpapi.com/search.json';
 
+const MIME_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'application/javascript; charset=utf-8',
+  '.json': 'application/json',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+};
+
 // --------------------------------------------------
-// Helper: Make HTTPS GET request and return JSON
+// API Logic: Helpers
 // --------------------------------------------------
 function fetchJSON(reqUrl) {
   return new Promise((resolve, reject) => {
@@ -44,18 +64,12 @@ function fetchJSON(reqUrl) {
   });
 }
 
-// --------------------------------------------------
-// CORS headers (allow front-end on different origin)
-// --------------------------------------------------
 function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 }
 
-// --------------------------------------------------
-// Read POST body as JSON
-// --------------------------------------------------
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
@@ -71,9 +85,15 @@ function readBody(req) {
 }
 
 // --------------------------------------------------
-// Route: POST /scan
+// API Route Handler: /scan
 // --------------------------------------------------
 async function handleScan(req, res) {
+  if (req.method !== 'POST') {
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
+  }
+
   try {
     const body = await readBody(req);
     const { latitude, longitude, radius, category } = body;
@@ -165,45 +185,11 @@ async function handleScan(req, res) {
 }
 
 // --------------------------------------------------
-// Route: GET /scan (query-string variant for testing)
-// --------------------------------------------------
-async function handleScanGet(req, res) {
-  const parsed = url.parse(req.url, true);
-  const { lat, lng, radiusKm, q } = parsed.query;
-
-  if (!lat || !lng) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Missing lat / lng query params' }));
-    return;
-  }
-
-  console.log(`📤 GET Scan: lat=${lat} lng=${lng} radius=${radiusKm} q=${q}`);
-
-  const params = new URLSearchParams({
-    engine: 'google_maps',
-    q: q || 'places of interest',
-    ll: `@${lat},${lng},14z`,
-    type: 'search',
-    api_key: SERPAPI_KEY,
-  });
-
-  try {
-    const data = await fetchJSON(`${SERPAPI_BASE}?${params.toString()}`);
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(data));
-  } catch (err) {
-    res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err.message }));
-  }
-}
-
-// --------------------------------------------------
-// HTTP Server
+// Web Server (handles both API and Static files)
 // --------------------------------------------------
 const server = http.createServer(async (req, res) => {
   setCorsHeaders(res);
-
-  // Handle preflight
+  
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     res.end();
@@ -211,24 +197,43 @@ const server = http.createServer(async (req, res) => {
   }
 
   const parsed = url.parse(req.url, true);
-  const pathname = parsed.pathname;
+  let pathname = parsed.pathname;
 
-  if (pathname === '/scan' && req.method === 'POST') {
-    await handleScan(req, res);
-  } else if (pathname === '/scan' && req.method === 'GET') {
-    await handleScanGet(req, res);
-  } else {
-    res.writeHead(404, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Not found' }));
+  // 1. API route
+  if (pathname === '/scan') {
+    return handleScan(req, res);
   }
+
+  // 2. Static File serving (front_end)
+  if (pathname === '/') {
+    pathname = '/index.html';
+  }
+
+  // decode url and resolve file path
+  let filePath = path.join(FRONTEND_DIR, decodeURIComponent(pathname));
+
+  fs.stat(filePath, (err, stats) => {
+    if (err || !stats.isFile()) {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Not found');
+      return;
+    }
+
+    const ext = path.extname(filePath);
+    res.writeHead(200, {
+      'Content-Type': MIME_TYPES[ext] || 'application/octet-stream'
+    });
+    fs.createReadStream(filePath).pipe(res);
+  });
 });
 
 server.listen(PORT, () => {
   console.log('');
   console.log('==========================================');
-  console.log(`  🚀 PinMe API Server running`);
-  console.log(`  📡 http://localhost:${PORT}/scan`);
-  console.log(`  🔑 SerpAPI key: ${SERPAPI_KEY ? '✅ loaded' : '❌ missing'}`);
+  console.log(`  🚀 PinMe Merged Server running`);
+  console.log(`  🌐 Frontend: http://localhost:${PORT}/`);
+  console.log(`  📡 API:      http://localhost:${PORT}/scan`);
+  console.log(`  🔑 SerpAPI:  ${SERPAPI_KEY ? '✅ loaded' : '❌ missing'}`);
   console.log('==========================================');
   console.log('');
 });
