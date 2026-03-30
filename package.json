@@ -2,11 +2,14 @@
   "name": "pinme",
   "version": "1.0.0",
   "description": "PinMe - Location Scanner Application",
-  "main": "server.js",
+  "main": "back_end/server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node back_end/server.js",
     "test": "jest --verbose",
     "test:coverage": "jest --coverage --verbose"
+  },
+  "jest": {
+    "testMatch": ["**/back_end/tests/**/*.test.js"]
   },
   "keywords": [
     "location",
