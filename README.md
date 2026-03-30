@@ -697,4 +697,4 @@ flowchart TD
 
 ## Retrospective Phase 3
 
-[Retrospective Video Phase 3]((https://www.youtube.com/watch?v=MVU9iQHDngI))
+[Retrospective Video Phase 3](https://www.youtube.com/watch?v=MVU9iQHDngI)
