@@ -9,7 +9,21 @@
     "test:coverage": "jest --coverage --verbose"
   },
   "jest": {
-    "testMatch": ["**/back_end/tests/**/*.test.js"]
+    "testMatch": [
+      "**/back_end/tests/**/*.test.js"
+    ],
+    "reporters": [
+      "default",
+      [
+        "jest-html-reporters",
+        {
+          "publicPath": "./html-report",
+          "filename": "test-report.html",
+          "expand": true,
+          "pageTitle": "PinMe Test Case Report"
+        }
+      ]
+    ]
   },
   "keywords": [
     "location",
@@ -19,6 +33,7 @@
   "author": "PinMe Team",
   "license": "MIT",
   "devDependencies": {
-    "jest": "^30.3.0"
+    "jest": "^30.3.0",
+    "jest-html-reporters": "^3.1.7"
   }
 }
