@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="PinMe - ค้นหาสถานที่ใกล้คุณ พร้อมบันทึกสถานที่โปรดและจัดทริปในวันเดียว" />
+  <meta name="description" content="PinMe - nearby place scanner with favorites and trip planning" />
   <title>PinMe - Nearby Place Scanner</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link
@@ -21,7 +21,7 @@
 
   <div class="topbar-controls">
     <button id="langToggleBtn" class="control-btn" aria-label="Toggle Language" title="Change Language">TH</button>
-    <button id="themeToggleBtn" class="control-btn icon-btn" aria-label="Toggle Theme" title="Toggle Light/Dark Theme">☀️</button>
+    <button id="themeToggleBtn" class="control-btn icon-btn" aria-label="Toggle Theme" title="Toggle Light or Dark Theme">☀️</button>
   </div>
 
   <main class="app-shell">
@@ -43,12 +43,12 @@
           <strong id="heroRadiusValue">3 km</strong>
         </div>
         <div class="hero-stat">
-          <span class="hero-stat-label">Mode</span>
-          <strong>Explore</strong>
+          <span class="hero-stat-label">Category</span>
+          <strong id="heroCategoryValue">All places</strong>
         </div>
         <div class="hero-stat">
-          <span class="hero-stat-label">Save</span>
-          <strong>Favorites</strong>
+          <span class="hero-stat-label">Results</span>
+          <strong id="heroResultsValue">Ready</strong>
         </div>
       </div>
     </section>
@@ -68,6 +68,19 @@
           </div>
 
           <form id="searchForm" autocomplete="off" class="stack-lg">
+            <div class="scan-summary">
+              <div class="summary-card">
+                <span class="summary-label">Search Window</span>
+                <strong id="summaryRadiusValue">3 km</strong>
+                <p id="summaryHint" class="summary-text">Adjust the distance and scan for places that match your trip.</p>
+              </div>
+              <div class="summary-card summary-card-accent">
+                <span class="summary-label">Preview</span>
+                <strong id="summaryCategoryValue">All categories</strong>
+                <p id="summaryCategoryHint" class="summary-text">Balanced scan radius for nearby discovery.</p>
+              </div>
+            </div>
+
             <div class="stack-sm">
               <label class="form-label" data-i18n="label_coords">พิกัดตำแหน่ง</label>
               <div class="field-grid">
@@ -86,10 +99,44 @@
 
             <div class="stack-sm">
               <label class="form-label" data-i18n="label_radius">รัศมีการค้นหา</label>
-              <div class="radius-chips">
-                <button type="button" class="radius-chip" data-value="1">1 <span data-i18n="unit_km">กม.</span></button>
-                <button type="button" class="radius-chip active" data-value="3">3 <span data-i18n="unit_km">กม.</span></button>
-                <button type="button" class="radius-chip" data-value="5">5 <span data-i18n="unit_km">กม.</span></button>
+              <div class="radius-control">
+                <div class="radius-metrics">
+                  <div>
+                    <span class="radius-value-label">Live radius</span>
+                    <strong id="radiusValueDisplay" class="radius-value-display">3.0 km</strong>
+                  </div>
+                  <div class="radius-note">0.5 - 30 km</div>
+                </div>
+                <input
+                  type="range"
+                  id="radiusSlider"
+                  class="radius-slider"
+                  min="0.5"
+                  max="30"
+                  step="0.5"
+                  value="3"
+                  aria-label="Search radius"
+                />
+                <div class="radius-input-row">
+                  <div class="input-shell input-shell-inline">
+                    <span class="input-label">KM</span>
+                    <input
+                      type="number"
+                      id="radiusInput"
+                      class="form-input"
+                      min="0.5"
+                      max="30"
+                      step="0.5"
+                      value="3"
+                      inputmode="decimal"
+                    />
+                  </div>
+                  <div class="radius-presets" aria-label="Radius presets">
+                    <button type="button" class="radius-preset active" data-value="3">3 km</button>
+                    <button type="button" class="radius-preset" data-value="8">8 km</button>
+                    <button type="button" class="radius-preset" data-value="15">15 km</button>
+                  </div>
+                </div>
               </div>
             </div>
 

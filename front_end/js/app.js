@@ -18,6 +18,9 @@ import { renderTripPlan, addTripActivity } from './modules/tripPlanner.js';
 const API_ENDPOINT = '/scan';
 const IMAGE_PROXY_ENDPOINT = '/image';
 const FAVORITES_STORAGE_KEY = 'pinme_favorites';
+const MIN_RADIUS = 0.5;
+const MAX_RADIUS = 30;
+const RADIUS_STEP = 0.5;
 
 // --- DOM Elements ---
 const searchForm = document.getElementById('searchForm');
@@ -39,6 +42,15 @@ const mapToggleBtn = document.getElementById('mapToggleBtn');
 const mapWrapper = document.getElementById('mapWrapper');
 const mapRadiusBadge = document.getElementById('mapRadiusBadge');
 const heroRadiusValue = document.getElementById('heroRadiusValue');
+const heroCategoryValue = document.getElementById('heroCategoryValue');
+const heroResultsValue = document.getElementById('heroResultsValue');
+const summaryRadiusValue = document.getElementById('summaryRadiusValue');
+const summaryHint = document.getElementById('summaryHint');
+const summaryCategoryValue = document.getElementById('summaryCategoryValue');
+const summaryCategoryHint = document.getElementById('summaryCategoryHint');
+const radiusSlider = document.getElementById('radiusSlider');
+const radiusInput = document.getElementById('radiusInput');
+const radiusValueDisplay = document.getElementById('radiusValueDisplay');
 
 // --- Detail Modal Elements ---
 const detailModal = document.getElementById('detailModal');
@@ -66,7 +78,7 @@ const langToggleBtn = document.getElementById('langToggleBtn');
 const themeToggleBtn = document.getElementById('themeToggleBtn');
 
 // --- State ---
-let selectedRadius = '3';
+let selectedRadius = 3;
 let selectedCategory = 'all';
 let currentLang = localStorage.getItem('pinme_lang') || 'th';
 let isDarkTheme = localStorage.getItem('pinme_theme') !== 'light';
@@ -77,10 +89,93 @@ function getDict() {
   return TRANSLATIONS[currentLang];
 }
 
+function clampRadius(value) {
+  const numericValue = Number(value);
+  if (Number.isNaN(numericValue)) return selectedRadius;
+  return Math.min(MAX_RADIUS, Math.max(MIN_RADIUS, Math.round(numericValue / RADIUS_STEP) * RADIUS_STEP));
+}
+
+function formatRadius(value, includeUnit = true) {
+  const normalized = clampRadius(value);
+  const radiusText = Number.isInteger(normalized) ? String(normalized) : normalized.toFixed(1);
+  return includeUnit ? `${radiusText} ${getDict().unit_km}` : radiusText;
+}
+
+function getCategoryDisplayText(category, dict = getDict()) {
+  const categoryMap = {
+    all: currentLang === 'th' ? 'ทั้งหมด' : 'All places',
+    hotel: dict.res_badge_hotel,
+    restaurant: dict.res_badge_restaurant,
+    sport: dict.res_badge_sport,
+    tourist: dict.res_badge_tourist,
+  };
+
+  return categoryMap[category] || categoryMap.all;
+}
+
+function getRadiusHint(radius) {
+  if (radius <= 2) return 'Focused scan for walkable places close to you.';
+  if (radius <= 8) return 'Balanced scan radius for nearby discovery.';
+  if (radius <= 15) return 'Wider scan for short rides and broader options.';
+  return 'Large search radius for city-wide exploration.';
+}
+
+function getCategoryHint(category) {
+  const hints = {
+    all: 'Scan across every category for a broad shortlist.',
+    hotel: 'Prioritize stay options near the selected point.',
+    restaurant: 'Focus on food spots that are easy to reach.',
+    sport: 'Look for active venues and sports destinations nearby.',
+    tourist: 'Surface landmarks and sightseeing spots first.',
+  };
+
+  return hints[category] || hints.all;
+}
+
+function setResultsStatusLabel(label) {
+  if (heroResultsValue) {
+    heroResultsValue.textContent = label;
+  }
+}
+
+function syncRadiusLabels() {
+  const radiusText = formatRadius(selectedRadius);
+  if (heroRadiusValue) heroRadiusValue.textContent = radiusText;
+  if (summaryRadiusValue) summaryRadiusValue.textContent = radiusText;
+  if (radiusValueDisplay) radiusValueDisplay.textContent = radiusText;
+  if (summaryHint) summaryHint.textContent = getRadiusHint(selectedRadius);
+}
+
+function syncCategorySummary() {
+  const categoryText = getCategoryDisplayText(selectedCategory);
+  if (heroCategoryValue) heroCategoryValue.textContent = categoryText;
+  if (summaryCategoryValue) summaryCategoryValue.textContent = categoryText;
+  if (summaryCategoryHint) summaryCategoryHint.textContent = getCategoryHint(selectedCategory);
+}
+
+function syncRadiusInputs() {
+  const normalized = clampRadius(selectedRadius);
+  radiusSlider.value = String(normalized);
+  radiusInput.value = formatRadius(normalized, false);
+
+  document.querySelectorAll('.radius-preset').forEach((preset) => {
+    const presetValue = Number(preset.dataset.value);
+    preset.classList.toggle('active', Math.abs(presetValue - normalized) < 0.001);
+  });
+}
+
+function refreshRadiusUi() {
+  syncRadiusLabels();
+  syncRadiusInputs();
+}
+
 function setLoadingState(isLoading) {
   submitBtn.disabled = isLoading;
   submitBtnText.style.display = isLoading ? 'none' : 'inline';
   submitSpinner.style.display = isLoading ? 'inline-block' : 'none';
+  if (isLoading) {
+    setResultsStatusLabel('Scanning...');
+  }
 
   if (isLoading) {
     resultsContainer.classList.add('visible');
@@ -92,14 +187,7 @@ function setLoadingState(isLoading) {
 
 function updateMapState(lat, lng) {
   initMap(lat, lng, selectedRadius, isDarkTheme, getDict(), mapRadiusBadge);
-  syncRadiusLabels();
-}
-
-function syncRadiusLabels() {
-  const radiusText = `${selectedRadius} ${getDict().unit_km}`;
-  if (heroRadiusValue) {
-    heroRadiusValue.textContent = radiusText;
-  }
+  refreshRadiusUi();
 }
 
 function getPlaceId(place) {
@@ -113,32 +201,56 @@ function getPlaceId(place) {
   ].join('|');
 }
 
+function getImageProxyUrl(imageUrl) {
+  if (!imageUrl || typeof imageUrl !== 'string') return '';
+  if (/^https?:\/\//i.test(imageUrl)) {
+    return `${IMAGE_PROXY_ENDPOINT}?url=${encodeURIComponent(imageUrl)}`;
+  }
+  return imageUrl;
+}
+
+function buildImageCandidates(place = {}) {
+  const rawCandidates = [
+    place.imageHiRes,
+    place.photoUrl,
+    place.imageUrl,
+    place.image,
+    place.photo,
+    ...(Array.isArray(place.photos) ? place.photos : []),
+    ...(Array.isArray(place.images) ? place.images : []),
+    place.thumbnail,
+  ].filter((item) => typeof item === 'string' && item.trim());
+
+  const uniqueCandidates = [...new Set(rawCandidates.map((item) => item.trim()))];
+
+  return uniqueCandidates
+    .map((candidate) => {
+      const lower = candidate.toLowerCase();
+      let score = 0;
+
+      if (lower.includes('original') || lower.includes('maxres')) score += 4;
+      if (lower.includes('photo') || lower.includes('image')) score += 2;
+      if (lower.includes('w=') || lower.includes('width=')) score += 1;
+      if (lower.includes('thumb') || lower.includes('thumbnail') || lower.includes('small')) score -= 3;
+
+      return { raw: candidate, score };
+    })
+    .sort((a, b) => b.score - a.score)
+    .map((item) => getImageProxyUrl(item.raw));
+}
+
 function normalizePlaceImage(place) {
-  const rawImage =
-    place?.thumbnail ||
-    place?.image ||
-    place?.photo ||
-    place?.photoUrl ||
-    place?.imageUrl ||
-    place?.images?.[0] ||
-    '';
-
-  if (!rawImage || typeof rawImage !== 'string') {
-    return '';
-  }
-
-  if (/^https?:\/\//i.test(rawImage)) {
-    return `${IMAGE_PROXY_ENDPOINT}?url=${encodeURIComponent(rawImage)}`;
-  }
-
-  return rawImage;
+  return buildImageCandidates(place)[0] || '';
 }
 
 function enrichPlace(place = {}) {
+  const imageCandidates = buildImageCandidates(place);
+
   return {
     ...place,
     placeId: place.placeId || getPlaceId(place),
-    thumbnail: normalizePlaceImage(place),
+    imageCandidates,
+    thumbnail: imageCandidates[0] || '',
   };
 }
 
@@ -192,7 +304,9 @@ function applyTranslations() {
     }
   });
 
-  langToggleBtn.innerHTML = currentLang === 'th' ? '🇹🇭 TH' : '🇬🇧 EN';
+  langToggleBtn.textContent = currentLang === 'th' ? '🇹🇭 TH' : '🇬🇧 EN';
+  syncCategorySummary();
+  refreshRadiusUi();
   renderFavorites();
 }
 
@@ -206,8 +320,7 @@ function toggleLanguage() {
     renderResults(currentResults);
   }
 
-  mapRadiusBadge.textContent = getDict().map_radius.replace('{val}', selectedRadius);
-  syncRadiusLabels();
+  mapRadiusBadge.textContent = getDict().map_radius.replace('{val}', formatRadius(selectedRadius, false));
   const isCollapsed = mapWrapper.classList.contains('collapsed');
   mapToggleBtn.textContent = isCollapsed ? getDict().btn_show_map : getDict().btn_hide_map;
   renderTripPlan(tripTimeline, getDict());
@@ -222,10 +335,10 @@ function toggleLanguage() {
 function applyTheme() {
   if (isDarkTheme) {
     document.documentElement.classList.remove('light-theme');
-    themeToggleBtn.innerHTML = '☀️';
+    themeToggleBtn.textContent = '☀️';
   } else {
     document.documentElement.classList.add('light-theme');
-    themeToggleBtn.innerHTML = '🌙';
+    themeToggleBtn.textContent = '🌙';
   }
   setMapTheme(isDarkTheme);
 }
@@ -234,6 +347,33 @@ function toggleTheme() {
   isDarkTheme = !isDarkTheme;
   localStorage.setItem('pinme_theme', isDarkTheme ? 'dark' : 'light');
   applyTheme();
+}
+
+function attachCardImage(container, place, name, categoryIcon) {
+  if (!place.thumbnail) {
+    container.innerHTML = `<div class="card-icon card-icon-large">${categoryIcon}</div>`;
+    return;
+  }
+
+  container.classList.add('loading');
+  const img = document.createElement('img');
+  img.className = 'card-thumb';
+  img.src = place.thumbnail;
+  img.alt = name;
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  img.referrerPolicy = 'no-referrer';
+
+  img.addEventListener('load', () => {
+    container.classList.remove('loading');
+  });
+
+  img.addEventListener('error', () => {
+    container.classList.remove('loading');
+    container.innerHTML = `<div class="card-icon card-icon-large">${categoryIcon}</div>`;
+  });
+
+  container.appendChild(img);
 }
 
 function createPlaceCard(place, dict, options = {}) {
@@ -251,16 +391,12 @@ function createPlaceCard(place, dict, options = {}) {
   const categoryIcon = getCategoryIcon(category);
   const pinned = isFavorite(place);
   const cardIndex = String(index + 1).padStart(2, '0');
-  const imageMarkup = place.thumbnail
-    ? `<img class="card-thumb" src="${escapeHtml(place.thumbnail)}" alt="${escapeHtml(name)}">`
-    : `<div class="card-icon card-icon-large">${categoryIcon}</div>`;
 
   const card = document.createElement('div');
   card.className = `result-card ${cardClassName}`.trim();
   card.style.animationDelay = `${index * 0.06}s`;
   card.innerHTML = `
     <div class="card-visual">
-      ${imageMarkup}
       <div class="card-visual-overlay">
         <div class="card-topline">
           <span class="card-index">#${cardIndex}</span>
@@ -292,18 +428,11 @@ function createPlaceCard(place, dict, options = {}) {
     </div>
   `;
 
+  const visualShell = card.querySelector('.card-visual');
   const detailBtn = card.querySelector('.card-btn-detail');
   const pinBtn = card.querySelector('.card-btn-pin');
-  const thumbImg = card.querySelector('.card-thumb');
 
-  if (thumbImg) {
-    thumbImg.addEventListener('error', () => {
-      thumbImg.replaceWith(Object.assign(document.createElement('div'), {
-        className: 'card-icon',
-        textContent: categoryIcon,
-      }));
-    });
-  }
+  attachCardImage(visualShell, place, name, categoryIcon);
 
   detailBtn.addEventListener('click', () => {
     openDetailModal(place);
@@ -358,6 +487,7 @@ function renderResults(data) {
   currentResults = results;
   resultsContainer.classList.add('visible');
   loadingState.style.display = 'none';
+  setResultsStatusLabel(results.length ? `${results.length} found` : 'No match');
 
   if (results.length === 0) {
     resultsGrid.innerHTML = '';
@@ -365,12 +495,40 @@ function renderResults(data) {
     emptyState.querySelector('.empty-title').textContent = getDict().empty_res_title;
     emptyState.querySelector('.empty-desc').textContent = getDict().empty_res_desc;
     resultsCount.textContent = `0 ${getDict().toast_places}`;
+    addPlaceMarkers([], getDict());
     return;
   }
 
   emptyState.style.display = 'none';
   renderPlaces(results);
   addPlaceMarkers(results, getDict());
+}
+
+function loadModalImage(place, name) {
+  if (!place.thumbnail) {
+    modalImage.removeAttribute('src');
+    modalImageContainer.classList.add('hidden');
+    return;
+  }
+
+  modalImageContainer.classList.remove('hidden');
+  modalImage.removeAttribute('src');
+  modalImage.alt = name;
+
+  const img = new Image();
+  img.decoding = 'async';
+  img.referrerPolicy = 'no-referrer';
+  img.src = place.thumbnail;
+
+  img.onload = () => {
+    modalImage.src = place.thumbnail;
+  };
+
+  img.onerror = () => {
+    modalImage.removeAttribute('src');
+    modalImageContainer.classList.add('hidden');
+    showToast(getDict().toast_image_unavailable, 'warning');
+  };
 }
 
 function openDetailModal(place) {
@@ -390,14 +548,7 @@ function openDetailModal(place) {
     modalRatingContainer.style.display = 'none';
   }
 
-  if (normalizedPlace.thumbnail) {
-    modalImageContainer.classList.remove('hidden');
-    modalImage.src = normalizedPlace.thumbnail;
-    modalImage.alt = name;
-  } else {
-    modalImage.removeAttribute('src');
-    modalImageContainer.classList.add('hidden');
-  }
+  loadModalImage(normalizedPlace, name);
 
   detailModal.classList.remove('hidden');
   detailModal.classList.add('flex');
@@ -420,6 +571,19 @@ function closeDetailModal() {
   }, 200);
 }
 
+function applyRadiusChange(value, { updateMap = true } = {}) {
+  selectedRadius = clampRadius(value);
+  refreshRadiusUi();
+
+  if (mapRadiusBadge) {
+    mapRadiusBadge.textContent = getDict().map_radius.replace('{val}', formatRadius(selectedRadius, false));
+  }
+
+  if (updateMap) {
+    updateRadiusCircleAndMap(selectedRadius, getDict(), mapRadiusBadge);
+  }
+}
+
 langToggleBtn.addEventListener('click', toggleLanguage);
 themeToggleBtn.addEventListener('click', toggleTheme);
 
@@ -431,13 +595,24 @@ mapToggleBtn.addEventListener('click', () => {
   }
 });
 
-document.querySelectorAll('.radius-chip').forEach((chip) => {
-  chip.addEventListener('click', () => {
-    document.querySelectorAll('.radius-chip').forEach((item) => item.classList.remove('active'));
-    chip.classList.add('active');
-    selectedRadius = chip.dataset.value;
-    updateRadiusCircleAndMap(selectedRadius, getDict(), mapRadiusBadge);
-    syncRadiusLabels();
+radiusSlider.addEventListener('input', () => {
+  applyRadiusChange(radiusSlider.value);
+});
+
+radiusInput.addEventListener('input', () => {
+  const nextValue = clampRadius(radiusInput.value);
+  selectedRadius = nextValue;
+  syncRadiusLabels();
+  syncRadiusInputs();
+});
+
+radiusInput.addEventListener('change', () => {
+  applyRadiusChange(radiusInput.value);
+});
+
+document.querySelectorAll('.radius-preset').forEach((preset) => {
+  preset.addEventListener('click', () => {
+    applyRadiusChange(preset.dataset.value);
   });
 });
 
@@ -446,6 +621,7 @@ document.querySelectorAll('.category-pill').forEach((pill) => {
     document.querySelectorAll('.category-pill').forEach((item) => item.classList.remove('active'));
     pill.classList.add('active');
     selectedCategory = pill.dataset.value;
+    syncCategorySummary();
   });
 });
 
@@ -525,7 +701,7 @@ searchForm.addEventListener('submit', async (event) => {
   const requestBody = {
     latitude: lat,
     longitude: lng,
-    radius: parseInt(selectedRadius, 10),
+    radius: selectedRadius,
     category: selectedCategory,
   };
 
@@ -560,6 +736,7 @@ searchForm.addEventListener('submit', async (event) => {
     emptyState.style.display = 'flex';
     emptyState.querySelector('.empty-title').textContent = dict.toast_conn_fail;
     emptyState.querySelector('.empty-desc').textContent = dict.toast_conn_fail_desc;
+    setResultsStatusLabel('Offline');
   } finally {
     setLoadingState(false);
   }
@@ -582,7 +759,8 @@ modalImage.addEventListener('error', () => {
 
 applyTheme();
 applyTranslations();
-syncRadiusLabels();
+syncCategorySummary();
+applyRadiusChange(selectedRadius, { updateMap: false });
 
 (function showDemoData() {
   const defaultLat = 13.7367;
@@ -601,4 +779,5 @@ syncRadiusLabels();
   emptyState.style.display = 'none';
   renderPlaces(demoPlaces);
   addPlaceMarkers(demoPlaces, getDict());
+  setResultsStatusLabel(`${demoPlaces.length} found`);
 })();

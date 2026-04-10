@@ -251,6 +251,28 @@ body {
 .dashboard-left {
   position: sticky;
   top: 5.7rem;
+  align-self: start;
+  max-height: calc(100vh - 7rem);
+  overflow-y: auto;
+  padding-right: 0.35rem;
+  scrollbar-gutter: stable;
+}
+
+.dashboard-left::-webkit-scrollbar {
+  width: 0.55rem;
+}
+
+.dashboard-left::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dashboard-left::-webkit-scrollbar-thumb {
+  background: rgba(149, 183, 176, 0.28);
+  border-radius: 999px;
+}
+
+.dashboard-left::-webkit-scrollbar-thumb:hover {
+  background: rgba(149, 183, 176, 0.42);
 }
 
 .panel-card {
@@ -304,6 +326,46 @@ body {
 
 .stack-sm {
   gap: 0.65rem;
+}
+
+.scan-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.summary-card {
+  padding: 1rem;
+  border-radius: 1.2rem;
+  border: 1px solid var(--border-color);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
+    var(--surface-soft);
+  display: grid;
+  gap: 0.35rem;
+}
+
+.summary-card-accent {
+  background:
+    linear-gradient(135deg, rgba(249, 115, 22, 0.14), rgba(20, 184, 166, 0.12)),
+    var(--surface-soft);
+}
+
+.summary-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.summary-card strong {
+  font-size: 1.15rem;
+}
+
+.summary-text {
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.5;
 }
 
 .field-grid {
@@ -419,14 +481,12 @@ body {
   animation: spin 1s linear infinite;
 }
 
-.radius-chips,
 .category-pills {
   display: flex;
   flex-wrap: wrap;
   gap: 0.7rem;
 }
 
-.radius-chip,
 .category-pill {
   border: 1px solid var(--border-color);
   background: var(--surface-soft);
@@ -437,29 +497,108 @@ body {
   transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
 }
 
-.radius-chip {
-  flex: 1;
-  min-width: 4.8rem;
-  padding: 0.85rem 0.95rem;
-  font-size: 0.94rem;
-  font-weight: 700;
-}
-
 .category-pill {
   padding: 0.7rem 0.95rem;
   font-size: 0.84rem;
   font-weight: 700;
 }
 
-.radius-chip:hover,
 .category-pill:hover {
   transform: translateY(-1px);
   border-color: rgba(20, 184, 166, 0.5);
   color: var(--text-primary);
 }
 
-.radius-chip.active,
 .category-pill.active {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--secondary), var(--primary-light));
+  box-shadow: 0 12px 24px rgba(15, 118, 110, 0.18);
+}
+
+.radius-control {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1rem;
+  border-radius: 1.25rem;
+  border: 1px solid var(--border-color);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+}
+
+.radius-metrics {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.radius-value-label {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.radius-value-display {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.radius-note {
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(20, 184, 166, 0.08);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.radius-slider {
+  width: 100%;
+  accent-color: var(--primary-light);
+  cursor: pointer;
+}
+
+.radius-input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 132px) minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.input-shell-inline .form-input {
+  padding: 1.45rem 1rem 0.8rem;
+}
+
+.radius-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.radius-preset {
+  min-height: 2.6rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-soft);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.radius-preset:hover {
+  transform: translateY(-1px);
+  border-color: rgba(20, 184, 166, 0.5);
+  color: var(--text-primary);
+}
+
+.radius-preset.active {
   color: #fff;
   border-color: transparent;
   background: linear-gradient(135deg, var(--secondary), var(--primary-light));
@@ -565,7 +704,8 @@ body {
 
 .results-list {
   display: grid;
-  gap: 0.9rem;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 #favoritesGrid:empty {
@@ -634,6 +774,15 @@ body {
   background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(249, 115, 22, 0.18));
 }
 
+.card-visual.loading::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+  animation: shimmer 1.2s linear infinite;
+  z-index: 1;
+}
+
 .card-visual::after {
   content: '';
   position: absolute;
@@ -672,8 +821,10 @@ body {
 
 .card-thumb {
   object-fit: cover;
+  object-position: center;
   display: block;
   transition: transform 0.35s ease;
+  filter: saturate(1.05) contrast(1.02);
 }
 
 .result-card:hover .card-thumb {
@@ -1018,6 +1169,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
 .modal-image-fade {
@@ -1225,6 +1377,15 @@ html.light-theme .leaflet-control-attribution {
   }
 }
 
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
 @media (max-width: 1080px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
@@ -1232,6 +1393,9 @@ html.light-theme .leaflet-control-attribution {
 
   .dashboard-left {
     position: static;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
   }
 
   .hero-panel {
@@ -1241,6 +1405,10 @@ html.light-theme .leaflet-control-attribution {
 
   .hero-stats {
     width: 100%;
+  }
+
+  .scan-summary {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1268,6 +1436,11 @@ html.light-theme .leaflet-control-attribution {
   .hero-stats,
   .field-grid,
   .card-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .radius-input-row,
+  .results-list {
     grid-template-columns: 1fr;
   }
 

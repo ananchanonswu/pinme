@@ -167,9 +167,10 @@ export function flyToPlaceAndOpenPopup(placeLat, placeLng) {
 export function updateRadiusCircleAndMap(radiusKm, dict, mapRadiusBadge) {
   if (map && radiusCircle && userMarker) {
     const latlng = userMarker.getLatLng();
+    const numericRadius = parseFloat(radiusKm);
     map.removeLayer(radiusCircle);
     radiusCircle = L.circle([latlng.lat, latlng.lng], {
-      radius: parseInt(radiusKm) * 1000,
+      radius: numericRadius * 1000,
       color: '#0d9488',
       fillColor: '#14b8a6',
       fillOpacity: 0.08,
@@ -177,7 +178,7 @@ export function updateRadiusCircleAndMap(radiusKm, dict, mapRadiusBadge) {
       dashArray: '6 4',
     }).addTo(map);
     map.fitBounds(radiusCircle.getBounds(), { padding: [30, 30] });
-    mapRadiusBadge.textContent = dict.map_radius.replace('{val}', radiusKm);
+    mapRadiusBadge.textContent = dict.map_radius.replace('{val}', String(numericRadius));
   }
 }
 

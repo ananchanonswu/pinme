@@ -174,7 +174,7 @@ async function handleScan(req, res) {
 
     // --- Extract & normalize results ---
     const localResults = data.local_results || [];
-    const radiusKm = radius || 5;
+    const radiusKm = Number(radius) || 5;
 
     const results = localResults
       .map((place) => {
@@ -209,7 +209,13 @@ async function handleScan(req, res) {
           address: place.address || '',
           rating: place.rating || null,
           type: place.type || '',
-          thumbnail: place.thumbnail || place.image || place.photo || place.images?.[0] || '',
+          thumbnail: place.thumbnail || place.image || place.photo || place.images?.[0] || place.photos?.[0] || '',
+          image: place.image || '',
+          photo: place.photo || '',
+          imageUrl: place.image_url || '',
+          photoUrl: place.photo_url || '',
+          images: Array.isArray(place.images) ? place.images : [],
+          photos: Array.isArray(place.photos) ? place.photos : [],
         };
       })
       .filter(Boolean)
