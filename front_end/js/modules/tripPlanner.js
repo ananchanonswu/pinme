@@ -1,10 +1,10 @@
 // ==========================================
-// Mini Trip Planner (เช็คเวลาทับซ้อน & วาด Timeline)
+// Mini Trip Planner
 // ==========================================
 
-import { escapeHtml, showToast } from '../utils/helpers.js';
+import { escapeHtml, showToast, getCategoryBadge } from '../utils/helpers.js';
 
-let tripPlan = []; // Array of { name, start, end }
+let tripPlan = [];
 
 function parseTime(timeStr) {
   const [h, m] = timeStr.split(':').map(Number);
@@ -23,7 +23,6 @@ export function checkTimeOverlap(startStr, endStr, dict) {
     const itemStart = parseTime(item.start);
     const itemEnd = parseTime(item.end);
 
-    // เช็คกรณีทับซ้อน (Overlap)
     if (newStart < itemEnd && newEnd > itemStart) {
       return dict.trip_overlap_msg
         .replace('{name}', item.name)
@@ -32,7 +31,13 @@ export function checkTimeOverlap(startStr, endStr, dict) {
     }
   }
 
-  return null; // ไม่มีทับซ้อน
+  return null;
+}
+
+function formatDistance(distance, dict) {
+  if (distance == null || Number.isNaN(distance)) return '';
+  if (distance < 1) return `${(distance * 1000).toFixed(0)} ${dict.unit_m}`;
+  return `${distance.toFixed(1)} ${dict.unit_km}`;
 }
 
 export function renderTripPlan(tripTimeline, dict) {
@@ -41,26 +46,29 @@ export function renderTripPlan(tripTimeline, dict) {
     return;
   }
 
-  // เรียงลำดับตามเวลาเริ่ม
   tripPlan.sort((a, b) => parseTime(a.start) - parseTime(b.start));
 
   tripTimeline.innerHTML = '';
   tripPlan.forEach((item) => {
+    const categoryBadge = item.category ? getCategoryBadge(item.category, dict) : '';
+    const sourceLabel = item.source ? `<span class="trip-source">${escapeHtml(item.source)}</span>` : '';
+    const distanceLabel = item.distance != null ? `<span class="trip-source">📍 ${formatDistance(item.distance, dict)}</span>` : '';
+
     tripTimeline.innerHTML += `
       <div class="trip-item">
         <div class="trip-bullet"></div>
-        <div class="trip-time">
-          🕒 ${item.start} - ${item.end}
-        </div>
+        <div class="trip-time">🕒 ${item.start} - ${item.end}</div>
         <div class="trip-content">
           <p class="trip-name">${escapeHtml(item.name)}</p>
+          ${(categoryBadge || sourceLabel || distanceLabel) ? `<div class="trip-tags">${categoryBadge}${sourceLabel}${distanceLabel}</div>` : ''}
+          ${item.address ? `<p class="trip-address">${escapeHtml(item.address)}</p>` : ''}
         </div>
       </div>
     `;
   });
 }
 
-export function addTripActivity(nameInput, startTime, endTime, tripTimeline, dict) {
+export function addTripActivity(nameInput, startTime, endTime, tripTimeline, dict, options = {}) {
   if (!nameInput || !startTime || !endTime) {
     showToast(dict.trip_fill_all, 'warning');
     return false;
@@ -72,17 +80,17 @@ export function addTripActivity(nameInput, startTime, endTime, tripTimeline, dic
     return false;
   }
 
-  // ไม่ทับซ้อน เพิ่มลง Array
   tripPlan.push({
     name: nameInput,
     start: startTime,
-    end: endTime
+    end: endTime,
+    category: options.category || '',
+    address: options.address || '',
+    distance: typeof options.distance === 'number' ? options.distance : null,
+    source: options.source || '',
   });
 
-  // อัปเดต UI
   renderTripPlan(tripTimeline, dict);
-  
   showToast(dict.trip_added.replace('{name}', nameInput), 'success');
   return true;
 }
-

@@ -183,6 +183,21 @@
             </div>
           </div>
 
+          <div id="tripDraftCard" class="trip-draft-card hidden">
+            <div class="trip-draft-head">
+              <div>
+                <p class="trip-draft-label">Selected from scan</p>
+                <strong id="tripDraftName">Place name</strong>
+              </div>
+              <button type="button" id="tripDraftClearBtn" class="trip-draft-clear">✕</button>
+            </div>
+            <div class="trip-draft-meta">
+              <div id="tripDraftCategory">Tourist</div>
+              <span id="tripDraftDistance" class="meta-pill">📍 0 km</span>
+            </div>
+            <p id="tripDraftAddress" class="trip-draft-address"></p>
+          </div>
+
           <form id="tripForm" class="stack-md">
             <input type="text" id="tripActivityName" class="form-input" placeholder="ชื่อกิจกรรม (เช่น วัดพระแก้ว)" data-i18n-ph="ph_trip_name" required />
             <div class="field-grid">

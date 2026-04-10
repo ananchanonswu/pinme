@@ -72,6 +72,12 @@ const tripActivityName = document.getElementById('tripActivityName');
 const tripStartTime = document.getElementById('tripStartTime');
 const tripEndTime = document.getElementById('tripEndTime');
 const tripTimeline = document.getElementById('tripTimeline');
+const tripDraftCard = document.getElementById('tripDraftCard');
+const tripDraftName = document.getElementById('tripDraftName');
+const tripDraftCategory = document.getElementById('tripDraftCategory');
+const tripDraftDistance = document.getElementById('tripDraftDistance');
+const tripDraftAddress = document.getElementById('tripDraftAddress');
+const tripDraftClearBtn = document.getElementById('tripDraftClearBtn');
 
 // --- Toggles ---
 const langToggleBtn = document.getElementById('langToggleBtn');
@@ -84,6 +90,7 @@ let currentLang = localStorage.getItem('pinme_lang') || 'th';
 let isDarkTheme = localStorage.getItem('pinme_theme') !== 'light';
 let currentResults = [];
 let favoritePlaces = loadFavorites();
+let pendingTripPlace = null;
 
 function getDict() {
   return TRANSLATIONS[currentLang];
@@ -136,6 +143,18 @@ function setResultsStatusLabel(label) {
   if (heroResultsValue) {
     heroResultsValue.textContent = label;
   }
+}
+
+function getTripSourceLabel() {
+  return currentLang === 'th' ? 'จากผลการสแกน' : 'From scan results';
+}
+
+function getAddToTripLabel() {
+  return currentLang === 'th' ? 'เพิ่มไปทริป' : 'Add to trip';
+}
+
+function getTripDraftLabel() {
+  return currentLang === 'th' ? 'เลือกจากผลสแกน' : 'Selected from scan';
 }
 
 function syncRadiusLabels() {
@@ -324,6 +343,7 @@ function toggleLanguage() {
   const isCollapsed = mapWrapper.classList.contains('collapsed');
   mapToggleBtn.textContent = isCollapsed ? getDict().btn_show_map : getDict().btn_hide_map;
   renderTripPlan(tripTimeline, getDict());
+  renderTripDraft();
 
   const lat = parseFloat(latInput.value);
   const lng = parseFloat(lngInput.value);
@@ -376,6 +396,45 @@ function attachCardImage(container, place, name, categoryIcon) {
   container.appendChild(img);
 }
 
+function formatDistanceText(distance, dict) {
+  if (distance == null) return '';
+  return distance < 1
+    ? `${(distance * 1000).toFixed(0)} ${dict.unit_m}`
+    : `${distance.toFixed(1)} ${dict.unit_km}`;
+}
+
+function clearTripDraft() {
+  pendingTripPlace = null;
+  tripDraftCard.classList.add('hidden');
+  tripActivityName.value = '';
+}
+
+function renderTripDraft() {
+  if (!pendingTripPlace) {
+    tripDraftCard.classList.add('hidden');
+    return;
+  }
+
+  const dict = getDict();
+  tripDraftCard.classList.remove('hidden');
+  tripDraftCard.querySelector('.trip-draft-label').textContent = getTripDraftLabel();
+  tripDraftName.textContent = pendingTripPlace.name || dict.unknown_name;
+  tripDraftCategory.innerHTML = getCategoryBadge(pendingTripPlace.category || 'tourist', dict);
+  tripDraftDistance.textContent = pendingTripPlace.distance != null
+    ? `📍 ${formatDistanceText(pendingTripPlace.distance, dict)}`
+    : `📍 ${currentLang === 'th' ? 'ไม่ระบุระยะ' : 'Distance n/a'}`;
+  tripDraftAddress.textContent = pendingTripPlace.address || dict.modal_no_address;
+  tripActivityName.value = pendingTripPlace.name || '';
+}
+
+function selectPlaceForTrip(place) {
+  pendingTripPlace = enrichPlace(place);
+  renderTripDraft();
+  tripForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  tripActivityName.focus();
+  showToast(currentLang === 'th' ? 'เพิ่มสถานที่เข้าช่องร่างทริปแล้ว' : 'Place added to trip draft', 'success');
+}
+
 function createPlaceCard(place, dict, options = {}) {
   const { index = 0, cardClassName = '' } = options;
   const name = place.name || dict.unknown_name;
@@ -424,18 +483,24 @@ function createPlaceCard(place, dict, options = {}) {
     </div>
     <div class="card-actions">
       <button class="card-btn card-btn-detail">${dict.btn_detail}</button>
+      <button class="card-btn card-btn-trip">${getAddToTripLabel()}</button>
       <button class="card-btn card-btn-pin ${pinned ? 'pinned' : ''}">${pinned ? dict.btn_pinned : dict.btn_pin}</button>
     </div>
   `;
 
   const visualShell = card.querySelector('.card-visual');
   const detailBtn = card.querySelector('.card-btn-detail');
+  const tripBtn = card.querySelector('.card-btn-trip');
   const pinBtn = card.querySelector('.card-btn-pin');
 
   attachCardImage(visualShell, place, name, categoryIcon);
 
   detailBtn.addEventListener('click', () => {
     openDetailModal(place);
+  });
+
+  tripBtn.addEventListener('click', () => {
+    selectPlaceForTrip(place);
   });
 
   pinBtn.addEventListener('click', () => {
@@ -668,12 +733,21 @@ tripForm.addEventListener('submit', (event) => {
   const startTime = tripStartTime.value;
   const endTime = tripEndTime.value;
 
-  const success = addTripActivity(nameInput, startTime, endTime, tripTimeline, getDict());
+  const success = addTripActivity(nameInput, startTime, endTime, tripTimeline, getDict(), pendingTripPlace ? {
+    category: pendingTripPlace.category || '',
+    address: pendingTripPlace.address || '',
+    distance: typeof pendingTripPlace.distance === 'number' ? pendingTripPlace.distance : null,
+    source: getTripSourceLabel(),
+  } : {});
   if (success) {
-    tripActivityName.value = '';
+    clearTripDraft();
     tripStartTime.value = '';
     tripEndTime.value = '';
   }
+});
+
+tripDraftClearBtn.addEventListener('click', () => {
+  clearTripDraft();
 });
 
 searchForm.addEventListener('submit', async (event) => {
@@ -758,9 +832,10 @@ modalImage.addEventListener('error', () => {
 });
 
 applyTheme();
-applyTranslations();
-syncCategorySummary();
-applyRadiusChange(selectedRadius, { updateMap: false });
+  applyTranslations();
+  syncCategorySummary();
+  applyRadiusChange(selectedRadius, { updateMap: false });
+  renderTripDraft();
 
 (function showDemoData() {
   const defaultLat = 13.7367;

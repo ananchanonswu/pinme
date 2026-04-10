@@ -42,10 +42,10 @@ export function initMap(lat, lng, radiusKm, isDarkTheme, dict, mapRadiusBadge) {
     className: 'user-marker-icon',
     html: `<div style="
       width: 24px; height: 24px;
-      background: linear-gradient(135deg, #0d9488, #14b8a6);
+      background: linear-gradient(135deg, #3b000f, #9f1239);
       border: 3px solid #f1f5f9;
       border-radius: 50%;
-      box-shadow: 0 0 12px rgba(13,148,136,0.6), 0 0 24px rgba(13,148,136,0.3);
+      box-shadow: 0 0 12px rgba(109,0,26,0.6), 0 0 24px rgba(109,0,26,0.3);
       animation: pulseMarker 2s ease-in-out infinite;
     "></div>`,
     iconSize: [24, 24],
@@ -65,9 +65,9 @@ export function initMap(lat, lng, radiusKm, isDarkTheme, dict, mapRadiusBadge) {
 
   radiusCircle = L.circle([lat, lng], {
     radius: radiusKm * 1000,
-    color: '#0d9488',
-    fillColor: '#14b8a6',
-    fillOpacity: 0.08,
+    color: '#9f1239',
+    fillColor: '#6d001a',
+    fillOpacity: 0.12,
     weight: 1.5,
     dashArray: '6 4',
   }).addTo(map);
@@ -85,10 +85,10 @@ export function addPlaceMarkers(placesArray, dict) {
   if (placeMarkersLayer) placeMarkersLayer.clearLayers();
 
   const categoryColors = {
-    hotel: '#818cf8',
-    restaurant: '#fbbf24',
-    sport: '#4ade80',
-    tourist: '#f472b6',
+    hotel: '#fafafa',
+    restaurant: '#9f1239',
+    sport: '#52525b',
+    tourist: '#d4d4d8',
   };
 
   placesArray.forEach((place) => {
@@ -171,9 +171,9 @@ export function updateRadiusCircleAndMap(radiusKm, dict, mapRadiusBadge) {
     map.removeLayer(radiusCircle);
     radiusCircle = L.circle([latlng.lat, latlng.lng], {
       radius: numericRadius * 1000,
-      color: '#0d9488',
-      fillColor: '#14b8a6',
-      fillOpacity: 0.08,
+      color: '#9f1239',
+      fillColor: '#6d001a',
+      fillOpacity: 0.12,
       weight: 1.5,
       dashArray: '6 4',
     }).addTo(map);
