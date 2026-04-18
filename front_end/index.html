@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="PinMe - nearby place scanner with favorites and trip planning" />
+  <title>PinMe - Nearby Place Scanner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="bg-gradient"></div>
+  <div class="bg-orb bg-orb-one"></div>
+  <div class="bg-orb bg-orb-two"></div>
+
+  <div class="topbar-controls">
+    <button id="langToggleBtn" class="control-btn" aria-label="Toggle Language" title="Change Language">TH</button>
+    <button id="themeToggleBtn" class="control-btn icon-btn" aria-label="Toggle Theme" title="Toggle Light or Dark Theme">☀️</button>
+  </div>
+
+  <main class="app-shell">
+    <section class="hero-panel glass-card">
+      <div class="hero-copy">
+        <div class="hero-brand">
+          <div class="logo-icon">📍</div>
+          <div>
+            <p class="hero-kicker">Location Discovery Dashboard</p>
+            <h1 class="hero-title">Pin<span>Me</span></h1>
+          </div>
+        </div>
+        <p class="hero-subtitle" data-i18n="subtitle">ค้นหาสถานที่รอบตัวคุณ</p>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-label">Radius</span>
+          <strong id="heroRadiusValue">3 km</strong>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-label">Category</span>
+          <strong id="heroCategoryValue">All places</strong>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-label">Results</span>
+          <strong id="heroResultsValue">Ready</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-grid">
+      <div class="dashboard-left">
+        <section class="glass-card panel-card search-panel">
+          <div class="panel-head">
+            <div>
+              <p class="panel-eyebrow">Navigator</p>
+              <h2 class="panel-title">Scan Nearby</h2>
+            </div>
+            <button type="button" id="gpsBtn" class="gps-btn">
+              <span class="gps-icon">📡</span>
+              <span class="gps-text" data-i18n="btn_gps">ใช้ตำแหน่งปัจจุบัน</span>
+            </button>
+          </div>
+
+          <form id="searchForm" autocomplete="off" class="stack-lg">
+            <div class="scan-summary">
+              <div class="summary-card">
+                <span class="summary-label">Search Window</span>
+                <strong id="summaryRadiusValue">3 km</strong>
+                <p id="summaryHint" class="summary-text">Adjust the distance and scan for places that match your trip.</p>
+              </div>
+              <div class="summary-card summary-card-accent">
+                <span class="summary-label">Preview</span>
+                <strong id="summaryCategoryValue">All categories</strong>
+                <p id="summaryCategoryHint" class="summary-text">Balanced scan radius for nearby discovery.</p>
+              </div>
+            </div>
+
+            <div class="stack-sm">
+              <label class="form-label" data-i18n="label_coords">พิกัดตำแหน่ง</label>
+              <div class="field-grid">
+                <div class="input-shell">
+                  <span class="input-label">LAT</span>
+                  <input type="number" id="latitude" class="form-input" placeholder="Latitude" step="any" min="-90" max="90" required />
+                </div>
+                <div class="input-shell">
+                  <span class="input-label">LNG</span>
+                  <input type="number" id="longitude" class="form-input" placeholder="Longitude" step="any" min="-180" max="180" required />
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="stack-sm">
+              <label class="form-label" data-i18n="label_radius">รัศมีการค้นหา</label>
+              <div class="radius-control">
+                <div class="radius-metrics">
+                  <div>
+                    <span class="radius-value-label">Live radius</span>
+                    <strong id="radiusValueDisplay" class="radius-value-display">3.0 km</strong>
+                  </div>
+                  <div class="radius-note">0.5 - 30 km</div>
+                </div>
+                <input
+                  type="range"
+                  id="radiusSlider"
+                  class="radius-slider"
+                  min="0.5"
+                  max="30"
+                  step="0.5"
+                  value="3"
+                  aria-label="Search radius"
+                />
+                <div class="radius-input-row">
+                  <div class="input-shell input-shell-inline">
+                    <span class="input-label">KM</span>
+                    <input
+                      type="number"
+                      id="radiusInput"
+                      class="form-input"
+                      min="0.5"
+                      max="30"
+                      step="0.5"
+                      value="3"
+                      inputmode="decimal"
+                    />
+                  </div>
+                  <div class="radius-presets" aria-label="Radius presets">
+                    <button type="button" class="radius-preset active" data-value="3">3 km</button>
+                    <button type="button" class="radius-preset" data-value="8">8 km</button>
+                    <button type="button" class="radius-preset" data-value="15">15 km</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="stack-sm">
+              <div class="inline-head">
+                <label class="form-label mb-0" data-i18n="title_map">แผนที่</label>
+                <div class="inline-actions">
+                  <span id="mapRadiusBadge" class="map-badge">รัศมี 3 กม.</span>
+                  <button type="button" id="mapToggleBtn" class="mini-btn" data-i18n="btn_hide_map">ซ่อนแผนที่</button>
+                </div>
+              </div>
+              <div id="mapWrapper" class="map-wrapper">
+                <div id="map"></div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="stack-sm">
+              <label class="form-label" data-i18n="label_category">หมวดหมู่</label>
+              <div class="category-pills">
+                <button type="button" class="category-pill active" data-value="all"><span data-i18n="cat_all">🌐 ทั้งหมด</span></button>
+                <button type="button" class="category-pill" data-value="hotel"><span data-i18n="cat_hotel">🏨 โรงแรม</span></button>
+                <button type="button" class="category-pill" data-value="restaurant"><span data-i18n="cat_restaurant">🍜 ร้านอาหาร</span></button>
+                <button type="button" class="category-pill" data-value="sport"><span data-i18n="cat_sport">⚽ สนามกีฬา</span></button>
+                <button type="button" class="category-pill" data-value="tourist"><span data-i18n="cat_tourist">🏛️ ท่องเที่ยว</span></button>
+              </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="submit-btn submit-hero">
+              <span id="submitBtnText" data-i18n="btn_submit">🔍 สแกนสถานที่</span>
+              <span id="submitSpinner" class="spinner spinner-inline" style="display:none;"></span>
+            </button>
+          </form>
+        </section>
+
+        <section class="glass-card panel-card trip-panel">
+          <div class="panel-head compact">
+            <div>
+              <p class="panel-eyebrow">Planner</p>
+              <h2 class="panel-title" data-i18n="title_trip">🗓️ แผนการเดินทาง 1 วัน</h2>
+            </div>
+          </div>
+
+          <div id="tripDraftCard" class="trip-draft-card hidden">
+            <div class="trip-draft-head">
+              <div>
+                <p class="trip-draft-label">Selected from scan</p>
+                <strong id="tripDraftName">Place name</strong>
+              </div>
+              <button type="button" id="tripDraftClearBtn" class="trip-draft-clear">✕</button>
+            </div>
+            <div class="trip-draft-meta">
+              <div id="tripDraftCategory">Tourist</div>
+              <span id="tripDraftDistance" class="meta-pill">📍 0 km</span>
+            </div>
+            <p id="tripDraftAddress" class="trip-draft-address"></p>
+          </div>
+
+          <form id="tripForm" class="stack-md">
+            <input type="text" id="tripActivityName" class="form-input" placeholder="ชื่อกิจกรรม (เช่น วัดพระแก้ว)" data-i18n-ph="ph_trip_name" required />
+            <div class="field-grid">
+              <div>
+                <label class="form-label subtle" data-i18n="label_trip_start">เวลาเริ่ม</label>
+                <input type="time" id="tripStartTime" class="form-input" required />
+              </div>
+              <div>
+                <label class="form-label subtle" data-i18n="label_trip_end">เวลาสิ้นสุด</label>
+                <input type="time" id="tripEndTime" class="form-input" required />
+              </div>
+            </div>
+            <button type="submit" class="submit-btn submit-secondary" data-i18n="btn_add_trip">➕ เพิ่มลงทริป</button>
+          </form>
+
+          <div class="divider"></div>
+          <div id="tripTimeline" class="trip-timeline">
+            <p class="trip-empty-text" id="emptyTripState" data-i18n="empty_trip">ยังไม่มีกิจกรรมในแผน</p>
+          </div>
+        </section>
+      </div>
+
+      <div class="dashboard-right">
+        <section id="favoritesSection" class="glass-card panel-card panel-list results-container visible">
+          <div class="panel-head">
+            <div>
+              <p class="panel-eyebrow">Saved</p>
+              <h2 class="panel-title" data-i18n="title_favorites">⭐ สถานที่โปรด</h2>
+            </div>
+            <span id="favoritesCount" class="count-pill">0</span>
+          </div>
+          <div id="favoritesEmptyState" class="empty-block compact">
+            <div class="empty-icon">⭐</div>
+            <p class="empty-title" data-i18n="favorites_empty_title">ยังไม่มีสถานที่โปรด</p>
+            <p class="empty-desc" data-i18n="favorites_empty_desc">กดปุ่มบันทึกที่การ์ดสถานที่เพื่อเก็บไว้ดูภายหลัง</p>
+          </div>
+          <div id="favoritesGrid" class="results-list"></div>
+        </section>
+
+        <section id="resultsContainer" class="glass-card panel-card panel-list results-container">
+          <div class="panel-head">
+            <div>
+              <p class="panel-eyebrow">Discover</p>
+              <h2 class="panel-title" data-i18n="title_results">📋 ผลลัพธ์</h2>
+            </div>
+            <span id="resultsCount" class="count-pill">0</span>
+          </div>
+
+          <div id="loadingState" class="loading-block" style="display:none;">
+            <div class="spinner"></div>
+            <p data-i18n="loading_places">กำลังค้นหาสถานที่...</p>
+          </div>
+
+          <div id="emptyState" class="empty-block" style="display:none;">
+            <div class="empty-icon">🗺️</div>
+            <p class="empty-title" data-i18n="empty_res_title">ไม่พบสถานที่</p>
+            <p class="empty-desc" data-i18n="empty_res_desc">ลองเปลี่ยนรัศมีหรือหมวดหมู่แล้วค้นหาอีกครั้ง</p>
+          </div>
+
+          <div id="resultsGrid" class="results-list"></div>
+        </section>
+      </div>
+    </section>
+
+    <div id="detailModal" class="modal-shell hidden">
+      <div class="modal-backdrop" id="modalBackdrop"></div>
+      <div class="modal-card glass-card scale-95 opacity-0" id="modalContent">
+        <div id="modalImageContainer" class="modal-image-wrap hidden">
+          <img id="modalImage" src="" alt="Place Thumbnail" class="modal-image" />
+          <div class="modal-image-fade"></div>
+        </div>
+
+        <div class="modal-body">
+          <div class="modal-head">
+            <div>
+              <h3 id="modalTitle" class="modal-title">Name</h3>
+              <div id="modalCategoryBadge" class="modal-badge-slot"></div>
+            </div>
+            <button id="modalCloseBtnTop" class="icon-close">✕</button>
+          </div>
+
+          <div class="modal-info">
+            <div class="modal-info-row">
+              <span class="modal-info-icon">📍</span>
+              <div>
+                <strong data-i18n="modal_address">ที่อยู่</strong>
+                <span id="modalAddress">Address</span>
+              </div>
+            </div>
+
+            <div id="modalRatingContainer" class="modal-info-row">
+              <span class="modal-info-icon star">⭐</span>
+              <div>
+                <strong data-i18n="modal_rating">คะแนน</strong>
+                <span id="modalRating">4.5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="modalCloseBtnBottom" class="modal-close-btn" data-i18n="modal_close">ปิด</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="app-footer">
+      <p>© 2026 PinMe • Location Scanner</p>
+    </footer>
+  </main>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
