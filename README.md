@@ -696,3 +696,5 @@ flowchart TD
 	- Tools: ใช้การจัดการ Version Control ผ่าน GitHub โดยมี Visual Studio Code และ Antigravity เป็น Code Editor หลัก นอกจากนี้ยังมีการประยุกต์ใช้ AI อย่าง Claude AI และ Google Gemini AI ในการช่วยวิเคราะห์โครงสร้างโค้ดและหาวิธีแก้ปัญหา (Debug) เบื้องต้น
 
 ## Retrospective Phase 3
+
+[Retrospective Video Phase 3](https://youtu.be/MVU9iQHDngI)
