@@ -1,4 +1,4 @@
-# สมาชิกกลุ่ม....
+# สมาชิกกลุ่ม
 
 นายบุญยศักดิ์ รัตนดิลก ณ ภูเก็ต 67102010165
 
@@ -204,19 +204,19 @@ flowchart TB
 
 ## 10) Product backlog
 
-![Product Backlog](sprint_1.png)
+![Product Backlog](milestone_and_sprint_example/sprint_1.png)
 
-![Product Backlog](product_backlog1.png)
+![Product Backlog](product_backlog/product_backlog1.png)
 
-![Product Backlog](product_backlog2.png)
+![Product Backlog](product_backlog/product_backlog2.png)
 
-![Product Backlog](product_backlog3.png)
+![Product Backlog](product_backlog/product_backlog3.png)
 
 ---
 
 ## 11) Sprint backlog
 
-![Sprint Backlog](milestone_sprint_1-4.png)
+![Sprint Backlog](milestone_and_sprint_example/milestone_sprint_1-4.png)
 
 ---
 
@@ -230,7 +230,7 @@ Issue ที่อยู่ใน Sprint 1 :
 
 - ทำ Report และกำหนด Requirement
 
- ![Sprint Backlog](sprint_1.png)
+ ![Sprint Backlog](milestone_and_sprint_example/sprint_1.png)
 
 ---
 ## 12) New functional/non-functional requirement
