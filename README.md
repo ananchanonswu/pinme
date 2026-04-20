@@ -833,60 +833,35 @@ graph TB
 
 ### 2.1 หน้าหลัก (Dark Theme)
 
-<!-- 📸 [แคปรูป] เปิดเว็บ http://localhost:3000 
-     แสดงหน้าแรกทั้งหมดแบบ Dark Theme 
-     ควรเห็น: Hero Panel, Search Form, Map, Results (Demo Data) -->
-
-`[แทรกรูป: screenshot_main_dark.png]`
+![website](docs/pinme_website_screenshots/screenshot_main_dark.png)
 
 ### 2.2 หน้าหลัก (Light Theme)
 
-<!-- 📸 [แคปรูป] กดปุ่มเปลี่ยน Theme เป็น Light 
-     แสดงหน้าแรกทั้งหมดแบบ Light Theme -->
-
-`[แทรกรูป: screenshot_main_light.png]`
+![website](docs/pinme_website_screenshots/screenshot_main_light.png)
 
 ### 2.3 แผนที่และ Markers
 
-<!-- 📸 [แคปรูป] Zoom เข้าไปดูแผนที่ให้เห็น User marker + Place markers หลายอัน 
-     ควรเห็น: Radius circle, Category markers สีต่างๆ, popup -->
-
-`[แทรกรูป: screenshot_map_markers.png]`
+![website](docs/pinme_website_screenshots/screenshot_map_markers.png)
 
 ### 2.4 ผลลัพธ์การ Scan (Results)
 
-<!-- 📸 [แคปรูป] ผลลัพธ์หลังกด Scan 
-     แสดง card สถานที่พร้อม thumbnail, badge, distance, rating -->
-
-`[แทรกรูป: screenshot_results.png]`
+![website](docs/pinme_website_screenshots/screenshot_results.png)
 
 ### 2.5 รายละเอียดสถานที่ (Detail Modal)
 
-<!-- 📸 [แคปรูป] กดปุ่ม "ดูรายละเอียด" ที่ card ใดก็ได้ 
-     ควรเห็น: Modal ขึ้นมาแสดงชื่อ, ที่อยู่, คะแนน, รูปภาพ, Category badge -->
-
-`[แทรกรูป: screenshot_detail_modal.png]`
+![website](docs/pinme_website_screenshots/screenshot_detail_modal.png)
 
 ### 2.6 Favorites (สถานที่โปรด)
 
-<!-- 📸 [แคปรูป] กดบันทึกสถานที่โปรด 2-3 แห่ง 
-     แล้วแสดงส่วน Favorites ที่มีรายชื่อสถานที่ที่ save ไว้ -->
-
-`[แทรกรูป: screenshot_favorites.png]`
+![website](docs/pinme_website_screenshots/screenshot_favorites.png)
 
 ### 2.7 Trip Planner (แผนการเดินทาง)
 
-<!-- 📸 [แคปรูป] เพิ่มกิจกรรม 2-3 อัน ให้เห็น Timeline 
-     ควรเห็น: Trip form + Timeline items เรียงตามเวลา -->
+![website](docs/pinme_website_screenshots/screenshot_trip_planner.png)
 
-`[แทรกรูป: screenshot_trip_planner.png]`
+### 2.8 ภาษาไทย (Thai Mode)
 
-### 2.8 ภาษาอังกฤษ (English Mode)
-
-<!-- 📸 [แคปรูป] กดเปลี่ยนภาษาเป็น English 
-     แสดงหน้าเว็บเป็นภาษาอังกฤษ -->
-
-`[แทรกรูป: screenshot_english.png]`
+![website](docs/pinme_website_screenshots/screenshot_thai.png)
 
 ---
 
