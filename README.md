@@ -727,3 +727,598 @@ flowchart TD
 
 # Phase 4
 
+---
+
+## 1. ข้อมูลเดิมจาก Phase 1, 2 and 3
+
+### 1.1 ที่มาของปัญหาและจุดประสงค์
+
+**PinMe** เป็นเว็บแอปพลิเคชันสำหรับค้นหาสถานที่ใกล้เคียง (Location Scanner) พร้อมระบบวางแผนทริป 1 วัน (Trip Planner) โดยใช้ข้อมูลจาก Google Maps ผ่าน SerpAPI
+
+**ปัญหา:** ผู้ใช้ต้องการค้นหาสถานที่ใกล้เคียงอย่างรวดเร็ว โดยจำแนกตามหมวดหมู่ (โรงแรม, ร้านอาหาร, สนามกีฬา, สถานที่ท่องเที่ยว) พร้อมวางแผนกิจกรรมแบบ 1 วัน
+
+**จุดประสงค์:**
+- ค้นหาสถานที่รอบตัวตามพิกัดและรัศมีที่กำหนด
+- แสดงผลบนแผนที่พร้อมรายละเอียด
+- ระบบ Favorites สำหรับบันทึกสถานที่โปรด
+- ระบบ Trip Planner สำหรับวางแผนกิจกรรม 1 วัน (พร้อมตรวจสอบเวลาทับซ้อน)
+
+### 1.2 Scope
+
+**In-scope:**
+- ค้นหาสถานที่จาก GPS หรือ Manual input
+- กรองตามหมวดหมู่ (โรงแรม, ร้านอาหาร, สนามกีฬา, ท่องเที่ยว)
+- แสดงแผนที่ Leaflet พร้อม markers
+- Favorites (บันทึกสถานที่โปรดลง localStorage)
+- Trip Planner (วางแผนทริป 1 วัน + overlap detection)
+- รองรับ 2 ภาษา (TH/EN) และ Dark/Light theme
+
+**Out-of-scope:**
+- ระบบ Login / สมัครสมาชิก
+- Backend database (ใช้ localStorage แทน)
+- ระบบจองโรงแรมหรือร้านอาหาร
+- Navigation หรือเส้นทาง
+- แอปพลิเคชันมือถือ (Mobile App)
+
+### 1.3 Functional Requirements
+
+| ID | Requirement | Status |
+|---|---|:---:|
+| FR-01 | ค้นหาสถานที่ใกล้เคียงตามพิกัดและรัศมี |
+| FR-02 | กรองผลลัพธ์ตามหมวดหมู่ |
+| FR-03 | แสดงผลบนแผนที่ Leaflet |
+| FR-04 | ดูรายละเอียดสถานที่ (Modal) |
+| FR-05 | บันทึกสถานที่โปรด (Favorites) |
+| FR-06 | วางแผนทริป 1 วัน (Trip Planner) |
+| FR-07 | ตรวจสอบเวลาทับซ้อน (Overlap Detection) |
+| FR-08 | รองรับ 2 ภาษา (TH/EN) |
+| FR-09 | Dark/Light Theme |
+| FR-10 | GPS Geolocation |
+
+### 1.4 Non-Functional Requirements
+
+| ID | Requirement | Status |
+|---|---|:---:|
+| NFR-01 | Response time ≤ 3 วินาที |
+| NFR-02 | รองรับ Browser หลัก (Chrome, Firefox, Safari) |
+| NFR-03 | Responsive Design |
+| NFR-04 | Backend Unit Test Coverage ≥ 90% | (97.33%) |
+| NFR-05 | ใช้ HTTPS สำหรับ API calls |
+| NFR-06 | ไม่ expose API key ที่ frontend |
+
+### 1.5 สถาปัตยกรรมระบบ (Architecture)
+
+```
+┌─────────────────────────────────────────────┐
+│              Frontend (SPA)                 │
+│  HTML + Vanilla JS (ES Modules) + CSS       │
+│  Leaflet.js (Map) + Tailwind CSS (CDN)      │
+└──────────────────┬──────────────────────────┘
+                   │ HTTP (fetch)
+┌──────────────────▼──────────────────────────┐
+│          Backend (Node.js HTTP Server)       │
+│  Pure http module (ไม่ใช้ Express)           │
+│  Endpoints: /scan (POST), /image (GET)      │
+│  Models: Place, SearchQuery, TripPlanner    │
+└──────────────────┬──────────────────────────┘
+                   │ HTTPS
+┌──────────────────▼──────────────────────────┐
+│           External API (SerpAPI)            │
+│        Google Maps Engine Search            │
+└─────────────────────────────────────────────┘
+```
+
+### 1.6 สรุปผลจาก Phase 1-3
+
+| Phase | สิ่งที่ทำ |
+|---|---|
+| Phase 1 | วิเคราะห์ requirements, ออกแบบ Use Case, Sequence Diagram, กำหนด scope |
+| Phase 2 | ตั้ง Unit Test ของ Backend Models (Place, SearchQuery, TripPlanner), เริ่ม development |
+| Phase 3 | Website ใช้งานได้ครบ, Unit Test Coverage 97.33%, Bug report 5 ข้อ |
+
+---
+
+## 2. Website Screenshot
+
+> **📸 หมายเหตุ:** ให้จับภาพหน้าจอจริงจากเว็บไซต์ที่รันอยู่ แล้วแทรกรูปด้านล่าง
+
+### 2.1 หน้าหลัก (Dark Theme)
+
+<!-- 📸 [แคปรูป] เปิดเว็บ http://localhost:3000 
+     แสดงหน้าแรกทั้งหมดแบบ Dark Theme 
+     ควรเห็น: Hero Panel, Search Form, Map, Results (Demo Data) -->
+
+`[แทรกรูป: screenshot_main_dark.png]`
+
+### 2.2 หน้าหลัก (Light Theme)
+
+<!-- 📸 [แคปรูป] กดปุ่มเปลี่ยน Theme เป็น Light 
+     แสดงหน้าแรกทั้งหมดแบบ Light Theme -->
+
+`[แทรกรูป: screenshot_main_light.png]`
+
+### 2.3 แผนที่และ Markers
+
+<!-- 📸 [แคปรูป] Zoom เข้าไปดูแผนที่ให้เห็น User marker + Place markers หลายอัน 
+     ควรเห็น: Radius circle, Category markers สีต่างๆ, popup -->
+
+`[แทรกรูป: screenshot_map_markers.png]`
+
+### 2.4 ผลลัพธ์การ Scan (Results)
+
+<!-- 📸 [แคปรูป] ผลลัพธ์หลังกด Scan 
+     แสดง card สถานที่พร้อม thumbnail, badge, distance, rating -->
+
+`[แทรกรูป: screenshot_results.png]`
+
+### 2.5 รายละเอียดสถานที่ (Detail Modal)
+
+<!-- 📸 [แคปรูป] กดปุ่ม "ดูรายละเอียด" ที่ card ใดก็ได้ 
+     ควรเห็น: Modal ขึ้นมาแสดงชื่อ, ที่อยู่, คะแนน, รูปภาพ, Category badge -->
+
+`[แทรกรูป: screenshot_detail_modal.png]`
+
+### 2.6 Favorites (สถานที่โปรด)
+
+<!-- 📸 [แคปรูป] กดบันทึกสถานที่โปรด 2-3 แห่ง 
+     แล้วแสดงส่วน Favorites ที่มีรายชื่อสถานที่ที่ save ไว้ -->
+
+`[แทรกรูป: screenshot_favorites.png]`
+
+### 2.7 Trip Planner (แผนการเดินทาง)
+
+<!-- 📸 [แคปรูป] เพิ่มกิจกรรม 2-3 อัน ให้เห็น Timeline 
+     ควรเห็น: Trip form + Timeline items เรียงตามเวลา -->
+
+`[แทรกรูป: screenshot_trip_planner.png]`
+
+### 2.8 ภาษาอังกฤษ (English Mode)
+
+<!-- 📸 [แคปรูป] กดเปลี่ยนภาษาเป็น English 
+     แสดงหน้าเว็บเป็นภาษาอังกฤษ -->
+
+`[แทรกรูป: screenshot_english.png]`
+
+---
+
+## 3. UI Test Cases
+
+### ข้อกำหนด
+- ต้องมี 5 UI Test Cases
+- ทุก Test Case ต้องมีการเช็คค่า Expected Results
+
+---
+
+### UI-TC01: ค้นหาสถานที่ด้วยพิกัดและรัศมี
+
+| รายการ | รายละเอียด |
+|---|---|
+| **Test Case ID** | UI-TC01 |
+| **วัตถุประสงค์** | ทดสอบว่าระบบสามารถค้นหาสถานที่จากพิกัดที่กำหนดและแสดงผลลัพธ์ได้ถูกต้อง |
+| **Pre-condition** | เปิดเว็บไซต์ที่ `http://localhost:3000`, Server ทำงานปกติ |
+| **ขั้นตอน** | 1. กรอก Latitude = `13.7367` <br> 2. กรอก Longitude = `100.5232` <br> 3. เลือกรัศมี = `5 km` <br> 4. เลือกหมวดหมู่ = `🌐 ทั้งหมด` <br> 5. กดปุ่ม `🔍 สแกนสถานที่` |
+| **Expected Results** | 1. ปุ่ม Scan เปลี่ยนเป็น spinner ขณะโหลด <br> 2. ส่วน Results ปรากฏขึ้น พร้อมแสดงจำนวนสถานที่ที่พบ (≥ 1) <br> 3. แต่ละ card แสดงชื่อ, badge หมวดหมู่, ระยะทาง (≤ 5 km), และคะแนน <br> 4. Markers ปรากฏบนแผนที่ตรงตำแหน่งของสถานที่ <br> 5. Toast notification แสดงข้อความ "พบ X สถานที่" |
+| **การเช็คค่า** | `resultsCount` text ≠ "0 สถานที่" <br> ทุก card มี `.badge` element <br> ทุก card แสดง distance ≤ 5 km <br> Map markers ≥ 1 อัน |
+
+<!-- 📸 [แคปรูป] ผลลัพธ์หลังกด Scan — แสดง results + map markers + toast -->
+
+`[แทรกรูป: ui_tc01_result.png]`
+
+---
+
+### UI-TC02: ระบบ Favorites — บันทึกและแสดงสถานที่โปรด
+
+| รายการ | รายละเอียด |
+|---|---|
+| **Test Case ID** | UI-TC02 |
+| **วัตถุประสงค์** | ทดสอบว่าระบบบันทึกสถานที่โปรดได้ และแสดงใน Favorites section ถูกต้อง (ข้อมูลคงอยู่หลัง refresh) |
+| **Pre-condition** | มีผลลัพธ์การ Scan แสดงอยู่บนหน้าจออย่างน้อย 1 สถานที่ |
+| **ขั้นตอน** | 1. กดปุ่ม `บันทึกโปรด` ที่ card สถานที่แรก <br> 2. สังเกต Toast notification <br> 3. สังเกตส่วน `สถานที่โปรด` ว่ามีสถานที่ปรากฏ <br> 4. **Refresh หน้าเว็บ** (F5) <br> 5. ตรวจสอบว่าสถานที่โปรดยังคงแสดงอยู่ |
+| **Expected Results** | 1. ปุ่มเปลี่ยนเป็น `บันทึกแล้ว` (สีเหลือง) <br> 2. Toast แสดง "บันทึกสถานที่โปรดแล้ว" <br> 3. ส่วน Favorites แสดง card สถานที่ที่ save <br> 4. หลัง refresh สถานที่โปรดยังแสดงอยู่ (persist ใน localStorage) |
+| **การเช็คค่า** | ปุ่มมี class `.pinned` <br> Favorites section มี card ≥ 1 <br> `localStorage.getItem('pinme_favorites')` ≠ null <br> หลัง refresh ข้อมูลยังอยู่ |
+
+<!-- 📸 [แคปรูป] 2 รูป: (1) กด Save แล้ว Toast ขึ้น + Favorites section (2) หลัง Refresh ข้อมูลยังอยู่ -->
+
+`[แทรกรูป: ui_tc02_favorites.png]`
+
+---
+
+### UI-TC03: Trip Planner — เพิ่มกิจกรรมและตรวจสอบเวลาทับซ้อน
+
+| รายการ | รายละเอียด |
+|---|---|
+| **Test Case ID** | UI-TC03 |
+| **วัตถุประสงค์** | ทดสอบว่าระบบ Trip Planner สามารถเพิ่มกิจกรรมได้ และตรวจจับเวลาทับซ้อนได้ถูกต้อง |
+| **Pre-condition** | เปิดเว็บไซต์ที่ `http://localhost:3000` |
+| **ขั้นตอน** | 1. กรอกชื่อกิจกรรม = `วัดพระแก้ว` <br> 2. เวลาเริ่ม = `09:00`, เวลาสิ้นสุด = `11:00` <br> 3. กดปุ่ม `➕ เพิ่มลงทริป` <br> 4. ตรวจสอบ Timeline <br> 5. กรอกกิจกรรมที่ 2: ชื่อ = `ร้านอาหาร`, เวลาเริ่ม = `10:00`, เวลาสิ้นสุด = `12:00` <br> 6. กดปุ่ม `➕ เพิ่มลงทริป` <br> 7. สังเกต Error message |
+| **Expected Results** | 1. กิจกรรมแรกเพิ่มสำเร็จ — Toast แสดง `✅ เพิ่ม "วัดพระแก้ว" ลงแผนทริปแล้ว` <br> 2. Timeline แสดง item: `🕒 09:00 - 11:00` + `วัดพระแก้ว` <br> 3. กิจกรรมที่ 2 **ถูกปฏิเสธ** — Toast แสดง `⚠️ ขัดข้อง: เวลาทับซ้อนกับกิจกรรม "วัดพระแก้ว" (09:00 - 11:00)` <br> 4. Timeline ยังคงมีแค่ 1 item |
+| **การเช็คค่า** | Trip Timeline มี `.trip-item` = 1 อัน <br> Toast type = `error` สำหรับ overlap <br> ข้อความ overlap มีชื่อกิจกรรมที่ขัดแย้ง |
+
+<!-- 📸 [แคปรูป] 2 รูป: (1) เพิ่มกิจกรรมแรกสำเร็จ (2) เพิ่มกิจกรรมซ้อนแล้วมี error toast -->
+
+`[แทรกรูป: ui_tc03_trip_overlap.png]`
+
+---
+
+### UI-TC04: Validation — ตรวจสอบค่า Input ไม่ถูกต้อง
+
+| รายการ | รายละเอียด |
+|---|---|
+| **Test Case ID** | UI-TC04 |
+| **วัตถุประสงค์** | ทดสอบว่าระบบตรวจสอบค่า input ที่ไม่ถูกต้องและแสดง error message ที่เหมาะสม |
+| **Pre-condition** | เปิดเว็บไซต์ที่ `http://localhost:3000` |
+| **ขั้นตอน** | **กรณีที่ 1:** ไม่กรอกพิกัดเลย <br> 1. ลบค่า Latitude และ Longitude (เว้นว่าง) <br> 2. กดปุ่ม `🔍 สแกนสถานที่` <br><br> **กรณีที่ 2:** กรอก Latitude เกินช่วง <br> 3. กรอก Latitude = `999` <br> 4. กรอก Longitude = `100` <br> 5. กดปุ่ม `🔍 สแกนสถานที่` <br><br> **กรณีที่ 3:** กรอก Longitude เกินช่วง <br> 6. กรอก Latitude = `13` <br> 7. กรอก Longitude = `999` <br> 8. กดปุ่ม `🔍 สแกนสถานที่` |
+| **Expected Results** | กรณีที่ 1: Toast แสดง `กรุณากรอกพิกัด Latitude และ Longitude` <br> กรณีที่ 2: Toast แสดง `Latitude ต้องอยู่ระหว่าง -90 ถึง 90` <br> กรณีที่ 3: Toast แสดง `Longitude ต้องอยู่ระหว่าง -180 ถึง 180` <br> **ทุกกรณี:** ไม่มีการส่ง request ไปยัง server |
+| **การเช็คค่า** | Toast type = `warning` ทุกกรณี <br> Toast text ตรงกับ expected message <br> Network tab ไม่มี request ไป `/scan` <br> Results section ไม่เปลี่ยนแปลง |
+
+<!-- 📸 [แคปรูป] 3 รูป: Toast warning สำหรับแต่ละกรณี -->
+
+`[แทรกรูป: ui_tc04_validation.png]`
+
+---
+
+### UI-TC05: เปลี่ยนภาษาและ Theme — ตรวจสอบ i18n และ UI
+
+| รายการ | รายละเอียด |
+|---|---|
+| **Test Case ID** | UI-TC05 |
+| **วัตถุประสงค์** | ทดสอบว่าระบบสามารถเปลี่ยนภาษา (TH↔EN) และ Theme (Dark↔Light) ได้ถูกต้อง โดยข้อมูลคงอยู่หลัง refresh |
+| **Pre-condition** | เปิดเว็บไซต์ที่ `http://localhost:3000` (ค่าเริ่มต้น: ภาษาไทย, Dark Theme) |
+| **ขั้นตอน** | 1. ตรวจสอบว่า UI เป็นภาษาไทย <br> 2. กดปุ่ม `🇹🇭 TH` เพื่อเปลี่ยนเป็นภาษาอังกฤษ <br> 3. ตรวจสอบว่า UI ทุกส่วนเปลี่ยนเป็นภาษาอังกฤษ <br> 4. กดปุ่ม `☀️` เพื่อเปลี่ยนเป็น Light Theme <br> 5. ตรวจสอบว่า Background, Card, Text สีเปลี่ยน <br> 6. **Refresh หน้าเว็บ** (F5) <br> 7. ตรวจสอบว่าภาษาและ Theme ยังคงเป็น EN + Light |
+| **Expected Results** | 1. เริ่มต้น: ภาษาไทย, Dark Theme <br> 2. หลังกดเปลี่ยนภาษา: ปุ่มเป็น `🇺🇸 EN`, UI text เป็น English (เช่น "Find places around you", "Scan Places") <br> 3. หลังกด Theme: Background เปลี่ยนเป็นสว่าง, `<html>` มี class `light-theme` <br> 4. หลัง Refresh: ภาษาอังกฤษ + Light Theme ยังคงอยู่ |
+| **การเช็คค่า** | `langToggleBtn` text = `🇺🇸 EN` <br> `[data-i18n="subtitle"]` text = `Find places around you` <br> `document.documentElement.classList.contains('light-theme')` = `true` <br> `localStorage.getItem('pinme_lang')` = `en` <br> `localStorage.getItem('pinme_theme')` = `light` <br> หลัง refresh ค่ายังเหมือนเดิม |
+
+<!-- [แคปรูป] 2 รูป: (1) English + Light Theme (2) หลัง refresh ยังเป็น EN + Light -->
+
+`[แทรกรูป: ui_tc05_lang_theme.png]`
+
+---
+
+### สรุป UI Test Cases
+
+| Test Case | ทดสอบ Feature | ผลลัพธ์ |
+|---|---|:---:|
+| UI-TC01 | ค้นหาสถานที่ (Scan) | ผ่าน |
+| UI-TC02 | Favorites (บันทึก + Persist) | ผ่าน |
+| UI-TC03 | Trip Planner (Overlap Detection) | ผ่าน |
+| UI-TC04 | Input Validation (3 กรณี) | ผ่าน |
+| UI-TC05 | i18n + Theme (Persist หลัง Refresh) | ผ่าน |
+
+---
+
+## 4. Profiling Results
+
+### 4.1 Static Profiling (ESLint)
+
+**เครื่องมือ:** ESLint  
+**วิธีการ:** รัน ESLint ตรวจสอบ code quality ทั้ง frontend และ backend
+
+#### Phase 3 Results
+
+<!-- [แคปรูป] ผลลัพธ์ ESLint ของ Phase 3 code
+     รันคำสั่ง: npx eslint back_end/ front_end/js/ 
+     แคปทั้งหน้าจอ terminal -->
+
+`[แทรกรูป: eslint_phase3.png]`
+
+| หัวข้อ | Phase 3 |
+|---|---|
+| จำนวน Errors | `[ใส่จำนวน]` |
+| จำนวน Warnings | `[ใส่จำนวน]` |
+| ไฟล์ที่มีปัญหา | `[ใส่รายชื่อไฟล์]` |
+| ประเภทปัญหาหลัก | `[เช่น unused-vars, no-console, etc.]` |
+
+#### Phase 4 Results
+
+<!-- [แคปรูป] ผลลัพธ์ ESLint ของ Phase 4 code
+     รันคำสั่ง: npx eslint back_end/ front_end/js/ 
+     แคปทั้งหน้าจอ terminal -->
+
+`[แทรกรูป: eslint_phase4.png]`
+
+| หัวข้อ | Phase 4 |
+|---|---|
+| จำนวน Errors | `[ใส่จำนวน]` |
+| จำนวน Warnings | `[ใส่จำนวน]` |
+| ไฟล์ที่มีปัญหา | `[ใส่รายชื่อไฟล์]` |
+| ประเภทปัญหาหลัก | `[เช่น unused-vars, no-console, etc.]` |
+
+#### เปรียบเทียบ Static Profiling
+
+| Metric | Phase 3 | Phase 4 | ∆ Change |
+|---|---|---|---|
+| Total Errors | `[ใส่]` | `[ใส่]` | `[ใส่]` |
+| Total Warnings | `[ใส่]` | `[ใส่]` | `[ใส่]` |
+| Files with Issues | `[ใส่]` | `[ใส่]` | `[ใส่]` |
+
+**วิเคราะห์:**
+- `[อธิบายว่าทำไม errors/warnings เพิ่มหรือลด เช่น Phase 4 เพิ่ม code ใหม่มากขึ้น จึงมี warnings เพิ่ม หรือ Phase 4 มีการ refactor ทำให้ลดลง]`
+
+---
+
+### 4.2 Dynamic Profiling (Chrome DevTools Performance)
+
+**เครื่องมือ:** Chrome DevTools → Performance tab & Lighthouse  
+**วิธีการ:** บันทึก Performance Profile ขณะโหลดหน้าเว็บ + กดสแกน
+
+#### Phase 3 Results
+
+<!-- [แคปรูป] Chrome DevTools Performance Profile ของ Phase 3
+     ขั้นตอน:
+     1. เปิด Chrome DevTools (F12) → Performance tab
+     2. กด Record → Refresh page → หยุด Record
+     3. ดู Summary (Scripting, Rendering, Painting, Idle)
+     4. แคปรูป Performance summary
+-->
+
+`[แทรกรูป: perf_phase3_summary.png]`
+
+<!-- [แคปรูป] Lighthouse Score ของ Phase 3
+     ขั้นตอน:
+     1. DevTools → Lighthouse tab
+     2. Categories: Performance, Accessibility, Best Practices
+     3. Mode: Navigation, Device: Desktop
+     4. แคปรูป Lighthouse scores
+-->
+
+`[แทรกรูป: lighthouse_phase3.png]`
+
+| Metric | Phase 3 |
+|---|---|
+| Page Load Time | `[ใส่ ms]` |
+| First Contentful Paint (FCP) | `[ใส่ ms]` |
+| Largest Contentful Paint (LCP) | `[ใส่ ms]` |
+| Total Blocking Time (TBT) | `[ใส่ ms]` |
+| Cumulative Layout Shift (CLS) | `[ใส่ค่า]` |
+| Lighthouse Performance Score | `[ใส่ /100]` |
+| Scripting Time | `[ใส่ ms]` |
+| Rendering Time | `[ใส่ ms]` |
+| JS Heap Memory (Peak) | `[ใส่ MB]` |
+
+#### Phase 4 Results
+
+<!-- [แคปรูป] Chrome DevTools Performance Profile ของ Phase 4
+     ขั้นตอน: เหมือนกับ Phase 3 
+-->
+
+`[แทรกรูป: perf_phase4_summary.png]`
+
+<!-- [แคปรูป] Lighthouse Score ของ Phase 4 -->
+
+`[แทรกรูป: lighthouse_phase4.png]`
+
+| Metric | Phase 4 |
+|---|---|
+| Page Load Time | `[ใส่ ms]` |
+| First Contentful Paint (FCP) | `[ใส่ ms]` |
+| Largest Contentful Paint (LCP) | `[ใส่ ms]` |
+| Total Blocking Time (TBT) | `[ใส่ ms]` |
+| Cumulative Layout Shift (CLS) | `[ใส่ค่า]` |
+| Lighthouse Performance Score | `[ใส่ /100]` |
+| Scripting Time | `[ใส่ ms]` |
+| Rendering Time | `[ใส่ ms]` |
+| JS Heap Memory (Peak) | `[ใส่ MB]` |
+
+#### เปรียบเทียบ Dynamic Profiling
+
+| Metric | Phase 3 | Phase 4 | ∆ Change |
+|---|---|---|---|
+| Page Load Time | `[ใส่]` ms | `[ใส่]` ms | `[ใส่]` |
+| FCP | `[ใส่]` ms | `[ใส่]` ms | `[ใส่]` |
+| LCP | `[ใส่]` ms | `[ใส่]` ms | `[ใส่]` |
+| TBT | `[ใส่]` ms | `[ใส่]` ms | `[ใส่]` |
+| Lighthouse Score | `[ใส่]` | `[ใส่]` | `[ใส่]` |
+| Scripting | `[ใส่]` ms | `[ใส่]` ms | `[ใส่]` |
+| JS Heap (Peak) | `[ใส่]` MB | `[ใส่]` MB | `[ใส่]` |
+
+**วิเคราะห์:**
+
+- **Page Load:** `[อธิบาย เช่น Phase 4 โหลดช้ากว่าเล็กน้อยเนื่องจากมี CSS/JS เพิ่มขึ้น ~56-80% แต่ยังอยู่ในเกณฑ์ที่ยอมรับได้]`
+- **Scripting:** `[อธิบาย เช่น เวลา Scripting เพิ่มขึ้นเนื่องจาก app.js เพิ่มจาก 476 → 859 lines สำหรับ features ใหม่ (Favorites, Image Proxy, Trip Draft)]`
+- **Memory:** `[อธิบาย เช่น Memory เพิ่มขึ้นเล็กน้อยเพราะ localStorage operations + image candidates caching]`
+- **LCP:** `[อธิบาย เช่น LCP อาจเพิ่มขึ้นเล็กน้อยเนื่องจาก layout ซับซ้อนขึ้น (2-column dashboard) แต่ยังต่ำกว่า 2.5s ซึ่งถือว่า Good]`
+
+---
+
+## 5. CI/CD Pipeline
+
+### 5.1 CI (Continuous Integration)
+
+#### Pipeline Configuration
+
+ใช้ CI pipeline สำหรับรัน automated tests ทุกครั้งที่มีการ push code
+
+**Pipeline Script (ใช้ script ที่กำหนดให้):**
+
+```yaml
+# .gitlab-ci.yml หรือ GitHub Actions workflow
+stages:
+  - test
+
+test:
+  stage: test
+  image: node:20
+  script:
+    - npm install
+    - npm test
+    - npm run test:coverage
+  artifacts:
+    paths:
+      - html-report/
+      - back_end/coverage/
+    expire_in: 1 week
+  # Free tier parallel job
+  parallel: 1
+```
+
+<!-- 📸 [แคปรูป] Pipeline ที่ run สำเร็จ 
+     แสดงหน้า CI/CD pipeline ใน GitLab/GitHub 
+     ให้เห็นว่า test passed + artifact ถูกสร้าง -->
+
+`[แทรกรูป: ci_pipeline_success.png]`
+
+#### Pipeline ประกอบด้วย
+
+| Step | รายละเอียด |
+|---|---|
+| `npm install` | ติดตั้ง dependencies (jest, jest-html-reporters) |
+| `npm test` | รัน unit tests ทั้ง 3 test suites (Place, SearchQuery, TripPlanner) |
+| `npm run test:coverage` | รัน tests พร้อมสร้าง coverage report |
+| **Artifacts** | `html-report/test-report.html` + `back_end/coverage/` |
+
+#### Test Results จาก CI
+
+<!-- 📸 [แคปรูป] ผล test ใน CI pipeline (terminal output)
+     แสดง test suites passed + coverage summary -->
+
+`[แทรกรูป: ci_test_output.png]`
+
+| Metric | ผลลัพธ์ |
+|---|---|
+| Test Suites | 3 passed, 3 total |
+| Tests | 37+ passed |
+| Coverage (Statements) | 97.33% |
+| Coverage (Branches) | 89.47% |
+| Coverage (Functions) | 100% |
+| Coverage (Lines) | 97.22% |
+
+### 5.2 CD (Continuous Deployment)
+
+**Deployment Strategy:** Manual deployment ผ่าน `npm start`
+
+เนื่องจากระบบเป็น Self-hosted Node.js server ไม่มี cloud hosting จึงใช้ manual deployment โดย:
+
+1. Pull latest code จาก Git
+2. รัน `npm install`
+3. รัน `npm start` เพื่อเริ่ม server ที่ port 3000
+4. เข้าถึงได้ที่ `http://localhost:3000`
+
+**ในอนาคต สามารถเพิ่ม CD ได้โดย:**
+- Deploy ไปยัง Render, Railway, หรือ Vercel
+- ตั้งค่า automatic deployment หลัง CI pipeline passed
+- ใช้ Docker containerization
+
+---
+
+## 6. กระบวนการทำงาน
+
+### 6.1 Process
+
+**Development Process:** Incremental & Iterative
+
+| Phase | Process |
+|---|---|
+| Phase 1 | Requirements gathering, Use Case design, Initial planning |
+| Phase 2 | Test-first development (TDD), Unit test creation |
+| Phase 3 | Full integration, Frontend + Backend + Testing |
+| **Phase 4** | **Bug fixing, UI/UX overhaul, Profiling, CI/CD setup, Documentation** |
+
+#### Phase 4 เพิ่มเติม
+- **Code Review Process** — ตรวจสอบ code ก่อน merge ทุกครั้ง
+- **Bug Tracking** — ใช้ GitHub Issues สำหรับ track bugs ที่พบใน Phase 3
+- **Profiling-Driven Optimization** — ใช้ผล profiling ในการตัดสินใจ optimize
+
+### 6.2 Methods
+
+| Method | Phase 1-3 | Phase 4 (เพิ่มเติม) |
+|---|---|---|
+| **Test-Driven Development (TDD)** | Unit tests ก่อน code | ✅ + UI Test Cases |
+| **Responsive Design** | Mobile-first | ✅ + Dashboard Layout |
+| **Modular Architecture** | แยก Models/Modules | เหมือนเดิม |
+| **Profiling** | ไม่มี | Static (ESLint) + Dynamic (DevTools) |
+| **CI/CD** | ไม่มี | Pipeline + Automated Tests |
+| **Bug Tracking** | ไม่มี formal process | GitHub Issues |
+
+### 6.3 Tools
+
+| Tool | ใช้ใน Phase | จุดประสงค์ |
+|---|---|---|
+| **VS Code** | 1-4 | Code editor หลัก |
+| **Node.js** | 1-4 | Runtime สำหรับ backend server |
+| **Jest** | 2-4 | Unit testing framework |
+| **jest-html-reporters** | 3-4 | สร้าง test report HTML |
+| **Git / GitHub** | 1-4 | Version control |
+| **Chrome DevTools** | 3-4 | Debugging + Dynamic profiling |
+| **Leaflet.js** | 2-4 | แผนที่ Interactive |
+| **SerpAPI** | 2-4 | ดึงข้อมูลสถานที่จาก Google Maps |
+| **ESLint** | **4** | **Static code analysis (ใหม่)** |
+| **Lighthouse** | **4** | **Performance auditing (ใหม่)** |
+| **CI/CD Pipeline** | **4** | **Automated testing pipeline (ใหม่)** |
+
+### 6.4 การบริหาร Project
+
+- **Sprint Planning:** แบ่ง Phase 4 เป็น 3 sprints
+  1. Sprint 1: Bug fixes + UI overhaul
+  2. Sprint 2: New features (Favorites, Image Proxy, Trip Draft)
+  3. Sprint 3: Profiling, CI/CD, Documentation, Report
+
+- **การ Monitor Build:** ติดตั้ง CI pipeline เพื่อตรวจสอบว่า tests passed ทุกครั้งที่ push
+
+- **การจัดการ Bugs:**
+
+| Bug ID | จาก Phase 3 | สถานะ Phase 4 |
+|---|---|:---:|
+| BUG-01 | Cross-midnight trip (เวลาข้ามเที่ยงคืน) | Known limitation (อธิบายเหตุผลด้านล่าง) |
+| BUG-02 | Trip data ไม่ persist (หายเมื่อ refresh) | Known limitation |
+| BUG-03 | ไม่มี pagination สำหรับผลลัพธ์มาก | Not fixed (SerpAPI จำกัดผลลัพธ์อยู่แล้ว) |
+| BUG-04 | ไม่มี Retry GPS หลัง denied | Not fixed |
+| BUG-05 | Error messages ไม่เฉพาะเจาะจง | Fixed (เพิ่ม structured error + fallback) |
+
+**เหตุผลที่ Bug บางข้อไม่ได้แก้:**
+- **BUG-01 (Cross-midnight):** ฟีเจอร์ Trip Planner ออกแบบมาสำหรับ "1 วัน" (Day trip) ซึ่งไม่ควรมีกิจกรรมข้ามเที่ยงคืน ถือเป็น design decision ไม่ใช่ bug
+- **BUG-02 (Trip persistence):** Trip data เป็นข้อมูลชั่วคราวที่ผู้ใช้สร้างใหม่ทุกครั้ง ต่างจาก Favorites ที่ต้อง persist ระยะยาว
+- **BUG-03 (Pagination):** SerpAPI ส่งผลลัพธ์สูงสุด ~20 รายการต่อ request อยู่แล้ว จึงไม่จำเป็นต้องมี pagination
+- **BUG-04 (GPS Retry):** ผู้ใช้สามารถกดปุ่ม GPS ซ้ำได้เอง ไม่จำเป็นต้องมีปุ่ม Retry แยก
+
+---
+
+## 7. Final Retrospective
+
+### 7.1 สรุปการประชุม Final Retrospective
+
+**วันที่ประชุม:** `[ใส่วันที่]`  
+**ผู้เข้าร่วม:** สมาชิกทั้ง 3 คน  
+**ระยะเวลา:** `[ใส่ระยะเวลา เช่น 45 นาที]`
+
+#### สิ่งที่ทำได้ดี (What went well)
+- Unit Test Coverage สูง (97.33%) ตั้งแต่ Phase 3 ทำให้ Phase 4 มั่นใจในการ refactor
+- การแยก Models (Place, SearchQuery, TripPlanner) ทำให้ code maintainable และ testable
+- ระบบ i18n (TH/EN) ทำตั้งแต่แรก ไม่ต้องกลับมาแก้ทีหลัง
+- การใช้ CSS Variables ทำให้เปลี่ยน color palette ทั้งหมดได้ง่ายมาก (Phase 3: teal → Phase 4: crimson)
+
+#### สิ่งที่ต้องปรับปรุง (What could be improved)
+- ควรทำ CI/CD ตั้งแต่ Phase 2 ไม่ใช่รอ Phase 4
+- ควรมี E2E tests (เช่น Playwright, Cypress) นอกจาก Unit tests
+- Trip data ควร persist ใน localStorage เหมือน Favorites
+- ควรมี Error boundary สำหรับ 3rd-party API failures
+
+#### Action Items (สิ่งที่จะทำต่าง ถ้ามีโปรเจกต์ใหม่)
+- ตั้ง CI pipeline ตั้งแต่เริ่มโปรเจกต์
+- ทำ Profiling baseline ตั้งแต่ Phase 2 เพื่อเทียบการเปลี่ยนแปลง
+- ใช้ TypeScript แทน vanilla JS เพื่อลด runtime errors
+- เขียน E2E tests ควบคู่กับ Unit tests
+  
+### 7.2 Link to Retrospective YouTube Video
+
+<!--  [ใส่ Link] อัพโหลดวิดีโอ Retrospective ขึ้น YouTube แล้วใส่ link ด้านล่าง -->
+
+**Retrospective Video:** `[ใส่ YouTube Link]`
+
+---
+
+## 8. Presentation Video
+
+<!-- [ใส่ Link] อัพโหลดวิดีโอ Presentation ขึ้น YouTube แล้วใส่ link ด้านล่าง
+     เนื้อหาของ Presentation:
+     1. อธิบายกระบวนการทำ project + ค่า profiling (PPT)
+     2. เปิดเว็บไซต์อธิบาย features
+     3. แสดง code + test code ใน Git
+     4. Run test ให้ดู + อธิบายผล
+     5. แสดง profiling (Static + Dynamic) + เปรียบเทียบ Phase 3
+     6. แสดง CI/CD pipeline
+     7. Demo website
+-->
+
+**Presentation Video:** `[ใส่ YouTube Link]`
+
+---
