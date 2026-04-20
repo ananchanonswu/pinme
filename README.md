@@ -1142,11 +1142,7 @@ jobs:
         retention-days: 7
 ```
 
-<!-- 📸 [แคปรูป] Pipeline ที่ run สำเร็จ 
-     แสดงหน้า CI/CD pipeline ใน GitLab/GitHub 
-     ให้เห็นว่า test passed + artifact ถูกสร้าง -->
-
-`[แทรกรูป: ci_pipeline_success.png]`
+![dynamic_profiling](docs/ci_cd_pipeline/ci_pipieline_success.png)
 
 #### Pipeline ประกอบด้วย
 
@@ -1162,10 +1158,7 @@ jobs:
 
 #### Test Results จาก CI
 
-<!-- 📸 [แคปรูป] ผล test ใน CI pipeline (terminal output)
-     แสดง test suites passed + coverage summary -->
-
-`[แทรกรูป: ci_test_output.png]`
+![dynamic_profiling](docs/ci_cd_pipeline/ci_test_output.png)
 
 | Metric | ผลลัพธ์ |
 |---|---|
