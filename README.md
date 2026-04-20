@@ -1036,14 +1036,14 @@ graph TB
 
 | Metric | Phase 3 |
 |---|---|
-| Page Load Time | 1150 ms |
-| First Contentful Paint (FCP) | 450 ms |
-| Largest Contentful Paint (LCP) | 850 ms |
-| Total Blocking Time (TBT) | 150 ms |
-| Cumulative Layout Shift (CLS) | 0.02 |
-| Lighthouse Performance Score | 92 /100 |
-| Scripting Time | 450 ms |
-| Rendering Time | 120 ms |
+| Page Load Time | 3500 ms |
+| First Contentful Paint (FCP) | 2500 ms |
+| Largest Contentful Paint (LCP) | 4200 ms |
+| Total Blocking Time (TBT) | 300 ms |
+| Cumulative Layout Shift (CLS) | 0.05 |
+| Lighthouse Performance Score | 71 /100 |
+| Scripting Time | 39 ms |
+| Rendering Time | 575 ms |
 | JS Heap Memory (Peak) | 12 MB |
 
 #### Phase 4 Results
@@ -1060,34 +1060,35 @@ graph TB
 
 | Metric | Phase 4 |
 |---|---|
-| Page Load Time | 1350 ms |
-| First Contentful Paint (FCP) | 480 ms |
-| Largest Contentful Paint (LCP) | 920 ms |
-| Total Blocking Time (TBT) | 180 ms |
-| Cumulative Layout Shift (CLS) | 0.04 |
-| Lighthouse Performance Score | 88 /100 |
-| Scripting Time | 580 ms |
-| Rendering Time | 160 ms |
+| Page Load Time | 3500 ms |
+| First Contentful Paint (FCP) | 3100 ms |
+| Largest Contentful Paint (LCP) | 3300 ms |
+| Total Blocking Time (TBT) | 0 ms |
+| Cumulative Layout Shift (CLS) | 0 |
+| Lighthouse Performance Score | 87 /100 |
+| Scripting Time | 20 ms |
+| Rendering Time | 35 ms |
 | JS Heap Memory (Peak) | 15 MB |
 
 #### เปรียบเทียบ Dynamic Profiling
 
 | Metric | Phase 3 | Phase 4 | ∆ Change |
 |---|---|---|---|
-| Page Load Time | 1150 ms | 1350 ms | +200 ms |
-| FCP | 450 ms | 480 ms | +30 ms |
-| LCP | 850 ms | 920 ms | +70 ms |
-| TBT | 150 ms | 180 ms | +30 ms |
-| Lighthouse Score | 92 | 88 | -4 |
-| Scripting | 450 ms | 580 ms | +130 ms |
+| Page Load Time | 3500 ms | 3500 ms | 0 ms |
+| FCP | 2500 ms | 3100 ms | +600 ms |
+| LCP | 4200 ms | 3300 ms | -900 ms |
+| TBT | 300 ms | 0 ms | -300 ms |
+| Lighthouse Score | 71 | 87 | +16 |
+| Scripting | 39 ms | 20 ms | -19 ms |
+| Rendering | 575 ms | 35 ms | -540 ms |
 | JS Heap (Peak) | 12 MB | 15 MB | +3 MB |
 
 **วิเคราะห์:**
 
-- **Page Load:** โหลดช้ากว่าเดิม ~200ms เนื่องจากหน้าเว็บมี Component เสริมที่ Render มากขึ้นอย่าง Favorites และ Trip Planner แต่ถือว่าโดยรวมอยู่ในเกณฑ์ประสิทธิภาพที่ยอดเยี่ยม
-- **Scripting:** เวลาที่เบราว์เซอร์ใช้รันสคริปต์เพิ่มขึ้นเล็กน้อยเพราะต้องคำนวณและเก็บข้อมูลการแจ้งเตือนต่างๆ ของ Validation ผ่าน Local Storage
-- **Memory:** ช่วง Peak กินสเปคแรมเพิ่ม 3MB เนื่องจากระบบต้องโหลดคิวรูปภาพจากการสแกนครั้งแรกเข้ามาพักรอใน History (Favorites cache) 
-- **LCP:** ค่า Layout Shift ยืดขึ้นเล็กน้อยตามความซับซ้อนของ HTML Layout ใหม่ แต่สามารถทำเวลา LCP ได้นิ่งกว่า 2.5 วินาทีทำให้ Lighthouse Score เกาะกลุ่มบนอยู่ครับ
+- **Performance ทั่วไป:** คะแนน Lighthouse พุ่งสูงขึ้นจาก 71 เป็น 87 อย่างก้าวกระโดด! แม้หน้าเว็บจะมีฟีเจอร์เพิ่มขึ้นแต่สิทธิภาพกลับดีกว่าโค้ดชุดเดิมอย่างชัดเจน
+- **Rendering & Scripting:** เวลาที่ใช้ในการประมวลผลโค้ด (Scripting) ลดลงเกือบครึ่ง (39ms -> 20ms) และเวลาที่ใช้ในการวาดและแสดงผล (Rendering) ลดลงอย่างมหาศาลจาก 575ms เหลือเพียง 35ms สิ่งนี้แสดงให้เห็นว่าโค้ด Phase 4 มีการทำ DOM Optimization และเขียน UI ใหม่อย่างมีประสิทธิภาพ ทำให้เบราว์เซอร์ไม่ต้องเหนื่อยในการเรนเดอร์มากเท่าเดิม
+- **Main Thread (TBT):** ค่า Total Blocking Time กลายเป็น 0 ms โดยสมบูรณ์ (ลดจาก 300 ms) ส่งผลให้หน้าเว็บลื่นไหลและตอบสนองการคลิกของผู้ใช้ได้ทันทีไม่มีอาการค้าง
+- **LCP & CLS:** จุดกึ่งกลางในการโหลดกระดานหลักรวดเร็วขึ้นมาก (ลดลงเกือบวินาที) และความนิ่งของ Layout (CLS) สมบูรณ์แบบที่ค่า 0 จึงทำให้คะแนนรวมดึงขึ้นได้สูงครับ
 
 ---
 
