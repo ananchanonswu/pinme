@@ -542,7 +542,7 @@ flowchart TD
 ## Test Case
 ### ตาราง Unit Test Cases
 
-![ตาราง Unit Test Cases](TestCase_Table.png)
+![ตาราง Unit Test Cases](TestCase_Code_Example/TestCase_Table.png)
 
 ตารางด้านบนแสดงกรณีทดสอบ (Test Cases) จำนวน 10 กรณี ที่กลุ่มของเราได้ออกแบบมาเพื่อตรวจสอบความถูกต้องของ Data Structure และ Business Logic หลักในโฟลเดอร์ model โดยแบ่งกลุ่มการทดสอบตาม Class ได้ดังนี้:
 
