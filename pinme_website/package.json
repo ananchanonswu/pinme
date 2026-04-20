@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node back_end/server.js",
     "test": "jest --verbose",
-    "test:coverage": "jest --coverage --verbose"
+    "test:coverage": "jest --coverage --verbose",
+    "test:ui": "playwright test"
   },
   "jest": {
     "testMatch": [
@@ -33,6 +34,7 @@
   "author": "PinMe Team",
   "license": "MIT",
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "jest": "^30.3.0",
     "jest-html-reporters": "^3.1.7"
   }
