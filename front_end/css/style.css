@@ -29,19 +29,22 @@
 }
 
 html.light-theme {
-  --bg-dark: #f5f5f5;
-  --bg-soft: #ffffff;
-  --bg-card: rgba(255, 255, 255, 0.92);
-  --bg-card-hover: rgba(255, 255, 255, 0.98);
-  --surface-strong: rgba(109, 0, 26, 0.08);
-  --surface-soft: rgba(109, 0, 26, 0.03);
-  --text-primary: #111111;
-  --text-secondary: #4b5563;
-  --text-muted: #71717a;
-  --border-color: rgba(17, 17, 17, 0.1);
-  --shadow-soft: 0 24px 60px rgba(17, 17, 17, 0.08);
-  --shadow-card: 0 18px 40px rgba(17, 17, 17, 0.08);
-  --primary-glow: rgba(109, 0, 26, 0.12);
+  --bg-dark: #c8c6c1;
+  --bg-soft: #d2d0cb;
+  --bg-card: rgba(218, 216, 211, 0.88);
+  --bg-card-hover: rgba(226, 224, 219, 0.94);
+  --surface-strong: rgba(109, 0, 26, 0.12);
+  --surface-soft: rgba(109, 0, 26, 0.05);
+  --text-primary: #1c1917;
+  --text-secondary: #3b3733;
+  --text-muted: #57534e;
+  --border-color: rgba(0, 0, 0, 0.12);
+  --shadow-soft: 0 20px 50px rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.07);
+  --primary-glow: rgba(109, 0, 26, 0.16);
+  --success: #0f7a50;
+  --error: #b91c4a;
+  --warning: #a16207;
 }
 
 * {
@@ -1408,9 +1411,17 @@ body {
 
 html.light-theme .bg-gradient {
   background:
-    radial-gradient(circle at top left, rgba(109, 0, 26, 0.12), transparent 35%),
-    radial-gradient(circle at 80% 20%, rgba(17, 17, 17, 0.06), transparent 26%),
+    radial-gradient(circle at top left, rgba(109, 0, 26, 0.1), transparent 34%),
+    radial-gradient(circle at 82% 18%, rgba(0, 0, 0, 0.04), transparent 22%),
     linear-gradient(180deg, var(--bg-soft), var(--bg-dark));
+}
+
+html.light-theme .bg-orb-one {
+  background: radial-gradient(circle, rgba(109, 0, 26, 0.1), transparent 70%);
+}
+
+html.light-theme .bg-orb-two {
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.05), transparent 70%);
 }
 
 html.light-theme .text-slate-100,
@@ -1422,78 +1433,241 @@ html.light-theme .text-slate-600 {
   color: inherit !important;
 }
 
-html.light-theme .leaflet-control-attribution {
-  background: rgba(255, 255, 255, 0.88) !important;
+/* Hero */
+html.light-theme .hero-title span {
+  color: var(--text-secondary);
 }
 
+/* Glass card & panel */
+html.light-theme .glass-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06), 0 8px 20px rgba(0,0,0,0.04);
+}
+
+html.light-theme .hero-stat {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Summary cards */
+html.light-theme .summary-card {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0.01)),
+    var(--surface-soft);
+  border-color: var(--border-color);
+}
+
+html.light-theme .summary-card-accent {
+  background:
+    linear-gradient(135deg, rgba(109, 0, 26, 0.14), rgba(109, 0, 26, 0.04)),
+    var(--surface-soft);
+}
+
+/* Form inputs */
+html.light-theme .form-input,
+html.light-theme .form-select {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+html.light-theme .form-input::placeholder {
+  color: rgba(28, 25, 23, 0.4);
+}
+
+html.light-theme .form-input:focus,
+html.light-theme .form-select:focus {
+  border-color: rgba(109, 0, 26, 0.5);
+  background: rgba(109, 0, 26, 0.06);
+  box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+/* Radius control */
+html.light-theme .radius-control {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0.01));
+  border-color: var(--border-color);
+}
+
+html.light-theme .radius-note {
+  color: #6d001a;
+  background: rgba(109, 0, 26, 0.12);
+}
+
+html.light-theme .radius-slider {
+  accent-color: #9f1239;
+}
+
+/* Buttons */
 html.light-theme .gps-btn,
 html.light-theme .mini-btn {
-  color: #6d001a;
-  background: rgba(109, 0, 26, 0.08);
-  border-color: rgba(109, 0, 26, 0.18);
+  color: #ffffff;
+  background: rgba(109, 0, 26, 0.8);
+  border-color: rgba(109, 0, 26, 0.9);
 }
 
 html.light-theme .gps-btn:hover,
 html.light-theme .mini-btn:hover {
-  background: rgba(109, 0, 26, 0.14);
-  border-color: rgba(109, 0, 26, 0.28);
+  background: rgba(109, 0, 26, 0.9);
+  border-color: rgba(109, 0, 26, 1);
+}
+
+html.light-theme .control-btn {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+html.light-theme .control-btn:hover {
+  border-color: rgba(109, 0, 26, 0.3);
+  background: var(--bg-card-hover);
+}
+
+/* Category pills */
+html.light-theme .category-pill {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: var(--border-color);
+}
+
+html.light-theme .category-pill:hover {
+  border-color: rgba(109, 0, 26, 0.3);
+  background: rgba(109, 0, 26, 0.08);
+}
+
+html.light-theme .radius-preset {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+html.light-theme .radius-preset:hover {
+  border-color: rgba(109, 0, 26, 0.3);
+  background: rgba(109, 0, 26, 0.08);
+}
+
+html.light-theme .category-pill.active,
+html.light-theme .radius-preset.active {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+  box-shadow: 0 12px 24px rgba(109, 0, 26, 0.3);
+}
+
+/* Map badge / count pill */
+html.light-theme .map-badge,
+html.light-theme .count-pill {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+/* Leaflet */
+html.light-theme .leaflet-control-attribution {
+  background: rgba(200, 198, 193, 0.9) !important;
+  color: var(--text-muted) !important;
+}
+
+html.light-theme .leaflet-popup-content-wrapper,
+html.light-theme .leaflet-popup-tip {
+  background: var(--bg-card-hover) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+}
+
+/* Result cards */
+html.light-theme .result-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05), 0 6px 18px rgba(0,0,0,0.04);
+}
+
+html.light-theme .result-card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(109, 0, 26, 0.24);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.07), 0 10px 28px rgba(0,0,0,0.06);
+}
+
+html.light-theme .result-card.favorite-card {
+  border-color: rgba(161, 98, 7, 0.28);
 }
 
 html.light-theme .card-visual::after {
-  background: linear-gradient(to top, rgba(17, 17, 17, 0.44), rgba(17, 17, 17, 0.08) 45%, rgba(17, 17, 17, 0.02));
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.1) 45%, rgba(0, 0, 0, 0.02));
 }
 
 html.light-theme .card-index {
-  background: rgba(17, 17, 17, 0.7);
+  background: rgba(0, 0, 0, 0.6);
   color: #ffffff;
 }
 
 html.light-theme .card-favorite-flag {
-  background: rgba(109, 0, 26, 0.9);
+  background: rgba(109, 0, 26, 0.85);
   color: #ffffff;
 }
 
+html.light-theme .meta-pill {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
 html.light-theme .meta-pill-on-image {
-  color: #111111;
-  background: rgba(255, 255, 255, 0.88);
-  border-color: rgba(17, 17, 17, 0.08);
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+html.light-theme .meta-pill-star {
+  color: #9f1239;
+  border-color: rgba(109, 0, 26, 0.2);
+  background: rgba(109, 0, 26, 0.1);
+}
+
+html.light-theme .card-btn {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: var(--border-color);
 }
 
 html.light-theme .card-btn-detail {
-  color: #111111;
-  border-color: rgba(17, 17, 17, 0.12);
+  color: var(--text-primary);
+  border-color: var(--border-color);
 }
 
 html.light-theme .card-btn-detail:hover {
-  background: rgba(17, 17, 17, 0.05);
+  background: rgba(0, 0, 0, 0.08);
 }
 
 html.light-theme .card-btn-trip {
-  color: #6d001a;
-  background: rgba(109, 0, 26, 0.08);
-  border-color: rgba(109, 0, 26, 0.2);
+  color: #ffffff;
+  background: rgba(109, 0, 26, 0.78);
+  border-color: rgba(109, 0, 26, 0.85);
 }
 
 html.light-theme .card-btn-trip:hover {
-  background: rgba(109, 0, 26, 0.14);
+  background: rgba(109, 0, 26, 0.88);
 }
 
 html.light-theme .card-btn-pin {
-  color: #111111;
-  border-color: rgba(17, 17, 17, 0.12);
+  color: var(--text-primary);
+  border-color: var(--border-color);
 }
 
 html.light-theme .card-btn-pin:hover {
-  background: rgba(17, 17, 17, 0.05);
+  background: rgba(0, 0, 0, 0.08);
 }
 
+html.light-theme .card-btn-pin.pinned {
+  color: #92400e;
+  border-color: rgba(161, 98, 7, 0.28);
+  background: rgba(250, 204, 21, 0.14);
+}
+
+/* Badges */
 html.light-theme .badge-hotel {
-  color: #111111;
+  color: #3f3f46;
   background: rgba(82, 82, 91, 0.14);
 }
 
 html.light-theme .badge-restaurant {
-  color: #6d001a;
+  color: #9f1239;
   background: rgba(109, 0, 26, 0.12);
 }
 
@@ -1503,24 +1677,90 @@ html.light-theme .badge-sport {
 }
 
 html.light-theme .badge-tourist {
-  color: #111111;
-  background: rgba(17, 17, 17, 0.08);
+  color: #1c1917;
+  background: rgba(0, 0, 0, 0.08);
 }
 
+/* Trip planner */
 html.light-theme .trip-draft-card {
-  border-color: rgba(109, 0, 26, 0.16);
-  background: linear-gradient(135deg, rgba(109, 0, 26, 0.08), rgba(17, 17, 17, 0.02));
+  border-color: rgba(109, 0, 26, 0.2);
+  background: linear-gradient(135deg, rgba(109, 0, 26, 0.08), rgba(109, 0, 26, 0.03));
+}
+
+html.light-theme .trip-draft-clear {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: var(--border-color);
 }
 
 html.light-theme .trip-source {
-  color: #4b5563;
-  background: rgba(17, 17, 17, 0.04);
-  border-color: rgba(17, 17, 17, 0.08);
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.05);
+  border-color: var(--border-color);
+}
+
+html.light-theme .trip-timeline {
+  border-left-color: rgba(109, 0, 26, 0.22);
 }
 
 html.light-theme .trip-time {
-  color: #6d001a;
-  background: rgba(109, 0, 26, 0.1);
+  color: #9f1239;
+  background: rgba(109, 0, 26, 0.12);
+}
+
+/* Modal */
+html.light-theme .modal-backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+html.light-theme .modal-image-fade {
+  background: linear-gradient(to top, rgba(200, 198, 193, 0.85), transparent);
+}
+
+html.light-theme .modal-close-btn {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: var(--border-color);
+}
+
+/* Toast */
+html.light-theme .toast {
+  background: var(--bg-card-hover);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+html.light-theme .toast.success {
+  background: rgba(15, 122, 80, 0.12);
+  border-color: rgba(15, 122, 80, 0.22);
+}
+
+html.light-theme .toast.error {
+  background: rgba(185, 28, 74, 0.1);
+  border-color: rgba(185, 28, 74, 0.22);
+}
+
+html.light-theme .toast.warning {
+  background: rgba(161, 98, 7, 0.1);
+  border-color: rgba(161, 98, 7, 0.22);
+}
+
+/* Spinner */
+html.light-theme .spinner {
+  border-color: rgba(0, 0, 0, 0.1);
+  border-top-color: var(--primary-light);
+}
+
+/* Map container */
+html.light-theme #map {
+  background: rgba(200, 198, 193, 0.5);
+  border-color: var(--border-color);
+}
+
+/* Scrollbar */
+html.light-theme .dashboard-left::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.14);
+}
+
+html.light-theme .dashboard-left::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.22);
 }
 
 @keyframes spin {
