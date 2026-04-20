@@ -1,14 +1,21 @@
-# สมาชิกกลุ่ม
+# 📍 PinMe - Location Scanner & Trip Planner
+<p align="left">
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" />
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" />
+  <img src="https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white" />
+  <img src="https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white" />
+  <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white" />
+</p>
 
-นายบุญยศักดิ์ รัตนดิลก ณ ภูเก็ต 67102010165
+## 👥 สมาชิกกลุ่ม
 
-อนันฌานนทน์ แป้นสุวรรณ 67102010176
+1. นายบุญยศักดิ์ รัตนดิลก ณ ภูเก็ต `67102010165`
+2. อนันฌานนทน์ แป้นสุวรรณ `67102010176`
+3. นายสิทธิโชติ เกรียงชัยพฤกษ์ `67102010224`
 
-นายสิทธิโชติ เกรียงชัยพฤกษ์ 67102010224
+---
 
-# pinme
-
-## **1) ที่มาของปัญหาและความสำคัญ**
+## **💡 1) ที่มาของปัญหาและความสำคัญ**
 
 ในชีวิตประจำวัน ผู้ใช้มักต้องการค้นหาสถานที่ใกล้ตัวภายในระยะที่กำหนด เช่น ร้านอาหาร โรงแรม สนามกีฬา หรือสถานที่ท่องเที่ยว แต่การค้นหาผ่านหลายแพลตฟอร์มทำให้ข้อมูลกระจัดกระจาย ใช้เวลาในการเปรียบเทียบ และไม่สะดวกในการจัดหมวดหมู่เพื่อเลือกสถานที่ที่เหมาะสม
 
@@ -734,9 +741,9 @@ flowchart TD
 
 --- 
 
-# Phase 4
+# 🚀 Phase 4: Final Product & CI/CD Setup
 
-## 1. ข้อมูลเดิมจาก Phase 1, 2 and 3
+## 📚 1. ข้อมูลเดิมจาก Phase 1, 2 และ 3
 
 ### 1.1 ที่มาของปัญหาและจุดประสงค์
 
@@ -832,9 +839,15 @@ graph TB
 
 ---
 
-## 2. Website Screenshot
+---
 
-> **📸 หมายเหตุ:** ให้จับภาพหน้าจอจริงจากเว็บไซต์ที่รันอยู่ แล้วแทรกรูปด้านล่าง
+## 💻 2. Website Screenshots
+
+> **📸 หมายเหตุ:** ภาพหน้าจอทั้งหมดเป็นการแสดงผลลัพธ์จริงจากการรันแอปพลิเคชัน Phase 4
+
+<details>
+<summary><b>👉 คลิกเพื่อดูภาพ Screenshot หน้าเว็บทั้งหมด</b></summary>
+<br>
 
 ### 2.1 หน้าหลัก (Dark Theme)
 
@@ -867,16 +880,23 @@ graph TB
 ### 2.8 ภาษาไทย (Thai Mode)
 
 ![website](docs/pinme_website_screenshots/screenshot_thai.png)
+</details>
 
 ---
 
-## 3. UI Test Cases
+## 🧪 3. UI Test Cases (End-to-End)
+
+> **⚙️ เครื่องมือที่ใช้:** `Playwright` สำหรับรันการทดสอบอัตโนมัติบนหน้าเว็บ UI (Chromium)
 
 ### ข้อกำหนด
 - ต้องมี 5 UI Test Cases
 - ทุก Test Case ต้องมีการเช็คค่า Expected Results
 
 ---
+
+<details>
+<summary><b>👉 คลิกเพื่อดูรายละเอียด UI Test Cases ทั้งหมด (TC01-TC05)</b></summary>
+<br>
 
 ### UI-TC01: ค้นหาสถานที่ด้วยพิกัดและรัศมี
 
@@ -963,9 +983,11 @@ graph TB
 | UI-TC04 | Input Validation (3 กรณี) | ผ่าน |
 | UI-TC05 | i18n + Theme (Persist หลัง Refresh) | ผ่าน |
 
+</details>
+
 ---
 
-## 4. Profiling Results
+## ⚡ 4. Profiling Results (Performance)
 
 ### 4.1 Static Profiling (ESLint)
 
@@ -1072,7 +1094,7 @@ graph TB
 
 ---
 
-## 5. CI/CD Pipeline
+## ⚙️ 5. CI/CD Pipeline
 
 ### 5.1 CI (Continuous Integration)
 
@@ -1187,7 +1209,7 @@ jobs:
 
 ---
 
-## 6. กระบวนการทำงาน
+## 🛠️ 6. กระบวนการทำงาน (Process & Tools)
 
 ### 6.1 Process
 
@@ -1259,7 +1281,7 @@ jobs:
 
 ---
 
-## 7. Final Retrospective
+## 🗣️ 7. Final Retrospective
 
 ### 7.1 สรุปการประชุม Final Retrospective
 
@@ -1293,7 +1315,7 @@ jobs:
 
 ---
 
-## 8. Presentation Video
+## 🎬 8. Presentation Video
 
 <!-- 📸 [ใส่ Link] อัพโหลดวิดีโอ Presentation ขึ้น YouTube แล้วใส่ link ด้านล่าง
      เนื้อหาของ Presentation:
