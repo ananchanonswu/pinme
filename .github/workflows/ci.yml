@@ -1,0 +1,54 @@
+name: PinMe CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    name: Run All Tests
+    runs-on: ubuntu-latest
+    
+    # กำหนดให้ทุกคำสั่งรันในโฟลเดอร์ pinme_website
+    defaults:
+      run:
+        working-directory: pinme_website
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: 'pinme_website/package-lock.json'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run Jest Unit Tests
+      run: npm test
+
+    - name: Generate Code Coverage
+      run: npm run test:coverage
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+
+    - name: Run Playwright UI Tests
+      run: npm run test:ui
+
+    - name: Upload Test Report & Coverage Artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-artifacts
+        path: |
+          pinme_website/html-report/
+          pinme_website/back_end/coverage/
+          pinme_website/playwright-report/
+        retention-days: 7
