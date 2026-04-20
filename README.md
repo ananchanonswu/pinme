@@ -1142,7 +1142,7 @@ jobs:
         retention-days: 7
 ```
 
-![dynamic_profiling](docs/ci_cd_pipeline/ci_pipieline_success.png)
+![ci_pipeline](docs/ci_cd_pipeline/ci_pipieline_success.png)
 
 #### Pipeline ประกอบด้วย
 
@@ -1158,7 +1158,7 @@ jobs:
 
 #### Test Results จาก CI
 
-![dynamic_profiling](docs/ci_cd_pipeline/ci_test_output.png)
+![ci_pipeline](docs/ci_cd_pipeline/ci_test_output.png)
 
 | Metric | ผลลัพธ์ |
 |---|---|
