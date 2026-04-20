@@ -764,27 +764,27 @@ flowchart TD
 
 | ID | Requirement | Status |
 |---|---|:---:|
-| FR-01 | ค้นหาสถานที่ใกล้เคียงตามพิกัดและรัศมี |
-| FR-02 | กรองผลลัพธ์ตามหมวดหมู่ |
-| FR-03 | แสดงผลบนแผนที่ Leaflet |
-| FR-04 | ดูรายละเอียดสถานที่ (Modal) |
-| FR-05 | บันทึกสถานที่โปรด (Favorites) |
-| FR-06 | วางแผนทริป 1 วัน (Trip Planner) |
-| FR-07 | ตรวจสอบเวลาทับซ้อน (Overlap Detection) |
-| FR-08 | รองรับ 2 ภาษา (TH/EN) |
-| FR-09 | Dark/Light Theme |
-| FR-10 | GPS Geolocation |
+| FR-01 | ค้นหาสถานที่ใกล้เคียงตามพิกัดและรัศมี | ✅ |
+| FR-02 | กรองผลลัพธ์ตามหมวดหมู่ | ✅ |
+| FR-03 | แสดงผลบนแผนที่ Leaflet | ✅ |
+| FR-04 | ดูรายละเอียดสถานที่ (Modal) | ✅ |
+| FR-05 | บันทึกสถานที่โปรด (Favorites) | ✅ |
+| FR-06 | วางแผนทริป 1 วัน (Trip Planner) | ✅ |
+| FR-07 | ตรวจสอบเวลาทับซ้อน (Overlap Detection) | ✅ |
+| FR-08 | รองรับ 2 ภาษา (TH/EN) | ✅ |
+| FR-09 | Dark/Light Theme | ✅ |
+| FR-10 | GPS Geolocation | ✅ |
 
 ### 1.4 Non-Functional Requirements
 
 | ID | Requirement | Status |
 |---|---|:---:|
-| NFR-01 | Response time ≤ 3 วินาที |
-| NFR-02 | รองรับ Browser หลัก (Chrome, Firefox, Safari) |
-| NFR-03 | Responsive Design |
-| NFR-04 | Backend Unit Test Coverage ≥ 90% | (97.33%) |
-| NFR-05 | ใช้ HTTPS สำหรับ API calls |
-| NFR-06 | ไม่ expose API key ที่ frontend |
+| NFR-01 | Response time ≤ 3 วินาที | ✅ |
+| NFR-02 | รองรับ Browser หลัก (Chrome, Firefox, Safari) | ✅ |
+| NFR-03 | Responsive Design | ✅ |
+| NFR-04 | Backend Unit Test Coverage ≥ 90% | ✅ (97.33%) |
+| NFR-05 | ใช้ HTTPS สำหรับ API calls | ✅ |
+| NFR-06 | ไม่ expose API key ที่ frontend | ✅ |
 
 ### 1.5 สถาปัตยกรรมระบบ (Architecture)
 
@@ -897,8 +897,8 @@ flowchart TD
 | **วัตถุประสงค์** | ทดสอบว่าระบบสามารถค้นหาสถานที่จากพิกัดที่กำหนดและแสดงผลลัพธ์ได้ถูกต้อง |
 | **Pre-condition** | เปิดเว็บไซต์ที่ `http://localhost:3000`, Server ทำงานปกติ |
 | **ขั้นตอน** | 1. กรอก Latitude = `13.7367` <br> 2. กรอก Longitude = `100.5232` <br> 3. เลือกรัศมี = `5 km` <br> 4. เลือกหมวดหมู่ = `🌐 ทั้งหมด` <br> 5. กดปุ่ม `🔍 สแกนสถานที่` |
-| **Expected Results** | 1. ปุ่ม Scan เปลี่ยนเป็น spinner ขณะโหลด <br> 2. ส่วน Results ปรากฏขึ้น พร้อมแสดงจำนวนสถานที่ที่พบ (≥ 1) <br> 3. แต่ละ card แสดงชื่อ, badge หมวดหมู่, ระยะทาง (≤ 5 km), และคะแนน <br> 4. Markers ปรากฏบนแผนที่ตรงตำแหน่งของสถานที่ <br> 5. Toast notification แสดงข้อความ "พบ X สถานที่" |
-| **การเช็คค่า** | `resultsCount` text ≠ "0 สถานที่" <br> ทุก card มี `.badge` element <br> ทุก card แสดง distance ≤ 5 km <br> Map markers ≥ 1 อัน |
+| **Expected Results** | 1. ปุ่ม Scan เปลี่ยนเป็น spinner ขณะโหลด <br> 2. ส่วน Results ปรากฏขึ้น พร้อมแสดงจำนวนสถานที่ที่พบ (≥ 1) <br> 3. แต่ละ card แสดงชื่อ, badge หมวดหมู่, ระยะทาง (≤ 5 km), และคะแนน <br> 4. Markers ปรากฏบนแผนที่ตรงตำแหน่งของสถานที่ <br> 5. Toast notification แสดงข้อความ "✅ พบ X สถานที่" |
+| **การเช็คค่า** | ✅ `resultsCount` text ≠ "0 สถานที่" <br> ✅ ทุก card มี `.badge` element <br> ✅ ทุก card แสดง distance ≤ 5 km <br> ✅ Map markers ≥ 1 อัน |
 
 <!-- 📸 [แคปรูป] ผลลัพธ์หลังกด Scan — แสดง results + map markers + toast -->
 
@@ -913,9 +913,9 @@ flowchart TD
 | **Test Case ID** | UI-TC02 |
 | **วัตถุประสงค์** | ทดสอบว่าระบบบันทึกสถานที่โปรดได้ และแสดงใน Favorites section ถูกต้อง (ข้อมูลคงอยู่หลัง refresh) |
 | **Pre-condition** | มีผลลัพธ์การ Scan แสดงอยู่บนหน้าจออย่างน้อย 1 สถานที่ |
-| **ขั้นตอน** | 1. กดปุ่ม `บันทึกโปรด` ที่ card สถานที่แรก <br> 2. สังเกต Toast notification <br> 3. สังเกตส่วน `สถานที่โปรด` ว่ามีสถานที่ปรากฏ <br> 4. **Refresh หน้าเว็บ** (F5) <br> 5. ตรวจสอบว่าสถานที่โปรดยังคงแสดงอยู่ |
-| **Expected Results** | 1. ปุ่มเปลี่ยนเป็น `บันทึกแล้ว` (สีเหลือง) <br> 2. Toast แสดง "บันทึกสถานที่โปรดแล้ว" <br> 3. ส่วน Favorites แสดง card สถานที่ที่ save <br> 4. หลัง refresh สถานที่โปรดยังแสดงอยู่ (persist ใน localStorage) |
-| **การเช็คค่า** | ปุ่มมี class `.pinned` <br> Favorites section มี card ≥ 1 <br> `localStorage.getItem('pinme_favorites')` ≠ null <br> หลัง refresh ข้อมูลยังอยู่ |
+| **ขั้นตอน** | 1. กดปุ่ม `⭐ บันทึกโปรด` ที่ card สถานที่แรก <br> 2. สังเกต Toast notification <br> 3. สังเกตส่วน `⭐ สถานที่โปรด` ว่ามีสถานที่ปรากฏ <br> 4. **Refresh หน้าเว็บ** (F5) <br> 5. ตรวจสอบว่าสถานที่โปรดยังคงแสดงอยู่ |
+| **Expected Results** | 1. ปุ่มเปลี่ยนเป็น `💛 บันทึกแล้ว` (สีเหลือง) <br> 2. Toast แสดง "บันทึกสถานที่โปรดแล้ว" <br> 3. ส่วน Favorites แสดง card สถานที่ที่ save <br> 4. หลัง refresh สถานที่โปรดยังแสดงอยู่ (persist ใน localStorage) |
+| **การเช็คค่า** | ✅ ปุ่มมี class `.pinned` <br> ✅ Favorites section มี card ≥ 1 <br> ✅ `localStorage.getItem('pinme_favorites')` ≠ null <br> ✅ หลัง refresh ข้อมูลยังอยู่ |
 
 <!-- 📸 [แคปรูป] 2 รูป: (1) กด Save แล้ว Toast ขึ้น + Favorites section (2) หลัง Refresh ข้อมูลยังอยู่ -->
 
@@ -932,7 +932,7 @@ flowchart TD
 | **Pre-condition** | เปิดเว็บไซต์ที่ `http://localhost:3000` |
 | **ขั้นตอน** | 1. กรอกชื่อกิจกรรม = `วัดพระแก้ว` <br> 2. เวลาเริ่ม = `09:00`, เวลาสิ้นสุด = `11:00` <br> 3. กดปุ่ม `➕ เพิ่มลงทริป` <br> 4. ตรวจสอบ Timeline <br> 5. กรอกกิจกรรมที่ 2: ชื่อ = `ร้านอาหาร`, เวลาเริ่ม = `10:00`, เวลาสิ้นสุด = `12:00` <br> 6. กดปุ่ม `➕ เพิ่มลงทริป` <br> 7. สังเกต Error message |
 | **Expected Results** | 1. กิจกรรมแรกเพิ่มสำเร็จ — Toast แสดง `✅ เพิ่ม "วัดพระแก้ว" ลงแผนทริปแล้ว` <br> 2. Timeline แสดง item: `🕒 09:00 - 11:00` + `วัดพระแก้ว` <br> 3. กิจกรรมที่ 2 **ถูกปฏิเสธ** — Toast แสดง `⚠️ ขัดข้อง: เวลาทับซ้อนกับกิจกรรม "วัดพระแก้ว" (09:00 - 11:00)` <br> 4. Timeline ยังคงมีแค่ 1 item |
-| **การเช็คค่า** | Trip Timeline มี `.trip-item` = 1 อัน <br> Toast type = `error` สำหรับ overlap <br> ข้อความ overlap มีชื่อกิจกรรมที่ขัดแย้ง |
+| **การเช็คค่า** | ✅ Trip Timeline มี `.trip-item` = 1 อัน <br> ✅ Toast type = `error` สำหรับ overlap <br> ✅ ข้อความ overlap มีชื่อกิจกรรมที่ขัดแย้ง |
 
 <!-- 📸 [แคปรูป] 2 รูป: (1) เพิ่มกิจกรรมแรกสำเร็จ (2) เพิ่มกิจกรรมซ้อนแล้วมี error toast -->
 
@@ -948,8 +948,8 @@ flowchart TD
 | **วัตถุประสงค์** | ทดสอบว่าระบบตรวจสอบค่า input ที่ไม่ถูกต้องและแสดง error message ที่เหมาะสม |
 | **Pre-condition** | เปิดเว็บไซต์ที่ `http://localhost:3000` |
 | **ขั้นตอน** | **กรณีที่ 1:** ไม่กรอกพิกัดเลย <br> 1. ลบค่า Latitude และ Longitude (เว้นว่าง) <br> 2. กดปุ่ม `🔍 สแกนสถานที่` <br><br> **กรณีที่ 2:** กรอก Latitude เกินช่วง <br> 3. กรอก Latitude = `999` <br> 4. กรอก Longitude = `100` <br> 5. กดปุ่ม `🔍 สแกนสถานที่` <br><br> **กรณีที่ 3:** กรอก Longitude เกินช่วง <br> 6. กรอก Latitude = `13` <br> 7. กรอก Longitude = `999` <br> 8. กดปุ่ม `🔍 สแกนสถานที่` |
-| **Expected Results** | กรณีที่ 1: Toast แสดง `กรุณากรอกพิกัด Latitude และ Longitude` <br> กรณีที่ 2: Toast แสดง `Latitude ต้องอยู่ระหว่าง -90 ถึง 90` <br> กรณีที่ 3: Toast แสดง `Longitude ต้องอยู่ระหว่าง -180 ถึง 180` <br> **ทุกกรณี:** ไม่มีการส่ง request ไปยัง server |
-| **การเช็คค่า** | Toast type = `warning` ทุกกรณี <br> Toast text ตรงกับ expected message <br> Network tab ไม่มี request ไป `/scan` <br> Results section ไม่เปลี่ยนแปลง |
+| **Expected Results** | กรณีที่ 1: Toast แสดง `⚠️ กรุณากรอกพิกัด Latitude และ Longitude` <br> กรณีที่ 2: Toast แสดง `⚠️ Latitude ต้องอยู่ระหว่าง -90 ถึง 90` <br> กรณีที่ 3: Toast แสดง `⚠️ Longitude ต้องอยู่ระหว่าง -180 ถึง 180` <br> **ทุกกรณี:** ไม่มีการส่ง request ไปยัง server |
+| **การเช็คค่า** | ✅ Toast type = `warning` ทุกกรณี <br> ✅ Toast text ตรงกับ expected message <br> ✅ Network tab ไม่มี request ไป `/scan` <br> ✅ Results section ไม่เปลี่ยนแปลง |
 
 <!-- 📸 [แคปรูป] 3 รูป: Toast warning สำหรับแต่ละกรณี -->
 
@@ -966,9 +966,9 @@ flowchart TD
 | **Pre-condition** | เปิดเว็บไซต์ที่ `http://localhost:3000` (ค่าเริ่มต้น: ภาษาไทย, Dark Theme) |
 | **ขั้นตอน** | 1. ตรวจสอบว่า UI เป็นภาษาไทย <br> 2. กดปุ่ม `🇹🇭 TH` เพื่อเปลี่ยนเป็นภาษาอังกฤษ <br> 3. ตรวจสอบว่า UI ทุกส่วนเปลี่ยนเป็นภาษาอังกฤษ <br> 4. กดปุ่ม `☀️` เพื่อเปลี่ยนเป็น Light Theme <br> 5. ตรวจสอบว่า Background, Card, Text สีเปลี่ยน <br> 6. **Refresh หน้าเว็บ** (F5) <br> 7. ตรวจสอบว่าภาษาและ Theme ยังคงเป็น EN + Light |
 | **Expected Results** | 1. เริ่มต้น: ภาษาไทย, Dark Theme <br> 2. หลังกดเปลี่ยนภาษา: ปุ่มเป็น `🇺🇸 EN`, UI text เป็น English (เช่น "Find places around you", "Scan Places") <br> 3. หลังกด Theme: Background เปลี่ยนเป็นสว่าง, `<html>` มี class `light-theme` <br> 4. หลัง Refresh: ภาษาอังกฤษ + Light Theme ยังคงอยู่ |
-| **การเช็คค่า** | `langToggleBtn` text = `🇺🇸 EN` <br> `[data-i18n="subtitle"]` text = `Find places around you` <br> `document.documentElement.classList.contains('light-theme')` = `true` <br> `localStorage.getItem('pinme_lang')` = `en` <br> `localStorage.getItem('pinme_theme')` = `light` <br> หลัง refresh ค่ายังเหมือนเดิม |
+| **การเช็คค่า** | ✅ `langToggleBtn` text = `🇺🇸 EN` <br> ✅ `[data-i18n="subtitle"]` text = `Find places around you` <br> ✅ `document.documentElement.classList.contains('light-theme')` = `true` <br> ✅ `localStorage.getItem('pinme_lang')` = `en` <br> ✅ `localStorage.getItem('pinme_theme')` = `light` <br> ✅ หลัง refresh ค่ายังเหมือนเดิม |
 
-<!-- [แคปรูป] 2 รูป: (1) English + Light Theme (2) หลัง refresh ยังเป็น EN + Light -->
+<!-- 📸 [แคปรูป] 2 รูป: (1) English + Light Theme (2) หลัง refresh ยังเป็น EN + Light -->
 
 `[แทรกรูป: ui_tc05_lang_theme.png]`
 
@@ -978,11 +978,11 @@ flowchart TD
 
 | Test Case | ทดสอบ Feature | ผลลัพธ์ |
 |---|---|:---:|
-| UI-TC01 | ค้นหาสถานที่ (Scan) | ผ่าน |
-| UI-TC02 | Favorites (บันทึก + Persist) | ผ่าน |
-| UI-TC03 | Trip Planner (Overlap Detection) | ผ่าน |
-| UI-TC04 | Input Validation (3 กรณี) | ผ่าน |
-| UI-TC05 | i18n + Theme (Persist หลัง Refresh) | ผ่าน |
+| UI-TC01 | ค้นหาสถานที่ (Scan) | ✅ ผ่าน |
+| UI-TC02 | Favorites (บันทึก + Persist) | ✅ ผ่าน |
+| UI-TC03 | Trip Planner (Overlap Detection) | ✅ ผ่าน |
+| UI-TC04 | Input Validation (3 กรณี) | ✅ ผ่าน |
+| UI-TC05 | i18n + Theme (Persist หลัง Refresh) | ✅ ผ่าน |
 
 ---
 
@@ -995,7 +995,7 @@ flowchart TD
 
 #### Phase 3 Results
 
-<!-- [แคปรูป] ผลลัพธ์ ESLint ของ Phase 3 code
+<!-- 📸 [แคปรูป] ผลลัพธ์ ESLint ของ Phase 3 code
      รันคำสั่ง: npx eslint back_end/ front_end/js/ 
      แคปทั้งหน้าจอ terminal -->
 
@@ -1010,7 +1010,7 @@ flowchart TD
 
 #### Phase 4 Results
 
-<!-- [แคปรูป] ผลลัพธ์ ESLint ของ Phase 4 code
+<!-- 📸 [แคปรูป] ผลลัพธ์ ESLint ของ Phase 4 code
      รันคำสั่ง: npx eslint back_end/ front_end/js/ 
      แคปทั้งหน้าจอ terminal -->
 
@@ -1043,7 +1043,7 @@ flowchart TD
 
 #### Phase 3 Results
 
-<!-- [แคปรูป] Chrome DevTools Performance Profile ของ Phase 3
+<!-- 📸 [แคปรูป] Chrome DevTools Performance Profile ของ Phase 3
      ขั้นตอน:
      1. เปิด Chrome DevTools (F12) → Performance tab
      2. กด Record → Refresh page → หยุด Record
@@ -1053,7 +1053,7 @@ flowchart TD
 
 `[แทรกรูป: perf_phase3_summary.png]`
 
-<!-- [แคปรูป] Lighthouse Score ของ Phase 3
+<!-- 📸 [แคปรูป] Lighthouse Score ของ Phase 3
      ขั้นตอน:
      1. DevTools → Lighthouse tab
      2. Categories: Performance, Accessibility, Best Practices
@@ -1077,13 +1077,13 @@ flowchart TD
 
 #### Phase 4 Results
 
-<!-- [แคปรูป] Chrome DevTools Performance Profile ของ Phase 4
+<!-- 📸 [แคปรูป] Chrome DevTools Performance Profile ของ Phase 4
      ขั้นตอน: เหมือนกับ Phase 3 
 -->
 
 `[แทรกรูป: perf_phase4_summary.png]`
 
-<!-- [แคปรูป] Lighthouse Score ของ Phase 4 -->
+<!-- 📸 [แคปรูป] Lighthouse Score ของ Phase 4 -->
 
 `[แทรกรูป: lighthouse_phase4.png]`
 
@@ -1222,12 +1222,12 @@ test:
 
 | Method | Phase 1-3 | Phase 4 (เพิ่มเติม) |
 |---|---|---|
-| **Test-Driven Development (TDD)** | Unit tests ก่อน code | ✅ + UI Test Cases |
-| **Responsive Design** | Mobile-first | ✅ + Dashboard Layout |
-| **Modular Architecture** | แยก Models/Modules | เหมือนเดิม |
-| **Profiling** | ไม่มี | Static (ESLint) + Dynamic (DevTools) |
-| **CI/CD** | ไม่มี | Pipeline + Automated Tests |
-| **Bug Tracking** | ไม่มี formal process | GitHub Issues |
+| **Test-Driven Development (TDD)** | ✅ Unit tests ก่อน code | ✅ + UI Test Cases |
+| **Responsive Design** | ✅ Mobile-first | ✅ + Dashboard Layout |
+| **Modular Architecture** | ✅ แยก Models/Modules | ✅ เหมือนเดิม |
+| **Profiling** | ❌ ไม่มี | ✅ Static (ESLint) + Dynamic (DevTools) |
+| **CI/CD** | ❌ ไม่มี | ✅ Pipeline + Automated Tests |
+| **Bug Tracking** | ❌ ไม่มี formal process | ✅ GitHub Issues |
 
 ### 6.3 Tools
 
@@ -1258,11 +1258,11 @@ test:
 
 | Bug ID | จาก Phase 3 | สถานะ Phase 4 |
 |---|---|:---:|
-| BUG-01 | Cross-midnight trip (เวลาข้ามเที่ยงคืน) | Known limitation (อธิบายเหตุผลด้านล่าง) |
-| BUG-02 | Trip data ไม่ persist (หายเมื่อ refresh) | Known limitation |
-| BUG-03 | ไม่มี pagination สำหรับผลลัพธ์มาก | Not fixed (SerpAPI จำกัดผลลัพธ์อยู่แล้ว) |
-| BUG-04 | ไม่มี Retry GPS หลัง denied | Not fixed |
-| BUG-05 | Error messages ไม่เฉพาะเจาะจง | Fixed (เพิ่ม structured error + fallback) |
+| BUG-01 | Cross-midnight trip (เวลาข้ามเที่ยงคืน) | ⚠️ Known limitation (อธิบายเหตุผลด้านล่าง) |
+| BUG-02 | Trip data ไม่ persist (หายเมื่อ refresh) | ⚠️ Known limitation |
+| BUG-03 | ไม่มี pagination สำหรับผลลัพธ์มาก | ⚠️ Not fixed (SerpAPI จำกัดผลลัพธ์อยู่แล้ว) |
+| BUG-04 | ไม่มี Retry GPS หลัง denied | ⚠️ Not fixed |
+| BUG-05 | Error messages ไม่เฉพาะเจาะจง | ✅ Fixed (เพิ่ม structured error + fallback) |
 
 **เหตุผลที่ Bug บางข้อไม่ได้แก้:**
 - **BUG-01 (Cross-midnight):** ฟีเจอร์ Trip Planner ออกแบบมาสำหรับ "1 วัน" (Day trip) ซึ่งไม่ควรมีกิจกรรมข้ามเที่ยงคืน ถือเป็น design decision ไม่ใช่ bug
@@ -1297,18 +1297,18 @@ test:
 - ทำ Profiling baseline ตั้งแต่ Phase 2 เพื่อเทียบการเปลี่ยนแปลง
 - ใช้ TypeScript แทน vanilla JS เพื่อลด runtime errors
 - เขียน E2E tests ควบคู่กับ Unit tests
-  
+
 ### 7.2 Link to Retrospective YouTube Video
 
-<!--  [ใส่ Link] อัพโหลดวิดีโอ Retrospective ขึ้น YouTube แล้วใส่ link ด้านล่าง -->
+<!-- 📸 [ใส่ Link] อัพโหลดวิดีโอ Retrospective ขึ้น YouTube แล้วใส่ link ด้านล่าง -->
 
-**Retrospective Video:** `[ใส่ YouTube Link]`
+🎥 **Retrospective Video:** `[ใส่ YouTube Link]`
 
 ---
 
 ## 8. Presentation Video
 
-<!-- [ใส่ Link] อัพโหลดวิดีโอ Presentation ขึ้น YouTube แล้วใส่ link ด้านล่าง
+<!-- 📸 [ใส่ Link] อัพโหลดวิดีโอ Presentation ขึ้น YouTube แล้วใส่ link ด้านล่าง
      เนื้อหาของ Presentation:
      1. อธิบายกระบวนการทำ project + ค่า profiling (PPT)
      2. เปิดเว็บไซต์อธิบาย features
