@@ -725,9 +725,9 @@ flowchart TD
 
 	- วางแผนเทคนิคัล: ศึกษาการใช้ LocalStorage หรือฐานข้อมูลเพื่อแก้ปัญหาข้อมูลทริปหายเมื่อรีเฟรช ดำเนินการแก้ไข Bug ข้ามเที่ยงคืนให้สมบูรณ์ และเตรียมความพร้อมสำหรับการทำระบบ CI/CD Pipeline
 
-# Phase 4
+--- 
 
----
+# Phase 4
 
 ## 1. ข้อมูลเดิมจาก Phase 1, 2 and 3
 
@@ -788,24 +788,31 @@ flowchart TD
 
 ### 1.5 สถาปัตยกรรมระบบ (Architecture)
 
-```
-┌─────────────────────────────────────────────┐
-│              Frontend (SPA)                 │
-│  HTML + Vanilla JS (ES Modules) + CSS       │
-│  Leaflet.js (Map) + Tailwind CSS (CDN)      │
-└──────────────────┬──────────────────────────┘
-                   │ HTTP (fetch)
-┌──────────────────▼──────────────────────────┐
-│          Backend (Node.js HTTP Server)       │
-│  Pure http module (ไม่ใช้ Express)           │
-│  Endpoints: /scan (POST), /image (GET)      │
-│  Models: Place, SearchQuery, TripPlanner    │
-└──────────────────┬──────────────────────────┘
-                   │ HTTPS
-┌──────────────────▼──────────────────────────┐
-│           External API (SerpAPI)            │
-│        Google Maps Engine Search            │
-└─────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph Frontend["Frontend (SPA)"]
+        HTML["HTML + Vanilla JS<br/>ES Modules + CSS"]
+        Leaflet["Leaflet.js<br/>Map Library"]
+        Tailwind["Tailwind CSS<br/>CDN"]
+    end
+
+    subgraph Backend["Backend Node.js HTTP Server"]
+        Server["Pure http Module<br/>No Express"]
+        Endpoints["Endpoints:<br/>/scan POST<br/>/image GET"]
+        Models["Models:<br/>Place<br/>SearchQuery<br/>TripPlanner"]
+    end
+
+    subgraph ExternalAPI["External API"]
+        SerpAPI["SerpAPI<br/>Google Maps Engine<br/>Search"]
+    end
+
+    Frontend -->|"HTTP fetch"| Backend
+    Backend -->|"HTTPS"| ExternalAPI
+    
+    HTML -.-> Leaflet
+    HTML -.-> Tailwind
+    Server -.-> Endpoints
+    Server -.-> Models
 ```
 
 ### 1.6 สรุปผลจาก Phase 1-3
