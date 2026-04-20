@@ -1014,25 +1014,9 @@ graph TB
 
 #### Phase 3 Results
 
-<!-- 📸 [แคปรูป] Chrome DevTools Performance Profile ของ Phase 3
-     ขั้นตอน:
-     1. เปิด Chrome DevTools (F12) → Performance tab
-     2. กด Record → Refresh page → หยุด Record
-     3. ดู Summary (Scripting, Rendering, Painting, Idle)
-     4. แคปรูป Performance summary
--->
+![dynamic_profiling](docs/dynamic_profiling/perf_phase3_summary.png)
 
-`[แทรกรูป: perf_phase3_summary.png]`
-
-<!-- 📸 [แคปรูป] Lighthouse Score ของ Phase 3
-     ขั้นตอน:
-     1. DevTools → Lighthouse tab
-     2. Categories: Performance, Accessibility, Best Practices
-     3. Mode: Navigation, Device: Desktop
-     4. แคปรูป Lighthouse scores
--->
-
-`[แทรกรูป: lighthouse_phase3.png]`
+![dynamic_profiling](docs/dynamic_profiling/lighthouse_phase3.png)
 
 | Metric | Phase 3 |
 |---|---|
@@ -1048,15 +1032,10 @@ graph TB
 
 #### Phase 4 Results
 
-<!-- 📸 [แคปรูป] Chrome DevTools Performance Profile ของ Phase 4
-     ขั้นตอน: เหมือนกับ Phase 3 
--->
+![dynamic_profiling](docs/dynamic_profiling/perf_phase4_summary.png)
 
-`[แทรกรูป: perf_phase4_summary.png]`
+![dynamic_profiling](docs/dynamic_profiling/lighthouse_phase4.png)
 
-<!-- 📸 [แคปรูป] Lighthouse Score ของ Phase 4 -->
-
-`[แทรกรูป: lighthouse_phase4.png]`
 
 | Metric | Phase 4 |
 |---|---|
@@ -1273,11 +1252,11 @@ jobs:
 
 | Bug ID | จาก Phase 3 | สถานะ Phase 4 |
 |---|---|:---:|
-| BUG-01 | Cross-midnight trip (เวลาข้ามเที่ยงคืน) | ⚠️ Known limitation (อธิบายเหตุผลด้านล่าง) |
-| BUG-02 | Trip data ไม่ persist (หายเมื่อ refresh) | ⚠️ Known limitation |
-| BUG-03 | ไม่มี pagination สำหรับผลลัพธ์มาก | ⚠️ Not fixed (SerpAPI จำกัดผลลัพธ์อยู่แล้ว) |
-| BUG-04 | ไม่มี Retry GPS หลัง denied | ⚠️ Not fixed |
-| BUG-05 | Error messages ไม่เฉพาะเจาะจง | ✅ Fixed (เพิ่ม structured error + fallback) |
+| BUG-01 | Cross-midnight trip (เวลาข้ามเที่ยงคืน) | Known limitation (อธิบายเหตุผลด้านล่าง) |
+| BUG-02 | Trip data ไม่ persist (หายเมื่อ refresh) | Known limitation |
+| BUG-03 | ไม่มี pagination สำหรับผลลัพธ์มาก | Not fixed (SerpAPI จำกัดผลลัพธ์อยู่แล้ว) |
+| BUG-04 | ไม่มี Retry GPS หลัง denied | Not fixed |
+| BUG-05 | Error messages ไม่เฉพาะเจาะจง | Fixed (เพิ่ม structured error + fallback) |
 
 **เหตุผลที่ Bug บางข้อไม่ได้แก้:**
 - **BUG-01 (Cross-midnight):** ฟีเจอร์ Trip Planner ออกแบบมาสำหรับ "1 วัน" (Day trip) ซึ่งไม่ควรมีกิจกรรมข้ามเที่ยงคืน ถือเป็น design decision ไม่ใช่ bug
