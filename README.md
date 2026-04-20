@@ -974,11 +974,7 @@ graph TB
 
 #### Phase 3 Results
 
-<!-- 📸 [แคปรูป] ผลลัพธ์ ESLint ของ Phase 3 code
-     รันคำสั่ง: npx eslint back_end/ front_end/js/ 
-     แคปทั้งหน้าจอ terminal -->
-
-`[แทรกรูป: eslint_phase3.png]`
+![profiling_results](docs/profiling/eslint_phase3.png)
 
 | หัวข้อ | Phase 3 |
 |---|---|
@@ -989,11 +985,7 @@ graph TB
 
 #### Phase 4 Results
 
-<!-- 📸 [แคปรูป] ผลลัพธ์ ESLint ของ Phase 4 code
-     รันคำสั่ง: npx eslint back_end/ front_end/js/ 
-     แคปทั้งหน้าจอ terminal -->
-
-`[แทรกรูป: eslint_phase4.png]`
+![profiling_results](docs/profiling/eslint_phase4.png)
 
 | หัวข้อ | Phase 4 |
 |---|---|
