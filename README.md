@@ -884,9 +884,7 @@ graph TB
 | **Expected Results** | 1. ปุ่ม Scan เปลี่ยนเป็น spinner ขณะโหลด <br> 2. ส่วน Results ปรากฏขึ้น พร้อมแสดงจำนวนสถานที่ที่พบ (≥ 1) <br> 3. แต่ละ card แสดงชื่อ, badge หมวดหมู่, ระยะทาง (≤ 5 km), และคะแนน <br> 4. Markers ปรากฏบนแผนที่ตรงตำแหน่งของสถานที่ <br> 5. Toast notification แสดงข้อความ "✅ พบ X สถานที่" |
 | **การเช็คค่า** | ✅ `resultsCount` text ≠ "0 สถานที่" <br> ✅ ทุก card มี `.badge` element <br> ✅ ทุก card แสดง distance ≤ 5 km <br> ✅ Map markers ≥ 1 อัน |
 
-<!-- 📸 [แคปรูป] ผลลัพธ์หลังกด Scan — แสดง results + map markers + toast -->
-
-`[แทรกรูป: ui_tc01_result.png]`
+![ui test case](docs/ui_testcase/ui_tc01_result.png)
 
 ---
 
@@ -901,9 +899,7 @@ graph TB
 | **Expected Results** | 1. ปุ่มเปลี่ยนเป็น `💛 บันทึกแล้ว` (สีเหลือง) <br> 2. Toast แสดง "บันทึกสถานที่โปรดแล้ว" <br> 3. ส่วน Favorites แสดง card สถานที่ที่ save <br> 4. หลัง refresh สถานที่โปรดยังแสดงอยู่ (persist ใน localStorage) |
 | **การเช็คค่า** | ✅ ปุ่มมี class `.pinned` <br> ✅ Favorites section มี card ≥ 1 <br> ✅ `localStorage.getItem('pinme_favorites')` ≠ null <br> ✅ หลัง refresh ข้อมูลยังอยู่ |
 
-<!-- 📸 [แคปรูป] 2 รูป: (1) กด Save แล้ว Toast ขึ้น + Favorites section (2) หลัง Refresh ข้อมูลยังอยู่ -->
-
-`[แทรกรูป: ui_tc02_favorites.png]`
+![ui test case](docs/ui_testcase/ui_tc02_favorites.png)
 
 ---
 
@@ -918,9 +914,7 @@ graph TB
 | **Expected Results** | 1. กิจกรรมแรกเพิ่มสำเร็จ — Toast แสดง `✅ เพิ่ม "วัดพระแก้ว" ลงแผนทริปแล้ว` <br> 2. Timeline แสดง item: `🕒 09:00 - 11:00` + `วัดพระแก้ว` <br> 3. กิจกรรมที่ 2 **ถูกปฏิเสธ** — Toast แสดง `⚠️ ขัดข้อง: เวลาทับซ้อนกับกิจกรรม "วัดพระแก้ว" (09:00 - 11:00)` <br> 4. Timeline ยังคงมีแค่ 1 item |
 | **การเช็คค่า** | ✅ Trip Timeline มี `.trip-item` = 1 อัน <br> ✅ Toast type = `error` สำหรับ overlap <br> ✅ ข้อความ overlap มีชื่อกิจกรรมที่ขัดแย้ง |
 
-<!-- 📸 [แคปรูป] 2 รูป: (1) เพิ่มกิจกรรมแรกสำเร็จ (2) เพิ่มกิจกรรมซ้อนแล้วมี error toast -->
-
-`[แทรกรูป: ui_tc03_trip_overlap.png]`
+![ui test case](docs/ui_testcase/ui_tc03_trip_overlap.png)
 
 ---
 
@@ -935,9 +929,7 @@ graph TB
 | **Expected Results** | กรณีที่ 1: Toast แสดง `⚠️ กรุณากรอกพิกัด Latitude และ Longitude` <br> กรณีที่ 2: Toast แสดง `⚠️ Latitude ต้องอยู่ระหว่าง -90 ถึง 90` <br> กรณีที่ 3: Toast แสดง `⚠️ Longitude ต้องอยู่ระหว่าง -180 ถึง 180` <br> **ทุกกรณี:** ไม่มีการส่ง request ไปยัง server |
 | **การเช็คค่า** | ✅ Toast type = `warning` ทุกกรณี <br> ✅ Toast text ตรงกับ expected message <br> ✅ Network tab ไม่มี request ไป `/scan` <br> ✅ Results section ไม่เปลี่ยนแปลง |
 
-<!-- 📸 [แคปรูป] 3 รูป: Toast warning สำหรับแต่ละกรณี -->
-
-`[แทรกรูป: ui_tc04_validation.png]`
+![ui test case](docs/ui_testcase/ui_tc04_validation.png)
 
 ---
 
@@ -952,9 +944,7 @@ graph TB
 | **Expected Results** | 1. เริ่มต้น: ภาษาไทย, Dark Theme <br> 2. หลังกดเปลี่ยนภาษา: ปุ่มเป็น `🇺🇸 EN`, UI text เป็น English (เช่น "Find places around you", "Scan Places") <br> 3. หลังกด Theme: Background เปลี่ยนเป็นสว่าง, `<html>` มี class `light-theme` <br> 4. หลัง Refresh: ภาษาอังกฤษ + Light Theme ยังคงอยู่ |
 | **การเช็คค่า** | ✅ `langToggleBtn` text = `🇺🇸 EN` <br> ✅ `[data-i18n="subtitle"]` text = `Find places around you` <br> ✅ `document.documentElement.classList.contains('light-theme')` = `true` <br> ✅ `localStorage.getItem('pinme_lang')` = `en` <br> ✅ `localStorage.getItem('pinme_theme')` = `light` <br> ✅ หลัง refresh ค่ายังเหมือนเดิม |
 
-<!-- 📸 [แคปรูป] 2 รูป: (1) English + Light Theme (2) หลัง refresh ยังเป็น EN + Light -->
-
-`[แทรกรูป: ui_tc05_lang_theme.png]`
+![ui test case](docs/ui_testcase/ui_tc05_lang_theme.png)
 
 ---
 
@@ -962,11 +952,11 @@ graph TB
 
 | Test Case | ทดสอบ Feature | ผลลัพธ์ |
 |---|---|:---:|
-| UI-TC01 | ค้นหาสถานที่ (Scan) | ✅ ผ่าน |
-| UI-TC02 | Favorites (บันทึก + Persist) | ✅ ผ่าน |
-| UI-TC03 | Trip Planner (Overlap Detection) | ✅ ผ่าน |
-| UI-TC04 | Input Validation (3 กรณี) | ✅ ผ่าน |
-| UI-TC05 | i18n + Theme (Persist หลัง Refresh) | ✅ ผ่าน |
+| UI-TC01 | ค้นหาสถานที่ (Scan) | ผ่าน |
+| UI-TC02 | Favorites (บันทึก + Persist) | ผ่าน |
+| UI-TC03 | Trip Planner (Overlap Detection) | ผ่าน |
+| UI-TC04 | Input Validation (3 กรณี) | ผ่าน |
+| UI-TC05 | i18n + Theme (Persist หลัง Refresh) | ผ่าน |
 
 ---
 
