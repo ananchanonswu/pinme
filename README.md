@@ -1,4 +1,4 @@
-# สมาชิกกลุ่ม
+# สมาชิกกลุ่ม....
 
 นายบุญยศักดิ์ รัตนดิลก ณ ภูเก็ต 67102010165
 
@@ -204,19 +204,19 @@ flowchart TB
 
 ## 10) Product backlog
 
-![Product Backlog](milestone_and_sprint_example/sprint_1.png)
+![Product Backlog](sprint_1.png)
 
-![Product Backlog](product_backlog/product_backlog1.png)
+![Product Backlog](product_backlog1.png)
 
-![Product Backlog](product_backlog/product_backlog2.png)
+![Product Backlog](product_backlog2.png)
 
-![Product Backlog](product_backlog/product_backlog3.png)
+![Product Backlog](product_backlog3.png)
 
 ---
 
 ## 11) Sprint backlog
 
-![Sprint Backlog](milestone_and_sprint_example/milestone_sprint_1-4.png)
+![Sprint Backlog](milestone_sprint_1-4.png)
 
 ---
 
@@ -230,7 +230,7 @@ Issue ที่อยู่ใน Sprint 1 :
 
 - ทำ Report และกำหนด Requirement
 
- ![Sprint Backlog](milestone_and_sprint_example/sprint_1.png)
+ ![Sprint Backlog](sprint_1.png)
 
 ---
 ## 12) New functional/non-functional requirement
@@ -542,7 +542,7 @@ flowchart TD
 ## Test Case
 ### ตาราง Unit Test Cases
 
-![ตาราง Unit Test Cases](TestCase_Code_Example/TestCase_Table.png)
+![ตาราง Unit Test Cases](TestCase_Table.png)
 
 ตารางด้านบนแสดงกรณีทดสอบ (Test Cases) จำนวน 10 กรณี ที่กลุ่มของเราได้ออกแบบมาเพื่อตรวจสอบความถูกต้องของ Data Structure และ Business Logic หลักในโฟลเดอร์ model โดยแบ่งกลุ่มการทดสอบตาม Class ได้ดังนี้:
 
@@ -722,6 +722,8 @@ flowchart TD
 	- ปรับปรุงกระบวนการทำงานบน Git: กำหนดข้อตกลงในการแตก Branch ทำงานให้ชัดเจนขึ้น และแบ่งสัดส่วนโฟลเดอร์ให้ขาดจากกันเพื่อลดปัญหา Merge Conflict
 
 	- เพิ่มการอัปเดตงานแบบสั้นๆ : หากนัดประชุมยาก จะใช้วิธีให้สมาชิกพิมพ์อัปเดตความคืบหน้าสั้นๆ ลงในกลุ่มแชท (เช่น Discord/LINE) เพื่อให้ทุกคนเห็นภาพรวมงานตรงกันตลอดเวลา
+
+	- วางแผนเทคนิคัล: ศึกษาการใช้ LocalStorage หรือฐานข้อมูลเพื่อแก้ปัญหาข้อมูลทริปหายเมื่อรีเฟรช ดำเนินการแก้ไข Bug ข้ามเที่ยงคืนให้สมบูรณ์ และเตรียมความพร้อมสำหรับการทำระบบ CI/CD Pipeline
 
 	- วางแผนเทคนิคัล: ศึกษาการใช้ LocalStorage หรือฐานข้อมูลเพื่อแก้ปัญหาข้อมูลทริปหายเมื่อรีเฟรช ดำเนินการแก้ไข Bug ข้ามเที่ยงคืนให้สมบูรณ์ และเตรียมความพร้อมสำหรับการทำระบบ CI/CD Pipeline
 
