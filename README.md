@@ -899,7 +899,7 @@ graph TB
 | **Expected Results** | 1. ปุ่มเปลี่ยนเป็น `💛 บันทึกแล้ว` (สีเหลือง) <br> 2. Toast แสดง "บันทึกสถานที่โปรดแล้ว" <br> 3. ส่วน Favorites แสดง card สถานที่ที่ save <br> 4. หลัง refresh สถานที่โปรดยังแสดงอยู่ (persist ใน localStorage) |
 | **การเช็คค่า** | ✅ ปุ่มมี class `.pinned` <br> ✅ Favorites section มี card ≥ 1 <br> ✅ `localStorage.getItem('pinme_favorites')` ≠ null <br> ✅ หลัง refresh ข้อมูลยังอยู่ |
 
-![ui test case](docs/ui_testcase/ui_tc02_favroites.png)
+![ui test case](docs/ui_testcase/ui_tc02_favorites.png)
 
 ---
 
@@ -952,11 +952,11 @@ graph TB
 
 | Test Case | ทดสอบ Feature | ผลลัพธ์ |
 |---|---|:---:|
-| UI-TC01 | ค้นหาสถานที่ (Scan) | ✅ ผ่าน |
-| UI-TC02 | Favorites (บันทึก + Persist) | ✅ ผ่าน |
-| UI-TC03 | Trip Planner (Overlap Detection) | ✅ ผ่าน |
-| UI-TC04 | Input Validation (3 กรณี) | ✅ ผ่าน |
-| UI-TC05 | i18n + Theme (Persist หลัง Refresh) | ✅ ผ่าน |
+| UI-TC01 | ค้นหาสถานที่ (Scan) | ผ่าน |
+| UI-TC02 | Favorites (บันทึก + Persist) | ผ่าน |
+| UI-TC03 | Trip Planner (Overlap Detection) | ผ่าน |
+| UI-TC04 | Input Validation (3 กรณี) | ผ่าน |
+| UI-TC05 | i18n + Theme (Persist หลัง Refresh) | ผ่าน |
 
 ---
 
