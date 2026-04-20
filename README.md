@@ -204,19 +204,19 @@ flowchart TB
 
 ## 10) Product backlog
 
-![Product Backlog](sprint_1.png)
+![Product Backlog](docs/sprint/sprint_1.png)
 
-![Product Backlog](product_backlog1.png)
+![Product Backlog](docs/backlog/product_backlog1.png)
 
-![Product Backlog](product_backlog2.png)
+![Product Backlog](docs/backlog/product_backlog2.png)
 
-![Product Backlog](product_backlog3.png)
+![Product Backlog](docs/backlog/product_backlog3.png)
 
 ---
 
 ## 11) Sprint backlog
 
-![Sprint Backlog](milestone_sprint_1-4.png)
+![Sprint Backlog](docs/sprint/milestone_sprint_1-4.png)
 
 ---
 
@@ -230,7 +230,7 @@ Issue ที่อยู่ใน Sprint 1 :
 
 - ทำ Report และกำหนด Requirement
 
- ![Sprint Backlog](sprint_1.png)
+ ![Sprint Backlog](docs/sprint/sprint_1.png)
 
 ---
 ## 12) New functional/non-functional requirement
@@ -382,25 +382,25 @@ flowchart TD
 ## 14) Website screenshot
 
 ### Page 1
-![Page 1](Website_Screenshot_Figma/page1.png)
+![Page 1](docs/figma/page1.png)
 
 ### Page 2
-![Page 2](Website_Screenshot_Figma/page2.png)
+![Page 2](docs/figma/page2.png)
 
 ### Page 3
-![Page 3](Website_Screenshot_Figma/page3.png)
+![Page 3](docs/figma/page3.png)
 
 ### Page 4
-![Page 4](Website_Screenshot_Figma/page4.png)
+![Page 4](docs/figma/page4.png)
 
 ### Page 5
-![Page 5](Website_Screenshot_Figma/page5.png)
+![Page 5](docs/figma/page5.png)
 
 ### page 6
-![Page 6](Website_Screenshot_Figma/scan_result1.png)
+![Page 6](docs/figma/scan_result1.png)
 
 ### page 7
-![Page 7](Website_Screenshot_Figma/scan_result2.png)
+![Page 7](docs/figma/scan_result2.png)
 
 ## System Workflow
 
@@ -542,7 +542,7 @@ flowchart TD
 ## Test Case
 ### ตาราง Unit Test Cases
 
-![ตาราง Unit Test Cases](TestCase_Table.png)
+![ตาราง Unit Test Cases](docs/test_cases/TestCase_Table.png)
 
 ตารางด้านบนแสดงกรณีทดสอบ (Test Cases) จำนวน 10 กรณี ที่กลุ่มของเราได้ออกแบบมาเพื่อตรวจสอบความถูกต้องของ Data Structure และ Business Logic หลักในโฟลเดอร์ model โดยแบ่งกลุ่มการทดสอบตาม Class ได้ดังนี้:
 
@@ -559,17 +559,17 @@ flowchart TD
 ### ตัวอย่างที่ 1: การทดสอบ Haversine Formula (จากไฟล์ Place.test.js)
 ใช้ทดสอบว่าระบบสามารถคำนวณระยะทางจาก Latitude/Longitude 2 จุดบนโลกได้แม่นยำหรือไม่
 
-![Test Case Code 1](TestCase_Code_Example/ex1.png)
+![Test Case Code 1](docs/test_cases/ex1.png)
 
 ### ตัวอย่างที่ 2: การทดสอบเพิ่มกิจกรรมและเช็คเวลาทับซ้อน (จากไฟล์ TripPlanner.test.js)
 ใช้ทดสอบว่าคลาสผู้เชี่ยวชาญการจัดทริป สามารถตรวจจับว่าคุณไม่สามารถเพิ่มกิจกรรมที่เวลาทับซ้อนกับกิจกรรมอื่นที่มีอยู่แล้วได้
 
-![Test Case Code 2](TestCase_Code_Example/ex2.png)
+![Test Case Code 2](docs/test_cases/ex2.png)
 
 ### ตัวอย่างที่ 3: การทดสอบ Validation (จากไฟล์ SearchQuery.test.js)
 ใช้ทดสอบว่าผู้ใช้อาจเผลอป้อน Latitude หรือ Longitude ผิดพลาด ระบบต้องจับผิดได้
 
-![Test Case Code 3](TestCase_Code_Example/ex3.png)
+![Test Case Code 3](docs/test_cases/ex3.png)
 
 ## Test Coverage Report
 
@@ -577,7 +577,7 @@ flowchart TD
 
 ผลลัพธ์การรัน Coverage แสดงให้เห็นว่ากลุ่มของเรามีค่า **Statement Coverage ภาพรวมสูงถึง 97.33%** (โดยมีบางไฟล์เช่น `SearchQuery.js` สามารถทำ Coverage ได้ถึง 100%) ซึ่งผลลัพธ์นี้ผ่านเกณฑ์ที่กำหนดไว้ว่าต้องมากกว่า 80% อย่างสมบูรณ์ เป็นการยืนยันว่าโครงสร้างพื้นฐานของระบบได้รับการทดสอบอย่างครอบคลุมและมีความเสถียรสูง
 
-![Test Coverage_Report](TestCoverage/TestCoverage.png)
+![Test Coverage_Report](docs/test_coverage/TestCoverage.png)
 
 ## สิ่งที่ยังไม่เสร็จสมบูรณ์ (bugs and limitations)
 
@@ -605,51 +605,51 @@ flowchart TD
 
 หน้าหลักของ website :
 
-![website_page](Website_Screenshot/main_page.png)
+![website_page](docs/screenshots/main_page.png)
 
 ตัว website สามารถเปลี่ยน Theme ได้ (มี Light theme กับ Dark theme) และสามารถเปลี่ยนภาษาได้ (ภาษาไทย TH และ English US)
 
-![website_page](Website_Screenshot/lan_and_theme.png)
+![website_page](docs/screenshots/lan_and_theme.png)
 
 หน้า Website ที่เปลี่ยน Theme เป็น Light theme :
 
-![website_page](Website_Screenshot/web_with_light_theme.png)
+![website_page](docs/screenshots/web_with_light_theme.png)
 
 หน้า Website ที่เปลี่ยนภาษาจาก English US เป็น ภาษาไทย :
 
-![website_page](Website_Screenshot/web_withTH_lan.png)
+![website_page](docs/screenshots/web_withTH_lan.png)
 
 ในหน้า Website จะแสดงพิกัดตำแหน่งและสามารถเลือกพิกัดปัจจุบันที่เราอยู่ได้ โดยพิกัดจะแสดงเป็น ละติจูด ลองจิจูด และสามารถเลือกรัศมีการค้นหาสถานที่ต่างๆได้ เช่น 3 กม.
 
-![website_page](Website_Screenshot/Current_location.png)
+![website_page](docs/screenshots/Current_location.png)
 
 ในหน้าของ Website จะมีแผนที่แสดงตำแหน่งของตัวเรา , สถานที่ต่างๆในบริเวณของเรา และ รัศมีการค้นหาที่เราเลือกไว้ข้างต้น โดยตัวแผนที่สามารถกดบวกและลบเพื่อขยายขนาดของแผนที่ได้ และสามารถกดซ่อนแผนที่ได้
 
-![website_page](Website_Screenshot/Map.png)
+![website_page](docs/screenshots/Map.png)
 
 สามารถเลือกหมวดหมู (category) ของสถานที่ได้ และมีปุ่มสแกนเพื่อค้นหาสถานที่ที่อยู่ภายในบริเวณรัศมีที่เราเลือกไว้ได้
 
-![website_page](Website_Screenshot/Category_and_scan.png)
+![website_page](docs/screenshots/Category_and_scan.png)
 
 สามารถกำหนดแผนการเดินทางเบื้องต้นของเราได้ โดบการกำหนดชื่อสถานที่ จากนั้นก็เลือกเวลาที่เราจะเดินทางกี่โมงถึงกี่โมง
 
-![website_page](Website_Screenshot/tripplanner.png)
+![website_page](docs/screenshots/tripplanner.png)
 
 ตัวอย่าง :
 
-![website_page](Website_Screenshot/tripplanner2.png)
+![website_page](docs/screenshots/tripplanner2.png)
 
 หลังจากที่เรากดบันทึกไว้ :
 
-![website_page](Website_Screenshot/tripplanner3.png)
+![website_page](docs/screenshots/tripplanner3.png)
 
 หลังจากที่เราได้สแกนเพื่อค้นหาสถานที่โดยรอบแล้ว ตัว website ก็จะแสดงผลลัพธ์โดยมีสถานที่ต่างๆออกมา ตามหมวดหมู่ที่เราเลือกไว้ข้างต้น
 
-![website_page](Website_Screenshot/scan_result.png)
+![website_page](docs/screenshots/scan_result.png)
 
 สามารถเลือกดูลายละเอียดของสถานที่ต่างได้และสามารถกดปักหมุดได้
 
-![website_page](Website_Screenshot/place_description.png)
+![website_page](docs/screenshots/place_description.png)
 
 ## สิ่งเปลี่ยนแปลงจากรายงาน Phase 1 และ 2 และเหดุผลที่เปลี่ยน
 ในระหว่างการพัฒนาโปรแกรมจริงใน Phase 3 ทางกลุ่มได้พบข้อจำกัดและได้ปรับปรุงรายละเอียดบางส่วนให้ต่างไปจากที่เคยออกแบบไว้ใน Phase 1 และ 2 ดังนี้:
