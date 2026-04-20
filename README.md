@@ -1142,7 +1142,7 @@ jobs:
         retention-days: 7
 ```
 
-![ci_pipeline](docs/ci_cd_pipeline/ci_pipieline_success.png)
+![ci_pipeline](docs/ci_cd_pipeline/ci_pipeline_success.png)
 
 #### Pipeline ประกอบด้วย
 
