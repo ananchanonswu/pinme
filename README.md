@@ -1,4 +1,4 @@
-# 📍 PinMe - Location Scanner & Trip Planner
+# PinMe - Location Scanner & Trip Planner
 <p align="left">
   <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" />
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" />
@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white" />
 </p>
 
-## 👥 สมาชิกกลุ่ม
+## สมาชิกกลุ่ม
 
 1. นายบุญยศักดิ์ รัตนดิลก ณ ภูเก็ต `67102010165`
 2. อนันฌานนทน์ แป้นสุวรรณ `67102010176`
@@ -15,7 +15,7 @@
 
 ---
 
-## **💡 1) ที่มาของปัญหาและความสำคัญ**
+## **1) ที่มาของปัญหาและความสำคัญ**
 
 ในชีวิตประจำวัน ผู้ใช้มักต้องการค้นหาสถานที่ใกล้ตัวภายในระยะที่กำหนด เช่น ร้านอาหาร โรงแรม สนามกีฬา หรือสถานที่ท่องเที่ยว แต่การค้นหาผ่านหลายแพลตฟอร์มทำให้ข้อมูลกระจัดกระจาย ใช้เวลาในการเปรียบเทียบ และไม่สะดวกในการจัดหมวดหมู่เพื่อเลือกสถานที่ที่เหมาะสม
 
@@ -646,7 +646,7 @@ flowchart TD
 
 | Metric | ผลลัพธ์ |
 |---|---|
-| CI Pipeline Status | ✅ Passed สบายฉลุย |
+| CI Pipeline Status | Passed |
 | Total Tests Run | 65 Unit Tests & 5 UI E2E Tests |
 | Code Coverage Range | 97.33% Statements / 90.79% Branches / 100% Functions |
 | UI Functionality | 100% Passed (Form, Maps, Validation, Favorites) |
@@ -741,9 +741,9 @@ flowchart TD
 
 --- 
 
-# 🚀 Phase 4: Final Product & CI/CD Setup
+# Phase 4: Final Product & CI/CD Setup
 
-## 📚 1. ข้อมูลเดิมจาก Phase 1, 2 และ 3
+## 1. ข้อมูลเดิมจาก Phase 1, 2 และ 3
 
 ### 1.1 ที่มาของปัญหาและจุดประสงค์
 
@@ -841,12 +841,12 @@ graph TB
 
 ---
 
-## 💻 2. Website Screenshots
+## 2. Website Screenshots
 
-> **📸 หมายเหตุ:** ภาพหน้าจอทั้งหมดเป็นการแสดงผลลัพธ์จริงจากการรันแอปพลิเคชัน Phase 4
+> **หมายเหตุ:** ภาพหน้าจอทั้งหมดเป็นการแสดงผลลัพธ์จริงจากการรันแอปพลิเคชัน Phase 4
 
 <details>
-<summary><b>👉 คลิกเพื่อดูภาพ Screenshot หน้าเว็บทั้งหมด</b></summary>
+<summary><b>คลิกเพื่อดูภาพ Screenshot หน้าเว็บทั้งหมด</b></summary>
 <br>
 
 ### 2.1 หน้าหลัก (Dark Theme)
@@ -884,9 +884,9 @@ graph TB
 
 ---
 
-## 🧪 3. UI Test Cases (End-to-End)
+## 3. UI Test Cases (End-to-End)
 
-> **⚙️ เครื่องมือที่ใช้:** `Playwright` สำหรับรันการทดสอบอัตโนมัติบนหน้าเว็บ UI (Chromium)
+> **เครื่องมือที่ใช้:** `Playwright` สำหรับรันการทดสอบอัตโนมัติบนหน้าเว็บ UI (Chromium)
 
 ### ข้อกำหนด
 - ต้องมี 5 UI Test Cases
@@ -895,7 +895,7 @@ graph TB
 ---
 
 <details>
-<summary><b>👉 คลิกเพื่อดูรายละเอียด UI Test Cases ทั้งหมด (TC01-TC05)</b></summary>
+<summary><b>คลิกเพื่อดูรายละเอียด UI Test Cases ทั้งหมด (TC01-TC05)</b></summary>
 <br>
 
 ### UI-TC01: ค้นหาสถานที่ด้วยพิกัดและรัศมี
@@ -987,7 +987,7 @@ graph TB
 
 ---
 
-## ⚡ 4. Profiling Results (Performance)
+## 4. Profiling Results (Performance)
 
 ### 4.1 Static Profiling (ESLint)
 
@@ -1094,7 +1094,7 @@ graph TB
 
 ---
 
-## ⚙️ 5. CI/CD Pipeline
+## 5. CI/CD Pipeline
 
 ### 5.1 CI (Continuous Integration)
 
@@ -1209,7 +1209,7 @@ jobs:
 
 ---
 
-## 🛠️ 6. กระบวนการทำงาน (Process & Tools)
+## 6. กระบวนการทำงาน (Process & Tools)
 
 ### 6.1 Process
 
@@ -1256,14 +1256,17 @@ jobs:
 
 ### 6.4 การบริหาร Project
 
-- **Sprint Planning:** แบ่ง Phase 4 เป็น 3 sprints
-  1. Sprint 1: Bug fixes + UI overhaul
-  2. Sprint 2: New features (Favorites, Image Proxy, Trip Draft)
-  3. Sprint 3: Profiling, CI/CD, Documentation, Report
+- **Task Management (การจัดการงาน):** บริหารจัดการงานใน Phase 4 โดยใช้รูปแบบการจัดลำดับความสำคัญ (Task Prioritization) และทยอยดำเนินการตามลำดับ ดังนี้
 
-- **การ Monitor Build:** ติดตั้ง CI pipeline เพื่อตรวจสอบว่า tests passed ทุกครั้งที่ push
+  - **Phase 4 Part 1 (High Priority):** มุ่งเน้นไปที่การแก้ปัญหา (Bug fixes) และปรับโฉมหน้าตาการใช้งาน (UI overhaul) เป็นอันดับแรก
 
-- **การจัดการ Bugs:**
+  - **Phase 4 Part 2 (Feature Development):** ทยอยเพิ่มฟีเจอร์การใช้งานใหม่ๆ (Favorites, Image Proxy, Trip Draft)
+
+  - **Phase 4 Part 3 (Finalizing & Delivery):** ตรวจสอบประสิทธิภาพการทำงาน (Profiling), ติดตั้งระบบ CI/CD, รวบรวมเอกสาร (Documentation) และจัดทำรายงาน (Report) ก่อนการส่งมอบ
+
+- **การ Monitor Build:** ติดตั้ง CI Pipeline เพื่อตรวจสอบคุณภาพโค้ดและยืนยันว่า Tests passed ทุกครั้งที่มีการ Push
+
+- **การจัดการ Bugs:** จัดการปัญหาแบบเชิงรุก (Proactive) ผ่านระบบ Issue Tracking โดยจัดลำดับความสำคัญ หากพบ Critical Bug จะดึงงานมาแก้ไขทันทีเพื่อให้ระบบเสถียร
 
 | Bug ID | จาก Phase 3 | สถานะ Phase 4 |
 |---|---|:---:|
@@ -1281,7 +1284,7 @@ jobs:
 
 ---
 
-## 🗣️ 7. Final Retrospective
+## 7. Final Retrospective
 
 ### 7.1 สรุปการประชุม Final Retrospective
 
@@ -1311,13 +1314,13 @@ jobs:
 
 <!-- 📸 [ใส่ Link] อัพโหลดวิดีโอ Retrospective ขึ้น YouTube แล้วใส่ link ด้านล่าง -->
 
-🎥 **Retrospective Video:** `[ใส่ YouTube Link]`
+**Retrospective Video:** `[ใส่ YouTube Link]`
 
 ---
 
-## 🎬 8. Presentation Video
+## 8. Presentation Video
 
-<!-- 📸 [ใส่ Link] อัพโหลดวิดีโอ Presentation ขึ้น YouTube แล้วใส่ link ด้านล่าง
+<!-- [ใส่ Link] อัพโหลดวิดีโอ Presentation ขึ้น YouTube แล้วใส่ link ด้านล่าง
      เนื้อหาของ Presentation:
      1. อธิบายกระบวนการทำ project + ค่า profiling (PPT)
      2. เปิดเว็บไซต์อธิบาย features
