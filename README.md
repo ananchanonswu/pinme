@@ -1288,9 +1288,7 @@ jobs:
 
 ### 7.1 สรุปการประชุม Final Retrospective
 
-**วันที่ประชุม:** `[ใส่วันที่]`  
-**ผู้เข้าร่วม:** สมาชิกทั้ง 3 คน  
-**ระยะเวลา:** `[ใส่ระยะเวลา เช่น 45 นาที]`
+[Retrospective Video Phase 4](https://youtu.be/pxQmUTwlXtk)
 
 #### สิ่งที่ทำได้ดี (What went well)
 - Unit Test Coverage สูง (97.33%) ตั้งแต่ Phase 3 ทำให้ Phase 4 มั่นใจในการ refactor
@@ -1309,12 +1307,6 @@ jobs:
 - ทำ Profiling baseline ตั้งแต่ Phase 2 เพื่อเทียบการเปลี่ยนแปลง
 - ใช้ TypeScript แทน vanilla JS เพื่อลด runtime errors
 - เขียน E2E tests ควบคู่กับ Unit tests
-
-### 7.2 Link to Retrospective YouTube Video
-
-<!-- 📸 [ใส่ Link] อัพโหลดวิดีโอ Retrospective ขึ้น YouTube แล้วใส่ link ด้านล่าง -->
-
-**Retrospective Video:** `[ใส่ YouTube Link]`
 
 ---
 
