@@ -4,7 +4,25 @@
 
 import { escapeHtml, showToast, getCategoryBadge } from '../utils/helpers.js';
 
-let tripPlan = [];
+const TRIP_STORAGE_KEY = 'pinme_trip_plan';
+let tripPlan = loadTripPlan();
+
+function loadTripPlan() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(TRIP_STORAGE_KEY) || '[]');
+    return Array.isArray(saved) ? saved : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveTripPlan() {
+  localStorage.setItem(TRIP_STORAGE_KEY, JSON.stringify(tripPlan));
+}
+
+function syncTripPlanFromStorage() {
+  tripPlan = loadTripPlan();
+}
 
 function parseTime(timeStr) {
   const [h, m] = timeStr.split(':').map(Number);
@@ -12,6 +30,7 @@ function parseTime(timeStr) {
 }
 
 export function checkTimeOverlap(startStr, endStr, dict) {
+  syncTripPlanFromStorage();
   const newStart = parseTime(startStr);
   const newEnd = parseTime(endStr);
 
@@ -41,6 +60,8 @@ function formatDistance(distance, dict) {
 }
 
 export function renderTripPlan(tripTimeline, dict) {
+  syncTripPlanFromStorage();
+
   if (tripPlan.length === 0) {
     tripTimeline.innerHTML = `<p class="trip-empty-text" id="emptyTripState" data-i18n="empty_trip">${dict.empty_trip}</p>`;
     return;
@@ -89,6 +110,7 @@ export function addTripActivity(nameInput, startTime, endTime, tripTimeline, dic
     distance: typeof options.distance === 'number' ? options.distance : null,
     source: options.source || '',
   });
+  saveTripPlan();
 
   renderTripPlan(tripTimeline, dict);
   showToast(dict.trip_added.replace('{name}', nameInput), 'success');

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="PinMe favorite places page" />
+  <title>PinMe - Favorite Places</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="bg-gradient"></div>
+  <div class="bg-orb bg-orb-one"></div>
+  <div class="bg-orb bg-orb-two"></div>
+
+  <div class="topbar-controls">
+    <button id="langToggleBtn" class="control-btn" aria-label="Toggle Language" title="Change Language">TH</button>
+    <button id="themeToggleBtn" class="control-btn icon-btn" aria-label="Toggle Theme" title="Toggle Light or Dark Theme">☀</button>
+  </div>
+
+  <nav class="app-nav" aria-label="PinMe pages">
+    <a href="index.html" class="app-nav-link" data-i18n="nav_scanner">Scanner</a>
+    <a href="favorites.html" class="app-nav-link active" data-i18n="nav_favorites">Favorites</a>
+    <a href="trip-planner.html" class="app-nav-link" data-i18n="nav_trip">Trip Planner</a>
+  </nav>
+
+  <main class="app-shell page-shell">
+    <section class="hero-panel glass-card page-hero">
+      <div class="hero-copy">
+        <div class="hero-brand">
+          <div class="logo-icon">★</div>
+          <div>
+            <p class="hero-kicker" data-i18n="fav_kicker">Saved Places</p>
+            <h1 class="hero-title" data-i18n="fav_title">Favorites</h1>
+          </div>
+        </div>
+        <p class="hero-subtitle" data-i18n="fav_subtitle">Review places pinned from the scanner and remove places that no longer fit your trip.</p>
+      </div>
+
+      <div class="hero-stats page-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-label" data-i18n="fav_saved">Saved</span>
+          <strong id="favoriteTotal">0</strong>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-label" data-i18n="fav_storage">Storage</span>
+          <strong data-i18n="fav_local">Local</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass-card panel-card panel-list page-panel">
+      <div class="panel-head">
+        <div>
+          <p class="panel-eyebrow" data-i18n="fav_panel_kicker">Favorite Places</p>
+          <h2 class="panel-title" data-i18n="fav_panel_title">Pinned location list</h2>
+        </div>
+        <a class="mini-btn page-action-link" href="index.html" data-i18n="fav_scan_more">Scan more</a>
+      </div>
+
+      <div id="favoritesEmptyState" class="empty-block">
+        <div class="empty-icon">★</div>
+        <p class="empty-title" data-i18n="fav_empty_title">No favorite places yet</p>
+        <p class="empty-desc" data-i18n="fav_empty_desc">Open the Scanner page, search for nearby places, then pin cards to save them here.</p>
+      </div>
+
+      <div id="favoritesPageGrid" class="page-card-grid"></div>
+    </section>
+  </main>
+
+  <script type="module" src="js/favoritesPage.js"></script>
+</body>
+</html>
