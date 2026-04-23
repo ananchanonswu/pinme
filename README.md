@@ -877,9 +877,9 @@ graph TB
 
 ![website](docs/pinme_website_screenshots/screenshot_trip_planner.png)
 
-### 2.8 ภาษาไทย (Thai Mode)
+### 2.8 โหมดภาษาอังกฤษ (English Language Mode)
 
-![website](docs/pinme_website_screenshots/screenshot_thai.png)
+![website](docs/pinme_website_screenshots/screenshot_eng.png)
 </details>
 
 ---
