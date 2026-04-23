@@ -484,6 +484,17 @@ body {
   box-shadow: 0 0 0 4px var(--primary-glow);
 }
 
+option {
+  background: var(--bg-dark);
+  color: var(--text-primary);
+}
+
+html.light-theme option {
+  background: #ffffff;
+  color: var(--text-primary);
+}
+
+
 .gps-btn,
 .mini-btn {
   display: inline-flex;
@@ -1251,6 +1262,12 @@ body {
   color: #ffd5dd;
   border-color: rgba(251, 113, 133, 0.32);
   background: rgba(251, 113, 133, 0.08);
+}
+
+html.light-theme .page-danger-btn {
+  color: var(--error);
+  border-color: rgba(185, 28, 74, 0.4);
+  background: rgba(185, 28, 74, 0.12);
 }
 
 .trip-item-editable {

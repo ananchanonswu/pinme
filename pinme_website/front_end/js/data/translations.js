@@ -4,6 +4,9 @@
 
 export const TRANSLATIONS = {
   th: {
+    nav_scanner: 'สแกน',
+    nav_favorites: 'ที่บันทึกไว้',
+    nav_trip: 'แผนทริป',
     subtitle: 'ค้นหาสถานที่รอบตัวคุณ',
     label_coords: 'พิกัดตำแหน่ง',
     btn_gps: 'ใช้ตำแหน่งปัจจุบัน',
@@ -77,6 +80,9 @@ export const TRANSLATIONS = {
     trip_added: '✅ เพิ่ม "{name}" ลงแผนทริปแล้ว',
   },
   en: {
+    nav_scanner: 'Scanner',
+    nav_favorites: 'Favorites',
+    nav_trip: 'Trip Planner',
     subtitle: 'Find places around you',
     label_coords: 'Coordinates',
     btn_gps: 'Use Current Location',
