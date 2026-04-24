@@ -92,8 +92,8 @@ export function addPlaceMarkers(placesArray, dict) {
   };
 
   placesArray.forEach((place) => {
-    const lat = place.lat ?? place.latitude;
-    const lng = place.lng ?? place.longitude;
+    const lat = place.lat != null ? place.lat : place.latitude;
+    const lng = place.lng != null ? place.lng : place.longitude;
 
     if (lat == null || lng == null) return;
 

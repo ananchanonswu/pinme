@@ -205,7 +205,7 @@ function readBody(req) {
     req.on('end', () => {
       try {
         resolve(body ? JSON.parse(body) : {});
-      } catch {
+      } catch (err) {
         reject(new Error('Invalid JSON body'));
       }
     });
@@ -248,12 +248,12 @@ function mapSerpApiPlace(rawPlace, latitude, longitude, requestedCategory) {
   return normalizeServerPlace({
     name: rawPlace.title || 'Unknown',
     category: Place.detectCategoryFromType(rawPlace.type || ''),
-    lat: rawPlace.gps_coordinates?.latitude,
-    lng: rawPlace.gps_coordinates?.longitude,
+    lat: rawPlace.gps_coordinates && rawPlace.gps_coordinates.latitude ? rawPlace.gps_coordinates.latitude : null,
+    lng: rawPlace.gps_coordinates && rawPlace.gps_coordinates.longitude ? rawPlace.gps_coordinates.longitude : null,
     address: rawPlace.address || '',
     rating: rawPlace.rating || null,
     type: rawPlace.type || '',
-    thumbnail: rawPlace.thumbnail || rawPlace.image || rawPlace.photo || rawPlace.images?.[0] || rawPlace.photos?.[0] || '',
+    thumbnail: rawPlace.thumbnail || rawPlace.image || rawPlace.photo || (rawPlace.images && rawPlace.images[0]) || (rawPlace.photos && rawPlace.photos[0]) || '',
     image: rawPlace.image || '',
     photo: rawPlace.photo || '',
     image_url: rawPlace.image_url || '',

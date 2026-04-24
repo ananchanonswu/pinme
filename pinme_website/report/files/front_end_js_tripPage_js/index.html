@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - front_end\js\tripPage.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>front_end\js\tripPage.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">72.08</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">298</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">36.67</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">3.49</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">import { escapeHtml, getCategoryBadge, showToast } from &#039;./utils/helpers.js&#039;;
+
+const FAVORITES_STORAGE_KEY = &#039;pinme_favorites&#039;;
+const TRIP_STORAGE_KEY = &#039;pinme_trip_plan&#039;;
+const PAGE_COPY = {
+  en: {
+    nav_scanner: &#039;Scanner&#039;,
+    nav_favorites: &#039;Favorites&#039;,
+    nav_trip: &#039;Trip Planner&#039;,
+    trip_kicker: &#039;Itinerary Builder&#039;,
+    trip_title: &#039;Trip Planner&#039;,
+    trip_subtitle: &#039;Build a one-day plan from favorite places or custom activities. The planner checks time conflicts before adding each activity.&#039;,
+    trip_activities: &#039;Activities&#039;,
+    trip_duration: &#039;Duration&#039;,
+    trip_add_kicker: &#039;Add Activity&#039;,
+    trip_add_title: &#039;Plan one stop&#039;,
+    trip_use_saved: &#039;Use saved place&#039;,
+    trip_custom_activity: &#039;Custom activity&#039;,
+    trip_activity_name: &#039;Activity name&#039;,
+    trip_activity_placeholder: &#039;Grand Palace&#039;,
+    trip_start: &#039;Start time&#039;,
+    trip_end: &#039;End time&#039;,
+    trip_add_btn: &#039;Add to trip&#039;,
+    trip_clear_btn: &#039;Clear trip&#039;,
+    trip_timeline_kicker: &#039;Timeline&#039;,
+    trip_timeline_title: &#039;One-day itinerary&#039;,
+    trip_view_favorites: &#039;View favorites&#039;,
+    trip_empty: &#039;No activities in plan yet&#039;,
+    fill_all: &#039;Please fill in all fields&#039;,
+    time_invalid: &#039;End time must be after start time&#039;,
+    conflict: &#039;Time conflicts with&#039;,
+    added: &#039;Added&#039;,
+    removed: &#039;Activity removed&#039;,
+    cleared: &#039;Trip plan cleared&#039;,
+    remove: &#039;Remove&#039;,
+    res_badge_hotel: &#039;Hotel&#039;,
+    res_badge_restaurant: &#039;Restaurant&#039;,
+    res_badge_sport: &#039;Sport&#039;,
+    res_badge_tourist: &#039;Tourist&#039;,
+  },
+  th: {
+    nav_scanner: &#039;สแกน&#039;,
+    nav_favorites: &#039;รายการโปรด&#039;,
+    nav_trip: &#039;แผนทริป&#039;,
+    trip_kicker: &#039;ตัวจัดแผนเดินทาง&#039;,
+    trip_title: &#039;แผนทริป&#039;,
+    trip_subtitle: &#039;สร้างแผนเที่ยว 1 วันจากสถานที่โปรดหรือกิจกรรมที่กรอกเอง ระบบจะตรวจเวลาไม่ให้ทับซ้อนก่อนเพิ่มกิจกรรม&#039;,
+    trip_activities: &#039;กิจกรรม&#039;,
+    trip_duration: &#039;เวลารวม&#039;,
+    trip_add_kicker: &#039;เพิ่มกิจกรรม&#039;,
+    trip_add_title: &#039;วางแผนหนึ่งจุด&#039;,
+    trip_use_saved: &#039;ใช้สถานที่ที่บันทึกไว้&#039;,
+    trip_custom_activity: &#039;กิจกรรมที่กรอกเอง&#039;,
+    trip_activity_name: &#039;ชื่อกิจกรรม&#039;,
+    trip_activity_placeholder: &#039;วัดพระแก้ว&#039;,
+    trip_start: &#039;เวลาเริ่ม&#039;,
+    trip_end: &#039;เวลาสิ้นสุด&#039;,
+    trip_add_btn: &#039;เพิ่มลงทริป&#039;,
+    trip_clear_btn: &#039;ล้างแผนทริป&#039;,
+    trip_timeline_kicker: &#039;ไทม์ไลน์&#039;,
+    trip_timeline_title: &#039;แผนเดินทาง 1 วัน&#039;,
+    trip_view_favorites: &#039;ดูรายการโปรด&#039;,
+    trip_empty: &#039;ยังไม่มีกิจกรรมในแผน&#039;,
+    fill_all: &#039;กรุณากรอกข้อมูลให้ครบถ้วน&#039;,
+    time_invalid: &#039;เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม&#039;,
+    conflict: &#039;เวลาทับซ้อนกับ&#039;,
+    added: &#039;เพิ่มแล้ว&#039;,
+    removed: &#039;ลบกิจกรรมแล้ว&#039;,
+    cleared: &#039;ล้างแผนทริปแล้ว&#039;,
+    remove: &#039;ลบ&#039;,
+    res_badge_hotel: &#039;โรงแรม&#039;,
+    res_badge_restaurant: &#039;ร้านอาหาร&#039;,
+    res_badge_sport: &#039;กีฬา&#039;,
+    res_badge_tourist: &#039;ท่องเที่ยว&#039;,
+  },
+};
+
+const form = document.getElementById(&#039;standaloneTripForm&#039;);
+const favoriteSelect = document.getElementById(&#039;favoriteSelect&#039;);
+const activityNameInput = document.getElementById(&#039;tripActivityName&#039;);
+const startTimeInput = document.getElementById(&#039;tripStartTime&#039;);
+const endTimeInput = document.getElementById(&#039;tripEndTime&#039;);
+const timeline = document.getElementById(&#039;tripTimeline&#039;);
+const clearTripBtn = document.getElementById(&#039;clearTripBtn&#039;);
+const activityTotal = document.getElementById(&#039;activityTotal&#039;);
+const durationTotal = document.getElementById(&#039;durationTotal&#039;);
+const langToggleBtn = document.getElementById(&#039;langToggleBtn&#039;);
+const themeToggleBtn = document.getElementById(&#039;themeToggleBtn&#039;);
+
+let currentLang = localStorage.getItem(&#039;pinme_lang&#039;) || &#039;th&#039;;
+let isDarkTheme = localStorage.getItem(&#039;pinme_theme&#039;) !== &#039;light&#039;;
+
+function getDict() {
+  return PAGE_COPY[currentLang] || PAGE_COPY.en;
+}
+
+function applyTheme() {
+  document.documentElement.classList.toggle(&#039;light-theme&#039;, !isDarkTheme);
+  themeToggleBtn.textContent = isDarkTheme ? &#039;☀&#039; : &#039;☾&#039;;
+}
+
+function applyTranslations() {
+  const dict = getDict();
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll(&#039;[data-i18n]&#039;).forEach((el) =&gt; {
+    const key = el.getAttribute(&#039;data-i18n&#039;);
+    if (dict[key]) el.textContent = dict[key];
+  });
+  document.querySelectorAll(&#039;[data-i18n-ph]&#039;).forEach((el) =&gt; {
+    const key = el.getAttribute(&#039;data-i18n-ph&#039;);
+    if (dict[key]) el.setAttribute(&#039;placeholder&#039;, dict[key]);
+  });
+  langToggleBtn.textContent = currentLang === &#039;th&#039; ? &#039;TH&#039; : &#039;EN&#039;;
+  renderFavoriteOptions();
+  renderTrip();
+}
+
+function readJson(key, fallback) {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) || &#039;null&#039;);
+    return Array.isArray(parsed) ? parsed : fallback;
+  } catch (err) {
+    return fallback;
+  }
+}
+
+function loadFavorites() {
+  return readJson(FAVORITES_STORAGE_KEY, []);
+}
+
+function loadTrip() {
+  return readJson(TRIP_STORAGE_KEY, []);
+}
+
+function saveTrip(trip) {
+  localStorage.setItem(TRIP_STORAGE_KEY, JSON.stringify(trip));
+}
+
+function getActivityId(item) {
+  return [
+    item.name || &#039;&#039;,
+    item.start || &#039;&#039;,
+    item.end || &#039;&#039;,
+    item.address || &#039;&#039;,
+  ].join(&#039;|&#039;);
+}
+
+function parseTime(timeStr) {
+  if (!timeStr || !timeStr.includes(&#039;:&#039;)) return NaN;
+  const [hours, minutes] = timeStr.split(&#039;:&#039;).map(Number);
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) return NaN;
+  return hours * 60 + minutes;
+}
+
+function minutesToLabel(minutes) {
+  if (!minutes) return &#039;0m&#039;;
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (!hours) return `${mins}m`;
+  if (!mins) return `${hours}h`;
+  return `${hours}h ${mins}m`;
+}
+
+function validateActivity(trip, name, start, end) {
+  const dict = getDict();
+  if (!name || !start || !end) return dict.fill_all;
+
+  const newStart = parseTime(start);
+  const newEnd = parseTime(end);
+  if (Number.isNaN(newStart) || Number.isNaN(newEnd) || newStart &gt;= newEnd) {
+    return dict.time_invalid;
+  }
+
+  const conflict = trip.find((item) =&gt; {
+    const itemStart = parseTime(item.start);
+    const itemEnd = parseTime(item.end);
+    return newStart &lt; itemEnd &amp;&amp; newEnd &gt; itemStart;
+  });
+
+  if (conflict) {
+    return `${dict.conflict} &quot;${conflict.name}&quot; (${conflict.start} - ${conflict.end})`;
+  }
+
+  return &#039;&#039;;
+}
+
+function renderFavoriteOptions() {
+  const dict = getDict();
+  const favorites = loadFavorites();
+  favoriteSelect.innerHTML = `&lt;option value=&quot;&quot;&gt;${dict.trip_custom_activity}&lt;/option&gt;`;
+
+  favorites.forEach((place, index) =&gt; {
+    const option = document.createElement(&#039;option&#039;);
+    option.value = String(index);
+    option.textContent = place.name || `Favorite place ${index + 1}`;
+    favoriteSelect.appendChild(option);
+  });
+}
+
+function renderTrip() {
+  const dict = getDict();
+  const trip = loadTrip().sort((a, b) =&gt; parseTime(a.start) - parseTime(b.start));
+  const totalMinutes = trip.reduce((sum, item) =&gt; sum + Math.max(0, parseTime(item.end) - parseTime(item.start)), 0);
+
+  activityTotal.textContent = String(trip.length);
+  durationTotal.textContent = minutesToLabel(totalMinutes);
+
+  if (trip.length === 0) {
+    timeline.innerHTML = `&lt;p class=&quot;trip-empty-text&quot;&gt;${dict.trip_empty}&lt;/p&gt;`;
+    return;
+  }
+
+  timeline.innerHTML = &#039;&#039;;
+  trip.forEach((item) =&gt; {
+    const node = document.createElement(&#039;div&#039;);
+    node.className = &#039;trip-item trip-item-editable&#039;;
+    node.innerHTML = `
+      &lt;div class=&quot;trip-bullet&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;trip-time&quot;&gt;${escapeHtml(item.start)} - ${escapeHtml(item.end)}&lt;/div&gt;
+      &lt;div class=&quot;trip-content&quot;&gt;
+        &lt;p class=&quot;trip-name&quot;&gt;${escapeHtml(item.name)}&lt;/p&gt;
+        ${(item.category || item.address) ? `
+          &lt;div class=&quot;trip-tags&quot;&gt;
+            ${item.category ? getCategoryBadge(item.category, dict) : &#039;&#039;}
+            ${item.address ? `&lt;span class=&quot;trip-source&quot;&gt;${escapeHtml(item.address)}&lt;/span&gt;` : &#039;&#039;}
+          &lt;/div&gt;
+        ` : &#039;&#039;}
+      &lt;/div&gt;
+      &lt;button type=&quot;button&quot; class=&quot;trip-remove-btn&quot; aria-label=&quot;${dict.remove} ${escapeHtml(item.name)}&quot;&gt;${dict.remove}&lt;/button&gt;
+    `;
+
+    node.querySelector(&#039;button&#039;).addEventListener(&#039;click&#039;, () =&gt; {
+      const targetId = getActivityId(item);
+      const nextTrip = loadTrip().filter((activity) =&gt; getActivityId(activity) !== targetId);
+      saveTrip(nextTrip);
+      renderTrip();
+      showToast(dict.removed, &#039;warning&#039;);
+    });
+
+    timeline.appendChild(node);
+  });
+}
+
+favoriteSelect.addEventListener(&#039;change&#039;, () =&gt; {
+  const favorites = loadFavorites();
+  const selected = favorites[Number(favoriteSelect.value)];
+  if (!selected) return;
+  activityNameInput.value = selected.name || &#039;&#039;;
+});
+
+form.addEventListener(&#039;submit&#039;, (event) =&gt; {
+  event.preventDefault();
+  const trip = loadTrip();
+  const favorites = loadFavorites();
+  const selectedPlace = favorites[Number(favoriteSelect.value)] || null;
+  const name = activityNameInput.value.trim();
+  const start = startTimeInput.value;
+  const end = endTimeInput.value;
+  const error = validateActivity(trip, name, start, end);
+
+  if (error) {
+    showToast(error, &#039;error&#039;);
+    return;
+  }
+
+  trip.push({
+    name,
+    start,
+    end,
+    category: selectedPlace &amp;&amp; selectedPlace.category ? selectedPlace.category : &#039;&#039;,
+    address: selectedPlace &amp;&amp; selectedPlace.address ? selectedPlace.address : &#039;&#039;,
+  });
+  saveTrip(trip);
+  form.reset();
+  renderTrip();
+  showToast(`${getDict().added} &quot;${name}&quot;`, &#039;success&#039;);
+});
+
+clearTripBtn.addEventListener(&#039;click&#039;, () =&gt; {
+  saveTrip([]);
+  renderTrip();
+  showToast(getDict().cleared, &#039;warning&#039;);
+});
+
+langToggleBtn.addEventListener(&#039;click&#039;, () =&gt; {
+  currentLang = currentLang === &#039;th&#039; ? &#039;en&#039; : &#039;th&#039;;
+  localStorage.setItem(&#039;pinme_lang&#039;, currentLang);
+  applyTranslations();
+});
+
+themeToggleBtn.addEventListener(&#039;click&#039;, () =&gt; {
+  isDarkTheme = !isDarkTheme;
+  localStorage.setItem(&#039;pinme_theme&#039;, isDarkTheme ? &#039;dark&#039; : &#039;light&#039;);
+  applyTheme();
+});
+
+applyTheme();
+applyTranslations();</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

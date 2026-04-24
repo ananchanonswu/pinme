@@ -18,11 +18,11 @@ class Place {
   constructor(data = {}) {
     this.name = data.name || 'Unknown';
     this.category = Place.normalizeCategory(data.category);
-    this.lat = data.lat ?? null;
-    this.lng = data.lng ?? null;
+    this.lat = data.lat != null ? data.lat : null;
+    this.lng = data.lng != null ? data.lng : null;
     this.address = data.address || '';
-    this.rating = data.rating ?? null;
-    this.distance = data.distance ?? null;
+    this.rating = data.rating != null ? data.rating : null;
+    this.distance = data.distance != null ? data.distance : null;
     this.type = data.type || '';
     this.thumbnail = data.thumbnail || '';
   }
@@ -98,8 +98,8 @@ class Place {
 
   /** แปลง raw SerpAPI result เป็น Place */
   static fromSerpApiResult(raw, centerLat, centerLng) {
-    const lat = raw.gps_coordinates?.latitude;
-    const lng = raw.gps_coordinates?.longitude;
+    const lat = raw.gps_coordinates && raw.gps_coordinates.latitude ? raw.gps_coordinates.latitude : null;
+    const lng = raw.gps_coordinates && raw.gps_coordinates.longitude ? raw.gps_coordinates.longitude : null;
 
     if (lat == null || lng == null) return null;
 

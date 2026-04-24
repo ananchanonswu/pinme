@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - back_end/server.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>back_end/server.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">68.13</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">426</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">45.62</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">4.85</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">// ==========================================
+// PinMe - Full Stack Server
+// ==========================================
+// Serves static front-end files and handles
+// /scan API proxy requests to SerpAPI.
+// Falls back to local data when SerpAPI is
+// unavailable or the API key is missing.
+// ==========================================
+
+const http = require(&#039;http&#039;);
+const https = require(&#039;https&#039;);
+const url = require(&#039;url&#039;);
+const fs = require(&#039;fs&#039;);
+const path = require(&#039;path&#039;);
+const Place = require(&#039;./models/Place&#039;);
+const SearchQuery = require(&#039;./models/SearchQuery&#039;);
+
+const PORT = 3000;
+const FRONTEND_DIR = path.join(__dirname, &#039;..&#039;, &#039;front_end&#039;);
+const envPath = path.join(__dirname, &#039;.env.local&#039;);
+const SERPAPI_BASE = &#039;https://serpapi.com/search.json&#039;;
+
+let SERPAPI_KEY = &#039;&#039;;
+try {
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, &#039;utf-8&#039;);
+    const match = envContent.match(/SERPAPI_KEY=(.+)/);
+    if (match) SERPAPI_KEY = match[1].trim();
+  } else {
+    console.warn(&#039;[startup] .env.local not found; SerpAPI key missing&#039;);
+  }
+} catch (err) {
+  console.warn(&#039;[startup] Could not read .env.local:&#039;, err.message);
+}
+
+const FALLBACK_PLACES = [
+  {
+    name: &#039;Riverside Bangkok Hotel&#039;,
+    category: &#039;hotel&#039;,
+    lat: 13.7248,
+    lng: 100.5108,
+    address: &#039;257/1-3 Charoen Nakhon Rd, Bangkok&#039;,
+    rating: 4.5,
+    thumbnail: &#039;&#039;,
+  },
+  {
+    name: &#039;Grandma Kitchen&#039;,
+    category: &#039;restaurant&#039;,
+    lat: 13.7301,
+    lng: 100.5220,
+    address: &#039;12 Sukhumvit 26, Bangkok&#039;,
+    rating: 4.7,
+    thumbnail: &#039;&#039;,
+  },
+  {
+    name: &#039;Rajamangala National Stadium&#039;,
+    category: &#039;sport&#039;,
+    lat: 13.7553,
+    lng: 100.6210,
+    address: &#039;Ramkhamhaeng Rd, Bangkok&#039;,
+    rating: 4.2,
+    thumbnail: &#039;&#039;,
+  },
+  {
+    name: &#039;Wat Phra Kaew&#039;,
+    category: &#039;tourist&#039;,
+    lat: 13.7516,
+    lng: 100.4927,
+    address: &#039;Na Phra Lan Rd, Bangkok&#039;,
+    rating: 4.9,
+    thumbnail: &#039;&#039;,
+  },
+  {
+    name: &#039;Cafe Amazon Siam Square&#039;,
+    category: &#039;restaurant&#039;,
+    lat: 13.7455,
+    lng: 100.5346,
+    address: &#039;Siam Square Soi 3, Bangkok&#039;,
+    rating: 4.0,
+    thumbnail: &#039;&#039;,
+  },
+  {
+    name: &#039;The Sukhothai Bangkok&#039;,
+    category: &#039;hotel&#039;,
+    lat: 13.7225,
+    lng: 100.5355,
+    address: &#039;13/3 South Sathorn Rd, Bangkok&#039;,
+    rating: 4.8,
+    thumbnail: &#039;&#039;,
+  },
+];
+
+const MIME_TYPES = {
+  &#039;.html&#039;: &#039;text/html; charset=utf-8&#039;,
+  &#039;.css&#039;: &#039;text/css; charset=utf-8&#039;,
+  &#039;.js&#039;: &#039;application/javascript; charset=utf-8&#039;,
+  &#039;.json&#039;: &#039;application/json&#039;,
+  &#039;.png&#039;: &#039;image/png&#039;,
+  &#039;.jpg&#039;: &#039;image/jpeg&#039;,
+  &#039;.svg&#039;: &#039;image/svg+xml&#039;,
+  &#039;.ico&#039;: &#039;image/x-icon&#039;,
+};
+
+function sendJson(res, statusCode, payload) {
+  res.writeHead(statusCode, { &#039;Content-Type&#039;: &#039;application/json&#039; });
+  res.end(JSON.stringify(payload));
+}
+
+function getErrorMessage(error) {
+  if (!error) return &#039;Unknown error&#039;;
+  if (Array.isArray(error.errors) &amp;&amp; error.errors.length &gt; 0) {
+    return error.errors
+      .map((item) =&gt; getErrorMessage(item))
+      .filter(Boolean)
+      .join(&#039;; &#039;);
+  }
+  if (error instanceof Error &amp;&amp; error.message) return error.message;
+  if (error &amp;&amp; error.code) return String(error.code);
+  return String(error);
+}
+
+function getRemoteClient(targetUrl) {
+  return targetUrl.startsWith(&#039;https://&#039;) ? https : http;
+}
+
+function fetchImageBuffer(targetUrl, redirectCount = 0) {
+  return new Promise((resolve, reject) =&gt; {
+    if (!targetUrl || redirectCount &gt; 5) {
+      reject(new Error(&#039;Invalid image URL&#039;));
+      return;
+    }
+
+    const client = getRemoteClient(targetUrl);
+    client.get(targetUrl, (remoteRes) =&gt; {
+      const statusCode = remoteRes.statusCode || 500;
+      const location = remoteRes.headers.location;
+
+      if ([301, 302, 303, 307, 308].includes(statusCode) &amp;&amp; location) {
+        const redirectUrl = new URL(location, targetUrl).toString();
+        remoteRes.resume();
+        resolve(fetchImageBuffer(redirectUrl, redirectCount + 1));
+        return;
+      }
+
+      if (statusCode &lt; 200 || statusCode &gt;= 300) {
+        remoteRes.resume();
+        reject(new Error(`Image request failed with status ${statusCode}`));
+        return;
+      }
+
+      const chunks = [];
+      remoteRes.on(&#039;data&#039;, (chunk) =&gt; chunks.push(chunk));
+      remoteRes.on(&#039;end&#039;, () =&gt; {
+        resolve({
+          buffer: Buffer.concat(chunks),
+          contentType: remoteRes.headers[&#039;content-type&#039;] || &#039;image/jpeg&#039;,
+          cacheControl: remoteRes.headers[&#039;cache-control&#039;] || &#039;public, max-age=3600&#039;,
+        });
+      });
+    }).on(&#039;error&#039;, reject);
+  });
+}
+
+function fetchJSON(reqUrl) {
+  return new Promise((resolve, reject) =&gt; {
+    https.get(reqUrl, (remoteRes) =&gt; {
+      let data = &#039;&#039;;
+      remoteRes.on(&#039;data&#039;, (chunk) =&gt; {
+        data += chunk;
+      });
+      remoteRes.on(&#039;end&#039;, () =&gt; {
+        const statusCode = remoteRes.statusCode || 500;
+        if (statusCode &lt; 200 || statusCode &gt;= 300) {
+          reject(new Error(`SerpAPI HTTP ${statusCode}`));
+          return;
+        }
+
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.error) {
+            reject(new Error(`SerpAPI error: ${parsed.error}`));
+            return;
+          }
+          resolve(parsed);
+        } catch (err) {
+          reject(new Error(`Invalid JSON from SerpAPI: ${err.message}`));
+        }
+      });
+    }).on(&#039;error&#039;, reject);
+  });
+}
+
+function setCorsHeaders(res) {
+  res.setHeader(&#039;Access-Control-Allow-Origin&#039;, &#039;*&#039;);
+  res.setHeader(&#039;Access-Control-Allow-Methods&#039;, &#039;GET, POST, OPTIONS&#039;);
+  res.setHeader(&#039;Access-Control-Allow-Headers&#039;, &#039;Content-Type&#039;);
+}
+
+function readBody(req) {
+  return new Promise((resolve, reject) =&gt; {
+    let body = &#039;&#039;;
+    req.on(&#039;data&#039;, (chunk) =&gt; {
+      body += chunk;
+    });
+    req.on(&#039;end&#039;, () =&gt; {
+      try {
+        resolve(body ? JSON.parse(body) : {});
+      } catch (err) {
+        reject(new Error(&#039;Invalid JSON body&#039;));
+      }
+    });
+  });
+}
+
+function normalizeServerPlace(rawPlace, latitude, longitude, requestedCategory) {
+  const resolvedCategory = requestedCategory === &#039;all&#039;
+    ? (rawPlace.category || Place.detectCategoryFromType(rawPlace.type || &#039;&#039;))
+    : requestedCategory;
+
+  const place = new Place({
+    ...rawPlace,
+    category: resolvedCategory,
+  });
+
+  if (!place.hasValidCoordinates()) {
+    return null;
+  }
+
+  const distance = place.distanceFrom(latitude, longitude);
+  if (Number.isNaN(distance)) {
+    return null;
+  }
+
+  place.distance = parseFloat(distance.toFixed(2));
+
+  return {
+    ...place.toJSON(),
+    image: rawPlace.image || &#039;&#039;,
+    photo: rawPlace.photo || &#039;&#039;,
+    imageUrl: rawPlace.imageUrl || rawPlace.image_url || &#039;&#039;,
+    photoUrl: rawPlace.photoUrl || rawPlace.photo_url || &#039;&#039;,
+    images: Array.isArray(rawPlace.images) ? rawPlace.images : [],
+    photos: Array.isArray(rawPlace.photos) ? rawPlace.photos : [],
+  };
+}
+
+function mapSerpApiPlace(rawPlace, latitude, longitude, requestedCategory) {
+  return normalizeServerPlace({
+    name: rawPlace.title || &#039;Unknown&#039;,
+    category: Place.detectCategoryFromType(rawPlace.type || &#039;&#039;),
+    lat: rawPlace.gps_coordinates &amp;&amp; rawPlace.gps_coordinates.latitude ? rawPlace.gps_coordinates.latitude : null,
+    lng: rawPlace.gps_coordinates &amp;&amp; rawPlace.gps_coordinates.longitude ? rawPlace.gps_coordinates.longitude : null,
+    address: rawPlace.address || &#039;&#039;,
+    rating: rawPlace.rating || null,
+    type: rawPlace.type || &#039;&#039;,
+    thumbnail: rawPlace.thumbnail || rawPlace.image || rawPlace.photo || (rawPlace.images &amp;&amp; rawPlace.images[0]) || (rawPlace.photos &amp;&amp; rawPlace.photos[0]) || &#039;&#039;,
+    image: rawPlace.image || &#039;&#039;,
+    photo: rawPlace.photo || &#039;&#039;,
+    image_url: rawPlace.image_url || &#039;&#039;,
+    photo_url: rawPlace.photo_url || &#039;&#039;,
+    images: Array.isArray(rawPlace.images) ? rawPlace.images : [],
+    photos: Array.isArray(rawPlace.photos) ? rawPlace.photos : [],
+  }, latitude, longitude, requestedCategory);
+}
+
+function buildFallbackResults(searchQuery) {
+  return FALLBACK_PLACES
+    .filter((place) =&gt; searchQuery.category === &#039;all&#039; || place.category === searchQuery.category)
+    .map((place) =&gt; normalizeServerPlace(place, searchQuery.latitude, searchQuery.longitude, searchQuery.category))
+    .filter((place) =&gt; place &amp;&amp; place.distance &lt;= searchQuery.radius)
+    .sort((a, b) =&gt; a.distance - b.distance);
+}
+
+async function getScanResults(searchQuery) {
+  if (!SERPAPI_KEY) {
+    return {
+      results: buildFallbackResults(searchQuery),
+      source: &#039;fallback&#039;,
+      warning: &#039;SERPAPI_KEY is missing; using local fallback data.&#039;,
+    };
+  }
+
+  const params = searchQuery.toSerpApiParams(SERPAPI_KEY);
+  const serpUrl = `${SERPAPI_BASE}?${new URLSearchParams(params).toString()}`;
+  console.log(`[scan] Calling SerpAPI: ${searchQuery.getSearchQuery()} near ${searchQuery.latitude},${searchQuery.longitude}`);
+
+  try {
+    const data = await fetchJSON(serpUrl);
+    const results = (data.local_results || [])
+      .map((place) =&gt; mapSerpApiPlace(place, searchQuery.latitude, searchQuery.longitude, searchQuery.category))
+      .filter((place) =&gt; place &amp;&amp; place.distance &lt;= searchQuery.radius)
+      .sort((a, b) =&gt; a.distance - b.distance);
+
+    return {
+      results,
+      source: &#039;serpapi&#039;,
+      warning: results.length === 0 ? &#039;No places returned from SerpAPI for this query.&#039; : null,
+    };
+  } catch (error) {
+    return {
+      results: buildFallbackResults(searchQuery),
+      source: &#039;fallback&#039;,
+      warning: `SerpAPI failed: ${getErrorMessage(error)}. Using local fallback data.`,
+    };
+  }
+}
+
+async function handleScan(req, res) {
+  if (req.method !== &#039;POST&#039;) {
+    sendJson(res, 405, { error: &#039;Method Not Allowed&#039; });
+    return;
+  }
+
+  try {
+    const body = await readBody(req);
+    const searchQuery = new SearchQuery({
+      latitude: Number(body.latitude),
+      longitude: Number(body.longitude),
+      radius: Number(body.radius) || 5,
+      category: body.category,
+    });
+    const validation = searchQuery.validate();
+
+    if (!validation.valid) {
+      const details = validation.errors.map((code) =&gt; {
+        if (code === &#039;INVALID_LATITUDE&#039;) return &#039;Latitude must be a number between -90 and 90.&#039;;
+        if (code === &#039;INVALID_LONGITUDE&#039;) return &#039;Longitude must be a number between -180 and 180.&#039;;
+        return code;
+      });
+
+      sendJson(res, 400, {
+        error: &#039;Invalid scan request.&#039;,
+        details,
+      });
+      return;
+    }
+
+    console.log(
+      `[scan] Request lat=${searchQuery.latitude} lng=${searchQuery.longitude} radius=${searchQuery.radius} category=${searchQuery.category}`
+    );
+
+    const scanResult = await getScanResults(searchQuery);
+    console.log(`[scan] Returning ${scanResult.results.length} place(s) from ${scanResult.source}`);
+    sendJson(res, 200, scanResult);
+  } catch (err) {
+    const message = getErrorMessage(err);
+    console.error(&#039;[scan] Unhandled error:&#039;, message);
+    sendJson(res, 500, {
+      error: &#039;Scan request failed.&#039;,
+      details: [message],
+    });
+  }
+}
+
+async function handleImageProxy(req, res) {
+  try {
+    const parsed = new URL(req.url, `http://${req.headers.host}`);
+    const imageUrl = parsed.searchParams.get(&#039;url&#039;);
+
+    if (!imageUrl || !/^https?:\/\//i.test(imageUrl)) {
+      sendJson(res, 400, { error: &#039;Missing or invalid image url&#039; });
+      return;
+    }
+
+    const { buffer, contentType, cacheControl } = await fetchImageBuffer(imageUrl);
+    res.writeHead(200, {
+      &#039;Content-Type&#039;: contentType,
+      &#039;Cache-Control&#039;: cacheControl,
+    });
+    res.end(buffer);
+  } catch (err) {
+    console.error(&#039;[image] Proxy error:&#039;, getErrorMessage(err));
+    sendJson(res, 502, { error: &#039;Could not load image&#039; });
+  }
+}
+
+const server = http.createServer(async (req, res) =&gt; {
+  setCorsHeaders(res);
+
+  if (req.method === &#039;OPTIONS&#039;) {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
+  const parsed = url.parse(req.url, true);
+  let pathname = parsed.pathname;
+
+  if (pathname === &#039;/scan&#039;) {
+    return handleScan(req, res);
+  }
+
+  if (pathname === &#039;/image&#039;) {
+    return handleImageProxy(req, res);
+  }
+
+  if (pathname === &#039;/&#039;) {
+    pathname = &#039;/index.html&#039;;
+  }
+
+  const filePath = path.join(FRONTEND_DIR, decodeURIComponent(pathname));
+
+  fs.stat(filePath, (err, stats) =&gt; {
+    if (err || !stats.isFile()) {
+      res.writeHead(404, { &#039;Content-Type&#039;: &#039;text/plain&#039; });
+      res.end(&#039;Not found&#039;);
+      return;
+    }
+
+    const ext = path.extname(filePath);
+    res.writeHead(200, {
+      &#039;Content-Type&#039;: MIME_TYPES[ext] || &#039;application/octet-stream&#039;,
+    });
+    fs.createReadStream(filePath).pipe(res);
+  });
+});
+
+server.listen(PORT, () =&gt; {
+  console.log(&#039;&#039;);
+  console.log(&#039;==========================================&#039;);
+  console.log(`  PinMe server running on http://localhost:${PORT}/`);
+  console.log(`  Scan API: http://localhost:${PORT}/scan`);
+  console.log(`  SerpAPI:  ${SERPAPI_KEY ? &#039;loaded&#039; : &#039;missing -&gt; fallback mode&#039;}`);
+  console.log(&#039;==========================================&#039;);
+  console.log(&#039;&#039;);
+});</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

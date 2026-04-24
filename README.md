@@ -283,6 +283,7 @@ Issue ที่อยู่ใน Sprint 1 :
   API key ไม่ควรถูกเปิดเผยใน Frontend โดยให้ Backend เป็นตัวกลางในการเรียก SerpAPI
 - **NFR-08: Compatibility**
   ระบบควรใช้งานได้บนเว็บเบราว์เซอร์ทั่วไป เช่น Chrome, Edge, Firefox และรองรับหน้าจอหลายขนาด
+
 ## 13) Architectural design
 ```mermaid
 flowchart LR
@@ -1013,43 +1014,55 @@ graph TB
 
 ## 4. Profiling Results (Performance)
 
-### 4.1 Static Profiling (ESLint)
+### 4.1 Static Profiling (Plato)
 
-**เครื่องมือ:** ESLint  
-**วิธีการ:** รัน ESLint ตรวจสอบ code quality ทั้ง frontend และ backend
+**เครื่องมือ:** Plato  
+**วิธีการ:** รัน `npx plato` เพื่อวิเคราะห์ความซับซ้อนของโค้ด (Complexity) และความสามารถในการบำรุงรักษา (Maintainability) ทั้งใน Phase 3 และ Phase 4
 
 #### Phase 3 Results
 
-![profiling_results](docs/profiling/eslint_phase3.png)
+![profiling_results](docs/profiling/plato_phase3.png)
 
-| หัวข้อ | Phase 3 |
-|---|---|
-| จำนวน Errors | 0 |
-| จำนวน Warnings | 8 |
-| ไฟล์ที่มีปัญหา | `Place.js`, `server.js`, `app.js`, `map.js`, `block-navigation.js` |
-| ประเภทปัญหาหลัก | complexity (4 จุด), no-unused-vars (3 จุด) |
+| ไฟล์ | Maintainability | Lines of Code (SLOC) |
+|---|---|---|
+| `mockData.js` | 47.67 | 60 |
+| `translations.js` | 34.79 | 144 |
+| `tripPlanner.js` (front_end) | 68.68 | 87 |
+| `helpers.js` | 75.74 | 58 |
+| `TripPlanner.js` (back_end) | 66.44 | 169 |
+| **Average** | **58.67** | **Total: 518** |
 
 #### Phase 4 Results
 
-![profiling_results](docs/profiling/eslint_phase4.png)
+![profiling_results](docs/profiling/plato_phase4.png)
 
-| หัวข้อ | Phase 4 |
-|---|---|
-| จำนวน Errors | 0 |
-| จำนวน Warnings | 9 |
-| ไฟล์ที่มีปัญหา | `Place.js`, `server.js`, `app.js`, `map.js`, `block-navigation.js` |
-| ประเภทปัญหาหลัก | complexity (6 จุด), no-unused-vars (2 จุด) |
+| ไฟล์ที่ถูกวิเคราะห์ | Maintainability | Lines of Code (SLOC) |
+|---|---|---|
+| `app.js` (front_end) | 69.15 | 862 |
+| `tripPage.js` (front_end) | 72.08 | 298 |
+| `favoritesPage.js` (front_end) | 72.04 | 197 |
+| `tripPlanner.js` (front_end) | 68.30 | 118 |
+| `map.js` (front_end) | 61.16 | 192 |
+| `helpers.js` (front_end) | 75.74 | 61 |
+| `server.js` (back_end) | 68.13 | 426 |
+| `Place.js` (back_end) | 67.88 | 138 |
+| `SearchQuery.js` (back_end) | 72.60 | 99 |
+| `TripPlanner.js` (back_end) | 66.44 | 169 |
+| **Average (10 ไฟล์)** | **69.35** | **Total: 2,560** |
+
+*หมายเหตุ: ยกเว้นไฟล์ Static Data (`mockData.js`, `translations.js`) ออกจากการวิเคราะห์ เนื่องจากเป็นไฟล์ข้อมูลที่ไม่มี Logic แต่จะดึงค่า Maintainability เฉลี่ยลงอย่างมาก*
 
 #### เปรียบเทียบ Static Profiling
 
 | Metric | Phase 3 | Phase 4 | ∆ Change |
 |---|---|---|---|
-| Total Errors | 0 | 0 | 0 |
-| Total Warnings | 8 | 9 | +1 |
-| Files with Issues | 5 | 5 | 0 |
+| Total SLOC | 518 | 2,560 | +2,042 |
+| Average Maintainability | 58.67 | 69.35 | +10.68 |
+| Files Analyzed | 5 | 10 | +5 |
 
 **วิเคราะห์:**
-- Phase 4 มี Warning เรื่อง 'complexity' เพิ่มขึ้นมา 2 จุดในฝั่ง backend (`normalizeServerPlace`) และ frontend (`createPlaceCard`) เพราะใน Phase 4 มีการเพิ่มการดึงข้อมูลและจัดการองค์ประกอบ UI ที่ซับซ้อนขึ้น อย่างไรก็ตามตัวระบบไม่เกิด Error หรือ Critical Bug โดยรวมถือว่า Code Quality ยังอยู่ในเกณฑ์เสถียรและโครงสร้างดีขึ้นจากการมีตัวแปรไม่ถูกใช้น้อยลง ('no-unused-vars' ลดลง)
+- **Files Analyzed & SLOC:** จำนวนไฟล์ที่วิเคราะห์ได้เพิ่มขึ้นจาก 5 เป็น 10 ไฟล์ และ SLOC รวมเพิ่มจาก 518 เป็น 2,560 บรรทัด สาเหตุมาจากการ Refactor โค้ดโดยเปลี่ยน syntax สมัยใหม่ (เช่น Optional Chaining `?.`, Nullish Coalescing `??`, Optional catch binding) ให้เข้ากันได้กับ parser ของ Plato ทำให้สามารถวิเคราะห์ไฟล์ลอจิกหลักทั้งหมดได้สำเร็จ (เช่น `app.js`, `server.js`, `tripPage.js`)
+- **Maintainability:** คะแนนเฉลี่ยเพิ่มขึ้นอย่างมีนัยสำคัญจาก 58.67 เป็น **69.35** (+10.68) ซึ่งอยู่ในเกณฑ์ที่ดี สาเหตุหลักมาจากการแยกไฟล์ data ออกจากการคำนวณ และโครงสร้าง Modular ที่แบ่ง Logic ออกเป็นไฟล์ย่อยอย่างชัดเจน โดยไฟล์อย่าง `helpers.js` (75.74), `tripPage.js` (72.08), `SearchQuery.js` (72.60) ได้คะแนนสูงมาก ขณะที่ไฟล์ขนาดใหญ่อย่าง `app.js` ยังคงรักษาคะแนนอยู่ที่ 69.15 แม้จะมีความซับซ้อนสูง
 
 ---
 

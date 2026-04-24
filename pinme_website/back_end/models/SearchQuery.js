@@ -21,8 +21,8 @@ class SearchQuery {
    * @param {string} [data.category='all']
    */
   constructor(data = {}) {
-    this.latitude = data.latitude ?? null;
-    this.longitude = data.longitude ?? null;
+    this.latitude = data.latitude != null ? data.latitude : null;
+    this.longitude = data.longitude != null ? data.longitude : null;
     this.radius = data.radius || 3;
     this.category = SearchQuery.VALID_CATEGORIES.includes(data.category) ? data.category : 'all';
   }

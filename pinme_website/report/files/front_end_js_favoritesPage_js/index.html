@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - front_end\js\favoritesPage.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>front_end\js\favoritesPage.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">72.04</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">197</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">27.57</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">2.19</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">import { escapeHtml, getCategoryBadge, getCategoryIcon, showToast } from &#039;./utils/helpers.js&#039;;
+
+const FAVORITES_STORAGE_KEY = &#039;pinme_favorites&#039;;
+const PAGE_COPY = {
+  en: {
+    nav_scanner: &#039;Scanner&#039;,
+    nav_favorites: &#039;Favorites&#039;,
+    nav_trip: &#039;Trip Planner&#039;,
+    fav_kicker: &#039;Saved Places&#039;,
+    fav_title: &#039;Favorites&#039;,
+    fav_subtitle: &#039;Review places pinned from the scanner and remove places that no longer fit your trip.&#039;,
+    fav_saved: &#039;Saved&#039;,
+    fav_storage: &#039;Storage&#039;,
+    fav_local: &#039;Local&#039;,
+    fav_panel_kicker: &#039;Favorite Places&#039;,
+    fav_panel_title: &#039;Pinned location list&#039;,
+    fav_scan_more: &#039;Scan more&#039;,
+    fav_empty_title: &#039;No favorite places yet&#039;,
+    fav_empty_desc: &#039;Open the Scanner page, search for nearby places, then pin cards to save them here.&#039;,
+    res_badge_hotel: &#039;Hotel&#039;,
+    res_badge_restaurant: &#039;Restaurant&#039;,
+    res_badge_sport: &#039;Sport&#039;,
+    res_badge_tourist: &#039;Tourist&#039;,
+    unit_km: &#039;km&#039;,
+    unit_m: &#039;m&#039;,
+    saved_flag: &#039;Saved&#039;,
+    rating_label: &#039;Rating&#039;,
+    plan_trip: &#039;Plan trip&#039;,
+    remove: &#039;Remove&#039;,
+    removed: &#039;Removed&#039;,
+  },
+  th: {
+    nav_scanner: &#039;สแกน&#039;,
+    nav_favorites: &#039;รายการโปรด&#039;,
+    nav_trip: &#039;แผนทริป&#039;,
+    fav_kicker: &#039;สถานที่ที่บันทึกไว้&#039;,
+    fav_title: &#039;รายการโปรด&#039;,
+    fav_subtitle: &#039;ดูสถานที่ที่ปักหมุดจากหน้า Scanner และลบสถานที่ที่ไม่ต้องการออกจากแผนได้&#039;,
+    fav_saved: &#039;บันทึกแล้ว&#039;,
+    fav_storage: &#039;การเก็บข้อมูล&#039;,
+    fav_local: &#039;ในเครื่อง&#039;,
+    fav_panel_kicker: &#039;สถานที่โปรด&#039;,
+    fav_panel_title: &#039;รายการสถานที่ที่ปักหมุด&#039;,
+    fav_scan_more: &#039;สแกนเพิ่ม&#039;,
+    fav_empty_title: &#039;ยังไม่มีสถานที่โปรด&#039;,
+    fav_empty_desc: &#039;เปิดหน้า Scanner ค้นหาสถานที่ใกล้เคียง แล้วกดบันทึกการ์ดสถานที่เพื่อแสดงที่นี่&#039;,
+    res_badge_hotel: &#039;โรงแรม&#039;,
+    res_badge_restaurant: &#039;ร้านอาหาร&#039;,
+    res_badge_sport: &#039;กีฬา&#039;,
+    res_badge_tourist: &#039;ท่องเที่ยว&#039;,
+    unit_km: &#039;กม.&#039;,
+    unit_m: &#039;ม.&#039;,
+    saved_flag: &#039;บันทึกแล้ว&#039;,
+    rating_label: &#039;คะแนน&#039;,
+    plan_trip: &#039;วางแผนทริป&#039;,
+    remove: &#039;ลบ&#039;,
+    removed: &#039;ลบแล้ว&#039;,
+  },
+};
+
+const grid = document.getElementById(&#039;favoritesPageGrid&#039;);
+const emptyState = document.getElementById(&#039;favoritesEmptyState&#039;);
+const favoriteTotal = document.getElementById(&#039;favoriteTotal&#039;);
+const langToggleBtn = document.getElementById(&#039;langToggleBtn&#039;);
+const themeToggleBtn = document.getElementById(&#039;themeToggleBtn&#039;);
+
+let currentLang = localStorage.getItem(&#039;pinme_lang&#039;) || &#039;th&#039;;
+let isDarkTheme = localStorage.getItem(&#039;pinme_theme&#039;) !== &#039;light&#039;;
+
+function getDict() {
+  return PAGE_COPY[currentLang] || PAGE_COPY.en;
+}
+
+function applyTheme() {
+  document.documentElement.classList.toggle(&#039;light-theme&#039;, !isDarkTheme);
+  themeToggleBtn.textContent = isDarkTheme ? &#039;☀&#039; : &#039;☾&#039;;
+}
+
+function applyTranslations() {
+  const dict = getDict();
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll(&#039;[data-i18n]&#039;).forEach((el) =&gt; {
+    const key = el.getAttribute(&#039;data-i18n&#039;);
+    if (dict[key]) el.textContent = dict[key];
+  });
+  langToggleBtn.textContent = currentLang === &#039;th&#039; ? &#039;TH&#039; : &#039;EN&#039;;
+  renderFavorites();
+}
+
+function loadFavorites() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || &#039;[]&#039;);
+    return Array.isArray(saved) ? saved : [];
+  } catch (err) {
+    return [];
+  }
+}
+
+function saveFavorites(places) {
+  localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(places));
+}
+
+function getPlaceId(place) {
+  const lat = place.lat != null ? place.lat : (place.latitude != null ? place.latitude : &#039;&#039;);
+  const lng = place.lng != null ? place.lng : (place.longitude != null ? place.longitude : &#039;&#039;);
+  return [
+    String(place.name || &#039;&#039;).trim().toLowerCase(),
+    String(place.address || &#039;&#039;).trim().toLowerCase(),
+    String(lat),
+    String(lng),
+  ].join(&#039;|&#039;);
+}
+
+function formatDistance(distance) {
+  const dict = getDict();
+  if (distance == null || Number.isNaN(Number(distance))) return &#039;&#039;;
+  const numericDistance = Number(distance);
+  if (numericDistance &lt; 1) return `${(numericDistance * 1000).toFixed(0)} ${dict.unit_m}`;
+  return `${numericDistance.toFixed(1)} ${dict.unit_km}`;
+}
+
+function renderFavorites() {
+  const dict = getDict();
+  const favorites = loadFavorites();
+  favoriteTotal.textContent = String(favorites.length);
+  grid.innerHTML = &#039;&#039;;
+
+  if (favorites.length === 0) {
+    emptyState.style.display = &#039;flex&#039;;
+    return;
+  }
+
+  emptyState.style.display = &#039;none&#039;;
+
+  favorites.forEach((place, index) =&gt; {
+    const category = place.category || &#039;tourist&#039;;
+    const icon = getCategoryIcon(category);
+    const distance = formatDistance(place.distance);
+    const card = document.createElement(&#039;article&#039;);
+    card.className = &#039;result-card favorite-card&#039;;
+    card.style.animationDelay = `${index * 0.05}s`;
+    card.innerHTML = `
+      &lt;div class=&quot;card-visual&quot;&gt;
+        ${place.thumbnail ? `&lt;img class=&quot;card-thumb&quot; src=&quot;${escapeHtml(place.thumbnail)}&quot; alt=&quot;${escapeHtml(place.name || &#039;Favorite place&#039;)}&quot; /&gt;` : `&lt;div class=&quot;card-icon card-icon-large&quot;&gt;${icon}&lt;/div&gt;`}
+        &lt;div class=&quot;card-visual-overlay&quot;&gt;
+          &lt;div class=&quot;card-topline&quot;&gt;
+            &lt;span class=&quot;card-index&quot;&gt;#${String(index + 1).padStart(2, &#039;0&#039;)}&lt;/span&gt;
+            &lt;span class=&quot;card-favorite-flag&quot;&gt;${dict.saved_flag}&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;card-visual-meta&quot;&gt;
+            ${getCategoryBadge(category, dict)}
+            ${distance ? `&lt;span class=&quot;meta-pill meta-pill-on-image&quot;&gt;${distance}&lt;/span&gt;` : &#039;&#039;}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;card-body&quot;&gt;
+        &lt;div class=&quot;card-content&quot;&gt;
+          &lt;h3 class=&quot;card-title&quot;&gt;${escapeHtml(place.name || &#039;Unknown place&#039;)}&lt;/h3&gt;
+          ${place.address ? `&lt;p class=&quot;card-address&quot;&gt;${escapeHtml(place.address)}&lt;/p&gt;` : &#039;&#039;}
+          &lt;div class=&quot;card-meta&quot;&gt;
+            ${place.rating ? `&lt;span class=&quot;meta-pill meta-pill-star&quot;&gt;${dict.rating_label} ${escapeHtml(String(place.rating))}&lt;/span&gt;` : &#039;&#039;}
+            ${distance ? `&lt;span class=&quot;meta-pill&quot;&gt;${distance}&lt;/span&gt;` : &#039;&#039;}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;card-actions two-actions&quot;&gt;
+        &lt;a class=&quot;card-btn card-btn-trip page-card-link&quot; href=&quot;trip-planner.html&quot;&gt;${dict.plan_trip}&lt;/a&gt;
+        &lt;button class=&quot;card-btn card-btn-pin pinned&quot; type=&quot;button&quot;&gt;${dict.remove}&lt;/button&gt;
+      &lt;/div&gt;
+    `;
+
+    card.querySelector(&#039;button&#039;).addEventListener(&#039;click&#039;, () =&gt; {
+      const id = place.placeId || getPlaceId(place);
+      const nextFavorites = loadFavorites().filter((item) =&gt; (item.placeId || getPlaceId(item)) !== id);
+      saveFavorites(nextFavorites);
+      showToast(`${dict.removed} &quot;${place.name || &#039;place&#039;}&quot;`, &#039;warning&#039;);
+      renderFavorites();
+    });
+
+    grid.appendChild(card);
+  });
+}
+
+langToggleBtn.addEventListener(&#039;click&#039;, () =&gt; {
+  currentLang = currentLang === &#039;th&#039; ? &#039;en&#039; : &#039;th&#039;;
+  localStorage.setItem(&#039;pinme_lang&#039;, currentLang);
+  applyTranslations();
+});
+
+themeToggleBtn.addEventListener(&#039;click&#039;, () =&gt; {
+  isDarkTheme = !isDarkTheme;
+  localStorage.setItem(&#039;pinme_theme&#039;, isDarkTheme ? &#039;dark&#039; : &#039;light&#039;);
+  applyTheme();
+});
+
+applyTheme();
+applyTranslations();</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

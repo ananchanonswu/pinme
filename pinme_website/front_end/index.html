@@ -36,7 +36,7 @@
         <div class="hero-brand">
           <div class="logo-icon">📍</div>
           <div>
-            <p class="hero-kicker">Location Discovery Dashboard</p>
+            <p class="hero-kicker" data-i18n="hero_kicker">Location Discovery Dashboard</p>
             <h1 class="hero-title">Pin<span>Me</span></h1>
           </div>
         </div>
@@ -45,15 +45,15 @@
 
       <div class="hero-stats">
         <div class="hero-stat">
-          <span class="hero-stat-label">Radius</span>
+          <span class="hero-stat-label" data-i18n="stat_radius">Radius</span>
           <strong id="heroRadiusValue">3 km</strong>
         </div>
         <div class="hero-stat">
-          <span class="hero-stat-label">Category</span>
+          <span class="hero-stat-label" data-i18n="stat_category">Category</span>
           <strong id="heroCategoryValue">All places</strong>
         </div>
         <div class="hero-stat">
-          <span class="hero-stat-label">Results</span>
+          <span class="hero-stat-label" data-i18n="stat_results">Results</span>
           <strong id="heroResultsValue">Ready</strong>
         </div>
       </div>
@@ -64,8 +64,8 @@
         <section class="glass-card panel-card search-panel">
           <div class="panel-head">
             <div>
-              <p class="panel-eyebrow">Navigator</p>
-              <h2 class="panel-title">Scan Nearby</h2>
+              <p class="panel-eyebrow" data-i18n="panel_navigator">Navigator</p>
+              <h2 class="panel-title" data-i18n="panel_scan_nearby">Scan Nearby</h2>
             </div>
             <button type="button" id="gpsBtn" class="gps-btn">
               <span class="gps-icon">📡</span>
@@ -76,12 +76,12 @@
           <form id="searchForm" autocomplete="off" class="stack-lg">
             <div class="scan-summary">
               <div class="summary-card">
-                <span class="summary-label">Search Window</span>
+                <span class="summary-label" data-i18n="summary_search_window">Search Window</span>
                 <strong id="summaryRadiusValue">3 km</strong>
                 <p id="summaryHint" class="summary-text">Adjust the distance and scan for places that match your trip.</p>
               </div>
               <div class="summary-card summary-card-accent">
-                <span class="summary-label">Preview</span>
+                <span class="summary-label" data-i18n="summary_preview">Preview</span>
                 <strong id="summaryCategoryValue">All categories</strong>
                 <p id="summaryCategoryHint" class="summary-text">Balanced scan radius for nearby discovery.</p>
               </div>
@@ -91,11 +91,11 @@
               <label class="form-label" data-i18n="label_coords">พิกัดตำแหน่ง</label>
               <div class="field-grid">
                 <div class="input-shell">
-                  <span class="input-label">LAT</span>
+                  <span class="input-label" data-i18n="input_lat">LAT</span>
                   <input type="number" id="latitude" class="form-input" placeholder="Latitude" step="any" min="-90" max="90" required />
                 </div>
                 <div class="input-shell">
-                  <span class="input-label">LNG</span>
+                  <span class="input-label" data-i18n="input_lng">LNG</span>
                   <input type="number" id="longitude" class="form-input" placeholder="Longitude" step="any" min="-180" max="180" required />
                 </div>
               </div>
@@ -108,7 +108,7 @@
               <div class="radius-control">
                 <div class="radius-metrics">
                   <div>
-                    <span class="radius-value-label">Live radius</span>
+                    <span class="radius-value-label" data-i18n="live_radius">Live radius</span>
                     <strong id="radiusValueDisplay" class="radius-value-display">3.0 km</strong>
                   </div>
                   <div class="radius-note">0.5 - 30 km</div>
@@ -184,7 +184,7 @@
         <section class="glass-card panel-card trip-panel">
           <div class="panel-head compact">
             <div>
-              <p class="panel-eyebrow">Planner</p>
+              <p class="panel-eyebrow" data-i18n="panel_planner">Planner</p>
               <h2 class="panel-title" data-i18n="title_trip">🗓️ แผนการเดินทาง 1 วัน</h2>
             </div>
           </div>
@@ -230,7 +230,7 @@
         <section id="favoritesSection" class="glass-card panel-card panel-list results-container visible">
           <div class="panel-head">
             <div>
-              <p class="panel-eyebrow">Saved</p>
+              <p class="panel-eyebrow" data-i18n="panel_saved">Saved</p>
               <h2 class="panel-title" data-i18n="title_favorites">⭐ สถานที่โปรด</h2>
             </div>
             <span id="favoritesCount" class="count-pill">0</span>
@@ -246,7 +246,7 @@
         <section id="resultsContainer" class="glass-card panel-card panel-list results-container">
           <div class="panel-head">
             <div>
-              <p class="panel-eyebrow">Discover</p>
+              <p class="panel-eyebrow" data-i18n="panel_discover">Discover</p>
               <h2 class="panel-title" data-i18n="title_results">📋 ผลลัพธ์</h2>
             </div>
             <span id="resultsCount" class="count-pill">0</span>
@@ -311,7 +311,7 @@
     </div>
 
     <footer class="app-footer">
-      <p>© 2026 PinMe • Location Scanner</p>
+      <p data-i18n="footer_text">© 2026 PinMe • Location Scanner</p>
     </footer>
   </main>
 

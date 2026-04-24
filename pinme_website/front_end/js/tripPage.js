@@ -119,7 +119,7 @@ function readJson(key, fallback) {
   try {
     const parsed = JSON.parse(localStorage.getItem(key) || 'null');
     return Array.isArray(parsed) ? parsed : fallback;
-  } catch {
+  } catch (err) {
     return fallback;
   }
 }
@@ -267,8 +267,8 @@ form.addEventListener('submit', (event) => {
     name,
     start,
     end,
-    category: selectedPlace?.category || '',
-    address: selectedPlace?.address || '',
+    category: selectedPlace && selectedPlace.category ? selectedPlace.category : '',
+    address: selectedPlace && selectedPlace.address ? selectedPlace.address : '',
   });
   saveTrip(trip);
   form.reset();

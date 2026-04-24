@@ -108,9 +108,10 @@ function formatRadius(value, includeUnit = true) {
   return includeUnit ? `${radiusText} ${getDict().unit_km}` : radiusText;
 }
 
-function getCategoryDisplayText(category, dict = getDict()) {
+function getCategoryDisplayText(category, dict) {
+  if (!dict) dict = getDict();
   const categoryMap = {
-    all: currentLang === 'th' ? 'ทั้งหมด' : 'All places',
+    all: dict.category_all,
     hotel: dict.res_badge_hotel,
     restaurant: dict.res_badge_restaurant,
     sport: dict.res_badge_sport,
@@ -121,19 +122,21 @@ function getCategoryDisplayText(category, dict = getDict()) {
 }
 
 function getRadiusHint(radius) {
-  if (radius <= 2) return 'Focused scan for walkable places close to you.';
-  if (radius <= 8) return 'Balanced scan radius for nearby discovery.';
-  if (radius <= 15) return 'Wider scan for short rides and broader options.';
-  return 'Large search radius for city-wide exploration.';
+  const dict = getDict();
+  if (radius <= 2) return dict.hint_rad_small;
+  if (radius <= 8) return dict.hint_rad_med;
+  if (radius <= 15) return dict.hint_rad_large;
+  return dict.hint_rad_huge;
 }
 
 function getCategoryHint(category) {
+  const dict = getDict();
   const hints = {
-    all: 'Scan across every category for a broad shortlist.',
-    hotel: 'Prioritize stay options near the selected point.',
-    restaurant: 'Focus on food spots that are easy to reach.',
-    sport: 'Look for active venues and sports destinations nearby.',
-    tourist: 'Surface landmarks and sightseeing spots first.',
+    all: dict.hint_cat_all,
+    hotel: dict.hint_cat_hotel,
+    restaurant: dict.hint_cat_restaurant,
+    sport: dict.hint_cat_sport,
+    tourist: dict.hint_cat_tourist,
   };
 
   return hints[category] || hints.all;
@@ -146,15 +149,15 @@ function setResultsStatusLabel(label) {
 }
 
 function getTripSourceLabel() {
-  return currentLang === 'th' ? 'จากผลการสแกน' : 'From scan results';
+  return getDict().trip_source_label;
 }
 
 function getAddToTripLabel() {
-  return currentLang === 'th' ? 'เพิ่มไปทริป' : 'Add to trip';
+  return getDict().trip_add_label;
 }
 
 function getTripDraftLabel() {
-  return currentLang === 'th' ? 'เลือกจากผลสแกน' : 'Selected from scan';
+  return getDict().trip_draft_label;
 }
 
 function syncRadiusLabels() {
@@ -193,7 +196,7 @@ function setLoadingState(isLoading) {
   submitBtnText.style.display = isLoading ? 'none' : 'inline';
   submitSpinner.style.display = isLoading ? 'inline-block' : 'none';
   if (isLoading) {
-    setResultsStatusLabel('Scanning...');
+    setResultsStatusLabel(getDict().status_scanning);
   }
 
   if (isLoading) {
@@ -210,8 +213,8 @@ function updateMapState(lat, lng) {
 }
 
 function getPlaceId(place) {
-  const lat = place.lat ?? place.latitude ?? '';
-  const lng = place.lng ?? place.longitude ?? '';
+  const lat = place.lat != null ? place.lat : (place.latitude != null ? place.latitude : '');
+  const lng = place.lng != null ? place.lng : (place.longitude != null ? place.longitude : '');
   return [
     String(place.name || '').trim().toLowerCase(),
     String(place.address || '').trim().toLowerCase(),
@@ -277,7 +280,7 @@ function loadFavorites() {
   try {
     const saved = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || '[]');
     return Array.isArray(saved) ? saved.map(enrichPlace) : [];
-  } catch {
+  } catch (err) {
     return [];
   }
 }
@@ -422,7 +425,7 @@ function renderTripDraft() {
   tripDraftCategory.innerHTML = getCategoryBadge(pendingTripPlace.category || 'tourist', dict);
   tripDraftDistance.textContent = pendingTripPlace.distance != null
     ? `📍 ${formatDistanceText(pendingTripPlace.distance, dict)}`
-    : `📍 ${currentLang === 'th' ? 'ไม่ระบุระยะ' : 'Distance n/a'}`;
+    : `📍 ${dict.unknown_distance}`;
   tripDraftAddress.textContent = pendingTripPlace.address || dict.modal_no_address;
   tripActivityName.value = pendingTripPlace.name || '';
 }
@@ -552,7 +555,8 @@ function renderResults(data) {
   currentResults = results;
   resultsContainer.classList.add('visible');
   loadingState.style.display = 'none';
-  setResultsStatusLabel(results.length ? `${results.length} found` : 'No match');
+  const dict = getDict();
+  setResultsStatusLabel(results.length ? dict.status_found.replace('{val}', results.length) : dict.status_no_match);
 
   if (results.length === 0) {
     resultsGrid.innerHTML = '';
@@ -622,8 +626,8 @@ function openDetailModal(place) {
     modalContent.classList.add('scale-100', 'opacity-100');
   });
 
-  const placeLat = normalizedPlace.lat ?? normalizedPlace.latitude;
-  const placeLng = normalizedPlace.lng ?? normalizedPlace.longitude;
+  const placeLat = normalizedPlace.lat != null ? normalizedPlace.lat : normalizedPlace.latitude;
+  const placeLng = normalizedPlace.lng != null ? normalizedPlace.lng : normalizedPlace.longitude;
   flyToPlaceAndOpenPopup(placeLat, placeLng);
 }
 
@@ -795,7 +799,7 @@ searchForm.addEventListener('submit', async (event) => {
 
     const data = await response.json();
     renderResults(data);
-    showToast(`${dict.toast_found} ${data.results?.length || 0} ${dict.toast_places}`, 'success');
+    showToast(`${dict.toast_found} ${data.results && data.results.length ? data.results.length : 0} ${dict.toast_places}`, 'success');
   } catch (error) {
     console.error('Fetch Error:', error);
     if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
@@ -810,7 +814,7 @@ searchForm.addEventListener('submit', async (event) => {
     emptyState.style.display = 'flex';
     emptyState.querySelector('.empty-title').textContent = dict.toast_conn_fail;
     emptyState.querySelector('.empty-desc').textContent = dict.toast_conn_fail_desc;
-    setResultsStatusLabel('Offline');
+    setResultsStatusLabel(getDict().status_offline);
   } finally {
     setLoadingState(false);
   }
@@ -854,5 +858,5 @@ applyTheme();
   emptyState.style.display = 'none';
   renderPlaces(demoPlaces);
   addPlaceMarkers(demoPlaces, getDict());
-  setResultsStatusLabel(`${demoPlaces.length} found`);
+  setResultsStatusLabel(getDict().status_found.replace('{val}', demoPlaces.length));
 })();

@@ -1,0 +1,39 @@
+{
+  "name": "pinme",
+  "version": "1.0.0",
+  "description": "PinMe - Location Scanner Application",
+  "main": "back_end/server.js",
+  "scripts": {
+    "start": "node back_end/server.js",
+    "test": "jest --verbose",
+    "test:coverage": "jest --coverage --verbose"
+  },
+  "jest": {
+    "testMatch": [
+      "**/back_end/tests/**/*.test.js"
+    ],
+    "reporters": [
+      "default",
+      [
+        "jest-html-reporters",
+        {
+          "publicPath": "./html-report",
+          "filename": "test-report.html",
+          "expand": true,
+          "pageTitle": "PinMe Test Case Report"
+        }
+      ]
+    ]
+  },
+  "keywords": [
+    "location",
+    "scanner",
+    "maps"
+  ],
+  "author": "PinMe Team",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^30.3.0",
+    "jest-html-reporters": "^3.1.7"
+  }
+}

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - back_end\models\TripPlanner.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>back_end\models\TripPlanner.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">66.44</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">169</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">57.00</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.55</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">// ==========================================
+// TripPlanner Model — Data structure สำหรับแผนทริป
+// ==========================================
+
+class TripPlanner {
+  constructor() {
+    this.activities = []; // Array of { name, start, end }
+  }
+
+  /** Parse time string &quot;HH:MM&quot; เป็นนาที */
+  static parseTime(timeStr) {
+    if (!timeStr || typeof timeStr !== &#039;string&#039;) return NaN;
+    const parts = timeStr.split(&#039;:&#039;);
+    if (parts.length !== 2) return NaN;
+    const [h, m] = parts.map(Number);
+    if (isNaN(h) || isNaN(m) || h &lt; 0 || h &gt; 23 || m &lt; 0 || m &gt; 59) return NaN;
+    return h * 60 + m;
+  }
+
+  /** แปลงนาทีกลับเป็น &quot;HH:MM&quot; */
+  static minutesToTime(minutes) {
+    if (typeof minutes !== &#039;number&#039; || isNaN(minutes) || minutes &lt; 0) return &#039;&#039;;
+    const h = Math.floor(minutes / 60) % 24;
+    const m = minutes % 60;
+    return `${String(h).padStart(2, &#039;0&#039;)}:${String(m).padStart(2, &#039;0&#039;)}`;
+  }
+
+  /** คำนวณระยะเวลา (นาที) */
+  static getDuration(startStr, endStr) {
+    const start = TripPlanner.parseTime(startStr);
+    const end = TripPlanner.parseTime(endStr);
+    if (isNaN(start) || isNaN(end)) return NaN;
+    return end - start;
+  }
+
+  /** ตรวจสอบ validation ของข้อมูล activity */
+  validateActivity(name, startStr, endStr) {
+    if (!name || typeof name !== &#039;string&#039; || name.trim() === &#039;&#039;) {
+      return { valid: false, error: &#039;EMPTY_NAME&#039; };
+    }
+    const start = TripPlanner.parseTime(startStr);
+    const end = TripPlanner.parseTime(endStr);
+    if (isNaN(start)) {
+      return { valid: false, error: &#039;INVALID_START_TIME&#039; };
+    }
+    if (isNaN(end)) {
+      return { valid: false, error: &#039;INVALID_END_TIME&#039; };
+    }
+    if (start &gt;= end) {
+      return { valid: false, error: &#039;END_BEFORE_START&#039; };
+    }
+    return { valid: true, error: null };
+  }
+
+  /** ตรวจสอบเวลาทับซ้อน */
+  checkOverlap(startStr, endStr) {
+    const newStart = TripPlanner.parseTime(startStr);
+    const newEnd = TripPlanner.parseTime(endStr);
+
+    for (const item of this.activities) {
+      const itemStart = TripPlanner.parseTime(item.start);
+      const itemEnd = TripPlanner.parseTime(item.end);
+
+      if (newStart &lt; itemEnd &amp;&amp; newEnd &gt; itemStart) {
+        return {
+          overlaps: true,
+          conflictWith: item,
+        };
+      }
+    }
+
+    return { overlaps: false, conflictWith: null };
+  }
+
+  /** เพิ่มกิจกรรม */
+  addActivity(name, startStr, endStr) {
+    const validation = this.validateActivity(name, startStr, endStr);
+    if (!validation.valid) {
+      return { success: false, error: validation.error };
+    }
+
+    const overlap = this.checkOverlap(startStr, endStr);
+    if (overlap.overlaps) {
+      return { success: false, error: &#039;OVERLAP&#039;, conflictWith: overlap.conflictWith };
+    }
+
+    this.activities.push({
+      name: name.trim(),
+      start: startStr,
+      end: endStr,
+    });
+
+    return { success: true };
+  }
+
+  /** ลบกิจกรรมตาม index */
+  removeActivity(index) {
+    if (index &lt; 0 || index &gt;= this.activities.length) return false;
+    this.activities.splice(index, 1);
+    return true;
+  }
+
+  /** เรียงลำดับตามเวลาเริ่ม */
+  getSortedActivities() {
+    return [...this.activities].sort(
+      (a, b) =&gt; TripPlanner.parseTime(a.start) - TripPlanner.parseTime(b.start)
+    );
+  }
+
+  /** คำนวณเวลาว่าง (gaps) ระหว่างกิจกรรม */
+  getFreeTimeSlots(dayStartStr = &#039;08:00&#039;, dayEndStr = &#039;22:00&#039;) {
+    const sorted = this.getSortedActivities();
+    const slots = [];
+    let cursor = TripPlanner.parseTime(dayStartStr);
+    const dayEnd = TripPlanner.parseTime(dayEndStr);
+
+    for (const act of sorted) {
+      const actStart = TripPlanner.parseTime(act.start);
+      const actEnd = TripPlanner.parseTime(act.end);
+      if (actStart &gt; cursor) {
+        slots.push({
+          start: TripPlanner.minutesToTime(cursor),
+          end: TripPlanner.minutesToTime(actStart),
+          durationMinutes: actStart - cursor,
+        });
+      }
+      cursor = Math.max(cursor, actEnd);
+    }
+
+    if (cursor &lt; dayEnd) {
+      slots.push({
+        start: TripPlanner.minutesToTime(cursor),
+        end: TripPlanner.minutesToTime(dayEnd),
+        durationMinutes: dayEnd - cursor,
+      });
+    }
+
+    return slots;
+  }
+
+  /** จำนวนกิจกรรมทั้งหมด */
+  get count() {
+    return this.activities.length;
+  }
+
+  /** คำนวณเวลาที่ใช้รวม (นาที) */
+  getTotalDuration() {
+    return this.activities.reduce((sum, act) =&gt; {
+      const dur = TripPlanner.getDuration(act.start, act.end);
+      return sum + (isNaN(dur) ? 0 : dur);
+    }, 0);
+  }
+
+  /** ล้างกิจกรรมทั้งหมด */
+  clearAll() {
+    this.activities = [];
+  }
+
+  /** แปลงเป็น JSON */
+  toJSON() {
+    return {
+      activities: this.getSortedActivities(),
+      totalDurationMinutes: this.getTotalDuration(),
+      count: this.count,
+    };
+  }
+}
+
+module.exports = TripPlanner;</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

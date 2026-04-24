@@ -91,7 +91,7 @@ function loadFavorites() {
   try {
     const saved = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || '[]');
     return Array.isArray(saved) ? saved : [];
-  } catch {
+  } catch (err) {
     return [];
   }
 }
@@ -101,8 +101,8 @@ function saveFavorites(places) {
 }
 
 function getPlaceId(place) {
-  const lat = place.lat ?? place.latitude ?? '';
-  const lng = place.lng ?? place.longitude ?? '';
+  const lat = place.lat != null ? place.lat : (place.latitude != null ? place.latitude : '');
+  const lng = place.lng != null ? place.lng : (place.longitude != null ? place.longitude : '');
   return [
     String(place.name || '').trim().toLowerCase(),
     String(place.address || '').trim().toLowerCase(),

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - back_end\models\Place.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>back_end\models\Place.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">67.88</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">138</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">65.96</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.60</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">// ==========================================
+// Place Model — Data structure สำหรับสถานที่
+// ==========================================
+
+class Place {
+  /**
+   * @param {Object} data
+   * @param {string} data.name - ชื่อสถานที่
+   * @param {string} data.category - หมวดหมู่ (hotel, restaurant, sport, tourist)
+   * @param {number} data.lat - Latitude
+   * @param {number} data.lng - Longitude
+   * @param {string} [data.address] - ที่อยู่
+   * @param {number} [data.rating] - คะแนน (0-5)
+   * @param {number} [data.distance] - ระยะทาง (km)
+   * @param {string} [data.type] - ประเภทจาก API
+   * @param {string} [data.thumbnail] - URL รูปภาพ
+   */
+  constructor(data = {}) {
+    this.name = data.name || &#039;Unknown&#039;;
+    this.category = Place.normalizeCategory(data.category);
+    this.lat = data.lat != null ? data.lat : null;
+    this.lng = data.lng != null ? data.lng : null;
+    this.address = data.address || &#039;&#039;;
+    this.rating = data.rating != null ? data.rating : null;
+    this.distance = data.distance != null ? data.distance : null;
+    this.type = data.type || &#039;&#039;;
+    this.thumbnail = data.thumbnail || &#039;&#039;;
+  }
+
+  /** ตรวจสอบว่าพิกัดถูกต้อง */
+  hasValidCoordinates() {
+    return (
+      this.lat !== null &amp;&amp;
+      this.lng !== null &amp;&amp;
+      typeof this.lat === &#039;number&#039; &amp;&amp;
+      typeof this.lng === &#039;number&#039; &amp;&amp;
+      this.lat &gt;= -90 &amp;&amp; this.lat &lt;= 90 &amp;&amp;
+      this.lng &gt;= -180 &amp;&amp; this.lng &lt;= 180
+    );
+  }
+
+  /** ตรวจสอบว่ามี rating หรือไม่ */
+  hasRating() {
+    return this.rating !== null &amp;&amp; typeof this.rating === &#039;number&#039; &amp;&amp; this.rating &gt;= 0 &amp;&amp; this.rating &lt;= 5;
+  }
+
+  /** คำนวณระยะทางจากจุดกำหนด (Haversine Formula) */
+  static calculateDistance(lat1, lng1, lat2, lng2) {
+    if ([lat1, lng1, lat2, lng2].some(v =&gt; typeof v !== &#039;number&#039; || isNaN(v))) {
+      return NaN;
+    }
+    const toRad = (v) =&gt; (v * Math.PI) / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+    return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  /** คำนวณระยะห่างจากพิกัดที่กำหนด */
+  distanceFrom(lat, lng) {
+    if (!this.hasValidCoordinates()) return NaN;
+    return Place.calculateDistance(lat, lng, this.lat, this.lng);
+  }
+
+  /** ตรวจสอบว่าอยู่ในรัศมีที่กำหนดหรือไม่ */
+  isWithinRadius(centerLat, centerLng, radiusKm) {
+    const dist = this.distanceFrom(centerLat, centerLng);
+    if (isNaN(dist)) return false;
+    return dist &lt;= radiusKm;
+  }
+
+  /** แสดงระยะทางในรูปแบบ text */
+  getDistanceText(dict = { unit_km: &#039;km&#039;, unit_m: &#039;m&#039; }) {
+    if (this.distance == null) return &#039;&#039;;
+    if (this.distance &lt; 1) {
+      return `${(this.distance * 1000).toFixed(0)} ${dict.unit_m}`;
+    }
+    return `${this.distance.toFixed(1)} ${dict.unit_km}`;
+  }
+
+  /** Normalize category ให้เป็นค่าที่ระบบรองรับ */
+  static normalizeCategory(category) {
+    const validCategories = [&#039;hotel&#039;, &#039;restaurant&#039;, &#039;sport&#039;, &#039;tourist&#039;];
+    const cat = (category || &#039;&#039;).toLowerCase().trim();
+    return validCategories.includes(cat) ? cat : &#039;other&#039;;
+  }
+
+  /** กำหนด category จาก type string ของ API */
+  static detectCategoryFromType(typeStr) {
+    const t = (typeStr || &#039;&#039;).toLowerCase();
+    if (t.includes(&#039;hotel&#039;) || t.includes(&#039;resort&#039;)) return &#039;hotel&#039;;
+    if (t.includes(&#039;restaurant&#039;) || t.includes(&#039;cafe&#039;) || t.includes(&#039;food&#039;)) return &#039;restaurant&#039;;
+    if (t.includes(&#039;gym&#039;) || t.includes(&#039;sport&#039;) || t.includes(&#039;stadium&#039;)) return &#039;sport&#039;;
+    return &#039;tourist&#039;;
+  }
+
+  /** แปลง raw SerpAPI result เป็น Place */
+  static fromSerpApiResult(raw, centerLat, centerLng) {
+    const lat = raw.gps_coordinates &amp;&amp; raw.gps_coordinates.latitude ? raw.gps_coordinates.latitude : null;
+    const lng = raw.gps_coordinates &amp;&amp; raw.gps_coordinates.longitude ? raw.gps_coordinates.longitude : null;
+
+    if (lat == null || lng == null) return null;
+
+    const distance = Place.calculateDistance(centerLat, centerLng, lat, lng);
+    const category = Place.detectCategoryFromType(raw.type || &#039;&#039;);
+
+    return new Place({
+      name: raw.title || &#039;Unknown&#039;,
+      category,
+      lat,
+      lng,
+      address: raw.address || &#039;&#039;,
+      rating: raw.rating || null,
+      distance: parseFloat(distance.toFixed(2)),
+      type: raw.type || &#039;&#039;,
+      thumbnail: raw.thumbnail || &#039;&#039;,
+    });
+  }
+
+  /** แปลงเป็น JSON object */
+  toJSON() {
+    return {
+      name: this.name,
+      category: this.category,
+      lat: this.lat,
+      lng: this.lng,
+      address: this.address,
+      rating: this.rating,
+      distance: this.distance,
+      type: this.type,
+      thumbnail: this.thumbnail,
+    };
+  }
+}
+
+module.exports = Place;</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

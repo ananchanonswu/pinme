@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - front_end\js\app.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>front_end\js\app.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">69.15</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">862</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">74.54</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">11.63</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">// ==========================================
+// PinMe - Main Application Logic
+// ==========================================
+
+import { MOCK_PLACES } from &#039;./data/mockData.js&#039;;
+import { TRANSLATIONS } from &#039;./data/translations.js&#039;;
+import { getCategoryBadge, getCategoryIcon, escapeHtml, showToast } from &#039;./utils/helpers.js&#039;;
+import {
+  initMap,
+  addPlaceMarkers,
+  flyToPlaceAndOpenPopup,
+  invalidateMapSize,
+  updateRadiusCircleAndMap,
+  setMapTheme
+} from &#039;./modules/map.js&#039;;
+import { renderTripPlan, addTripActivity } from &#039;./modules/tripPlanner.js&#039;;
+
+const API_ENDPOINT = &#039;/scan&#039;;
+const IMAGE_PROXY_ENDPOINT = &#039;/image&#039;;
+const FAVORITES_STORAGE_KEY = &#039;pinme_favorites&#039;;
+const MIN_RADIUS = 0.5;
+const MAX_RADIUS = 30;
+const RADIUS_STEP = 0.5;
+
+// --- DOM Elements ---
+const searchForm = document.getElementById(&#039;searchForm&#039;);
+const latInput = document.getElementById(&#039;latitude&#039;);
+const lngInput = document.getElementById(&#039;longitude&#039;);
+const gpsBtn = document.getElementById(&#039;gpsBtn&#039;);
+const submitBtn = document.getElementById(&#039;submitBtn&#039;);
+const submitBtnText = document.getElementById(&#039;submitBtnText&#039;);
+const submitSpinner = document.getElementById(&#039;submitSpinner&#039;);
+const resultsContainer = document.getElementById(&#039;resultsContainer&#039;);
+const resultsGrid = document.getElementById(&#039;resultsGrid&#039;);
+const resultsCount = document.getElementById(&#039;resultsCount&#039;);
+const favoritesGrid = document.getElementById(&#039;favoritesGrid&#039;);
+const favoritesCount = document.getElementById(&#039;favoritesCount&#039;);
+const favoritesEmptyState = document.getElementById(&#039;favoritesEmptyState&#039;);
+const loadingState = document.getElementById(&#039;loadingState&#039;);
+const emptyState = document.getElementById(&#039;emptyState&#039;);
+const mapToggleBtn = document.getElementById(&#039;mapToggleBtn&#039;);
+const mapWrapper = document.getElementById(&#039;mapWrapper&#039;);
+const mapRadiusBadge = document.getElementById(&#039;mapRadiusBadge&#039;);
+const heroRadiusValue = document.getElementById(&#039;heroRadiusValue&#039;);
+const heroCategoryValue = document.getElementById(&#039;heroCategoryValue&#039;);
+const heroResultsValue = document.getElementById(&#039;heroResultsValue&#039;);
+const summaryRadiusValue = document.getElementById(&#039;summaryRadiusValue&#039;);
+const summaryHint = document.getElementById(&#039;summaryHint&#039;);
+const summaryCategoryValue = document.getElementById(&#039;summaryCategoryValue&#039;);
+const summaryCategoryHint = document.getElementById(&#039;summaryCategoryHint&#039;);
+const radiusSlider = document.getElementById(&#039;radiusSlider&#039;);
+const radiusInput = document.getElementById(&#039;radiusInput&#039;);
+const radiusValueDisplay = document.getElementById(&#039;radiusValueDisplay&#039;);
+
+// --- Detail Modal Elements ---
+const detailModal = document.getElementById(&#039;detailModal&#039;);
+const modalBackdrop = document.getElementById(&#039;modalBackdrop&#039;);
+const modalContent = document.getElementById(&#039;modalContent&#039;);
+const modalTitle = document.getElementById(&#039;modalTitle&#039;);
+const modalCategoryBadge = document.getElementById(&#039;modalCategoryBadge&#039;);
+const modalAddress = document.getElementById(&#039;modalAddress&#039;);
+const modalRating = document.getElementById(&#039;modalRating&#039;);
+const modalRatingContainer = document.getElementById(&#039;modalRatingContainer&#039;);
+const modalImage = document.getElementById(&#039;modalImage&#039;);
+const modalImageContainer = document.getElementById(&#039;modalImageContainer&#039;);
+const modalCloseBtnTop = document.getElementById(&#039;modalCloseBtnTop&#039;);
+const modalCloseBtnBottom = document.getElementById(&#039;modalCloseBtnBottom&#039;);
+
+// --- Trip Planner Elements ---
+const tripForm = document.getElementById(&#039;tripForm&#039;);
+const tripActivityName = document.getElementById(&#039;tripActivityName&#039;);
+const tripStartTime = document.getElementById(&#039;tripStartTime&#039;);
+const tripEndTime = document.getElementById(&#039;tripEndTime&#039;);
+const tripTimeline = document.getElementById(&#039;tripTimeline&#039;);
+const tripDraftCard = document.getElementById(&#039;tripDraftCard&#039;);
+const tripDraftName = document.getElementById(&#039;tripDraftName&#039;);
+const tripDraftCategory = document.getElementById(&#039;tripDraftCategory&#039;);
+const tripDraftDistance = document.getElementById(&#039;tripDraftDistance&#039;);
+const tripDraftAddress = document.getElementById(&#039;tripDraftAddress&#039;);
+const tripDraftClearBtn = document.getElementById(&#039;tripDraftClearBtn&#039;);
+
+// --- Toggles ---
+const langToggleBtn = document.getElementById(&#039;langToggleBtn&#039;);
+const themeToggleBtn = document.getElementById(&#039;themeToggleBtn&#039;);
+
+// --- State ---
+let selectedRadius = 3;
+let selectedCategory = &#039;all&#039;;
+let currentLang = localStorage.getItem(&#039;pinme_lang&#039;) || &#039;th&#039;;
+let isDarkTheme = localStorage.getItem(&#039;pinme_theme&#039;) !== &#039;light&#039;;
+let currentResults = [];
+let favoritePlaces = loadFavorites();
+let pendingTripPlace = null;
+
+function getDict() {
+  return TRANSLATIONS[currentLang];
+}
+
+function clampRadius(value) {
+  const numericValue = Number(value);
+  if (Number.isNaN(numericValue)) return selectedRadius;
+  return Math.min(MAX_RADIUS, Math.max(MIN_RADIUS, Math.round(numericValue / RADIUS_STEP) * RADIUS_STEP));
+}
+
+function formatRadius(value, includeUnit = true) {
+  const normalized = clampRadius(value);
+  const radiusText = Number.isInteger(normalized) ? String(normalized) : normalized.toFixed(1);
+  return includeUnit ? `${radiusText} ${getDict().unit_km}` : radiusText;
+}
+
+function getCategoryDisplayText(category, dict) {
+  if (!dict) dict = getDict();
+  const categoryMap = {
+    all: dict.category_all,
+    hotel: dict.res_badge_hotel,
+    restaurant: dict.res_badge_restaurant,
+    sport: dict.res_badge_sport,
+    tourist: dict.res_badge_tourist,
+  };
+
+  return categoryMap[category] || categoryMap.all;
+}
+
+function getRadiusHint(radius) {
+  const dict = getDict();
+  if (radius &lt;= 2) return dict.hint_rad_small;
+  if (radius &lt;= 8) return dict.hint_rad_med;
+  if (radius &lt;= 15) return dict.hint_rad_large;
+  return dict.hint_rad_huge;
+}
+
+function getCategoryHint(category) {
+  const dict = getDict();
+  const hints = {
+    all: dict.hint_cat_all,
+    hotel: dict.hint_cat_hotel,
+    restaurant: dict.hint_cat_restaurant,
+    sport: dict.hint_cat_sport,
+    tourist: dict.hint_cat_tourist,
+  };
+
+  return hints[category] || hints.all;
+}
+
+function setResultsStatusLabel(label) {
+  if (heroResultsValue) {
+    heroResultsValue.textContent = label;
+  }
+}
+
+function getTripSourceLabel() {
+  return getDict().trip_source_label;
+}
+
+function getAddToTripLabel() {
+  return getDict().trip_add_label;
+}
+
+function getTripDraftLabel() {
+  return getDict().trip_draft_label;
+}
+
+function syncRadiusLabels() {
+  const radiusText = formatRadius(selectedRadius);
+  if (heroRadiusValue) heroRadiusValue.textContent = radiusText;
+  if (summaryRadiusValue) summaryRadiusValue.textContent = radiusText;
+  if (radiusValueDisplay) radiusValueDisplay.textContent = radiusText;
+  if (summaryHint) summaryHint.textContent = getRadiusHint(selectedRadius);
+}
+
+function syncCategorySummary() {
+  const categoryText = getCategoryDisplayText(selectedCategory);
+  if (heroCategoryValue) heroCategoryValue.textContent = categoryText;
+  if (summaryCategoryValue) summaryCategoryValue.textContent = categoryText;
+  if (summaryCategoryHint) summaryCategoryHint.textContent = getCategoryHint(selectedCategory);
+}
+
+function syncRadiusInputs() {
+  const normalized = clampRadius(selectedRadius);
+  radiusSlider.value = String(normalized);
+  radiusInput.value = formatRadius(normalized, false);
+
+  document.querySelectorAll(&#039;.radius-preset&#039;).forEach((preset) =&gt; {
+    const presetValue = Number(preset.dataset.value);
+    preset.classList.toggle(&#039;active&#039;, Math.abs(presetValue - normalized) &lt; 0.001);
+  });
+}
+
+function refreshRadiusUi() {
+  syncRadiusLabels();
+  syncRadiusInputs();
+}
+
+function setLoadingState(isLoading) {
+  submitBtn.disabled = isLoading;
+  submitBtnText.style.display = isLoading ? &#039;none&#039; : &#039;inline&#039;;
+  submitSpinner.style.display = isLoading ? &#039;inline-block&#039; : &#039;none&#039;;
+  if (isLoading) {
+    setResultsStatusLabel(getDict().status_scanning);
+  }
+
+  if (isLoading) {
+    resultsContainer.classList.add(&#039;visible&#039;);
+    loadingState.style.display = &#039;flex&#039;;
+    emptyState.style.display = &#039;none&#039;;
+    resultsGrid.innerHTML = &#039;&#039;;
+  }
+}
+
+function updateMapState(lat, lng) {
+  initMap(lat, lng, selectedRadius, isDarkTheme, getDict(), mapRadiusBadge);
+  refreshRadiusUi();
+}
+
+function getPlaceId(place) {
+  const lat = place.lat != null ? place.lat : (place.latitude != null ? place.latitude : &#039;&#039;);
+  const lng = place.lng != null ? place.lng : (place.longitude != null ? place.longitude : &#039;&#039;);
+  return [
+    String(place.name || &#039;&#039;).trim().toLowerCase(),
+    String(place.address || &#039;&#039;).trim().toLowerCase(),
+    String(lat),
+    String(lng),
+  ].join(&#039;|&#039;);
+}
+
+function getImageProxyUrl(imageUrl) {
+  if (!imageUrl || typeof imageUrl !== &#039;string&#039;) return &#039;&#039;;
+  if (/^https?:\/\//i.test(imageUrl)) {
+    return `${IMAGE_PROXY_ENDPOINT}?url=${encodeURIComponent(imageUrl)}`;
+  }
+  return imageUrl;
+}
+
+function buildImageCandidates(place = {}) {
+  const rawCandidates = [
+    place.imageHiRes,
+    place.photoUrl,
+    place.imageUrl,
+    place.image,
+    place.photo,
+    ...(Array.isArray(place.photos) ? place.photos : []),
+    ...(Array.isArray(place.images) ? place.images : []),
+    place.thumbnail,
+  ].filter((item) =&gt; typeof item === &#039;string&#039; &amp;&amp; item.trim());
+
+  const uniqueCandidates = [...new Set(rawCandidates.map((item) =&gt; item.trim()))];
+
+  return uniqueCandidates
+    .map((candidate) =&gt; {
+      const lower = candidate.toLowerCase();
+      let score = 0;
+
+      if (lower.includes(&#039;original&#039;) || lower.includes(&#039;maxres&#039;)) score += 4;
+      if (lower.includes(&#039;photo&#039;) || lower.includes(&#039;image&#039;)) score += 2;
+      if (lower.includes(&#039;w=&#039;) || lower.includes(&#039;width=&#039;)) score += 1;
+      if (lower.includes(&#039;thumb&#039;) || lower.includes(&#039;thumbnail&#039;) || lower.includes(&#039;small&#039;)) score -= 3;
+
+      return { raw: candidate, score };
+    })
+    .sort((a, b) =&gt; b.score - a.score)
+    .map((item) =&gt; getImageProxyUrl(item.raw));
+}
+
+function normalizePlaceImage(place) {
+  return buildImageCandidates(place)[0] || &#039;&#039;;
+}
+
+function enrichPlace(place = {}) {
+  const imageCandidates = buildImageCandidates(place);
+
+  return {
+    ...place,
+    placeId: place.placeId || getPlaceId(place),
+    imageCandidates,
+    thumbnail: imageCandidates[0] || &#039;&#039;,
+  };
+}
+
+function loadFavorites() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || &#039;[]&#039;);
+    return Array.isArray(saved) ? saved.map(enrichPlace) : [];
+  } catch (err) {
+    return [];
+  }
+}
+
+function saveFavorites() {
+  localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favoritePlaces));
+}
+
+function isFavorite(place) {
+  const placeId = place.placeId || getPlaceId(place);
+  return favoritePlaces.some((item) =&gt; item.placeId === placeId);
+}
+
+function toggleFavorite(place) {
+  const normalizedPlace = enrichPlace(place);
+  const index = favoritePlaces.findIndex((item) =&gt; item.placeId === normalizedPlace.placeId);
+
+  if (index &gt;= 0) {
+    favoritePlaces.splice(index, 1);
+    saveFavorites();
+    return false;
+  }
+
+  favoritePlaces.unshift(normalizedPlace);
+  saveFavorites();
+  return true;
+}
+
+function applyTranslations() {
+  const dict = getDict();
+
+  document.querySelectorAll(&#039;[data-i18n]&#039;).forEach((el) =&gt; {
+    const key = el.getAttribute(&#039;data-i18n&#039;);
+    if (dict[key]) {
+      el.innerHTML = dict[key];
+    }
+  });
+
+  document.querySelectorAll(&#039;[data-i18n-ph]&#039;).forEach((el) =&gt; {
+    const key = el.getAttribute(&#039;data-i18n-ph&#039;);
+    if (dict[key]) {
+      el.setAttribute(&#039;placeholder&#039;, dict[key]);
+    }
+  });
+
+  langToggleBtn.textContent = currentLang === &#039;th&#039; ? &#039;🇹🇭 TH&#039; : &#039;🇬🇧 EN&#039;;
+  syncCategorySummary();
+  refreshRadiusUi();
+  renderFavorites();
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === &#039;th&#039; ? &#039;en&#039; : &#039;th&#039;;
+  localStorage.setItem(&#039;pinme_lang&#039;, currentLang);
+
+  applyTranslations();
+
+  if (resultsContainer.classList.contains(&#039;visible&#039;) &amp;&amp; loadingState.style.display !== &#039;flex&#039;) {
+    renderResults(currentResults);
+  }
+
+  mapRadiusBadge.textContent = getDict().map_radius.replace(&#039;{val}&#039;, formatRadius(selectedRadius, false));
+  const isCollapsed = mapWrapper.classList.contains(&#039;collapsed&#039;);
+  mapToggleBtn.textContent = isCollapsed ? getDict().btn_show_map : getDict().btn_hide_map;
+  renderTripPlan(tripTimeline, getDict());
+  renderTripDraft();
+
+  const lat = parseFloat(latInput.value);
+  const lng = parseFloat(lngInput.value);
+  if (!Number.isNaN(lat) &amp;&amp; !Number.isNaN(lng)) {
+    updateMapState(lat, lng);
+  }
+}
+
+function applyTheme() {
+  if (isDarkTheme) {
+    document.documentElement.classList.remove(&#039;light-theme&#039;);
+    themeToggleBtn.textContent = &#039;☀️&#039;;
+  } else {
+    document.documentElement.classList.add(&#039;light-theme&#039;);
+    themeToggleBtn.textContent = &#039;🌙&#039;;
+  }
+  setMapTheme(isDarkTheme);
+}
+
+function toggleTheme() {
+  isDarkTheme = !isDarkTheme;
+  localStorage.setItem(&#039;pinme_theme&#039;, isDarkTheme ? &#039;dark&#039; : &#039;light&#039;);
+  applyTheme();
+}
+
+function attachCardImage(container, place, name, categoryIcon) {
+  if (!place.thumbnail) {
+    container.innerHTML = `&lt;div class=&quot;card-icon card-icon-large&quot;&gt;${categoryIcon}&lt;/div&gt;`;
+    return;
+  }
+
+  container.classList.add(&#039;loading&#039;);
+  const img = document.createElement(&#039;img&#039;);
+  img.className = &#039;card-thumb&#039;;
+  img.src = place.thumbnail;
+  img.alt = name;
+  img.loading = &#039;lazy&#039;;
+  img.decoding = &#039;async&#039;;
+  img.referrerPolicy = &#039;no-referrer&#039;;
+
+  img.addEventListener(&#039;load&#039;, () =&gt; {
+    container.classList.remove(&#039;loading&#039;);
+  });
+
+  img.addEventListener(&#039;error&#039;, () =&gt; {
+    container.classList.remove(&#039;loading&#039;);
+    container.innerHTML = `&lt;div class=&quot;card-icon card-icon-large&quot;&gt;${categoryIcon}&lt;/div&gt;`;
+  });
+
+  container.appendChild(img);
+}
+
+function formatDistanceText(distance, dict) {
+  if (distance == null) return &#039;&#039;;
+  return distance &lt; 1
+    ? `${(distance * 1000).toFixed(0)} ${dict.unit_m}`
+    : `${distance.toFixed(1)} ${dict.unit_km}`;
+}
+
+function clearTripDraft() {
+  pendingTripPlace = null;
+  tripDraftCard.classList.add(&#039;hidden&#039;);
+  tripActivityName.value = &#039;&#039;;
+}
+
+function renderTripDraft() {
+  if (!pendingTripPlace) {
+    tripDraftCard.classList.add(&#039;hidden&#039;);
+    return;
+  }
+
+  const dict = getDict();
+  tripDraftCard.classList.remove(&#039;hidden&#039;);
+  tripDraftCard.querySelector(&#039;.trip-draft-label&#039;).textContent = getTripDraftLabel();
+  tripDraftName.textContent = pendingTripPlace.name || dict.unknown_name;
+  tripDraftCategory.innerHTML = getCategoryBadge(pendingTripPlace.category || &#039;tourist&#039;, dict);
+  tripDraftDistance.textContent = pendingTripPlace.distance != null
+    ? `📍 ${formatDistanceText(pendingTripPlace.distance, dict)}`
+    : `📍 ${dict.unknown_distance}`;
+  tripDraftAddress.textContent = pendingTripPlace.address || dict.modal_no_address;
+  tripActivityName.value = pendingTripPlace.name || &#039;&#039;;
+}
+
+function selectPlaceForTrip(place) {
+  pendingTripPlace = enrichPlace(place);
+  renderTripDraft();
+  tripForm.scrollIntoView({ behavior: &#039;smooth&#039;, block: &#039;nearest&#039; });
+  tripActivityName.focus();
+  showToast(currentLang === &#039;th&#039; ? &#039;เพิ่มสถานที่เข้าช่องร่างทริปแล้ว&#039; : &#039;Place added to trip draft&#039;, &#039;success&#039;);
+}
+
+function createPlaceCard(place, dict, options = {}) {
+  const { index = 0, cardClassName = &#039;&#039; } = options;
+  const name = place.name || dict.unknown_name;
+  const category = place.category || place.type || &#039;other&#039;;
+  const distanceRaw = place.distance;
+  const distanceText = distanceRaw != null
+    ? (distanceRaw &lt; 1
+        ? `${(distanceRaw * 1000).toFixed(0)} ${dict.unit_m}`
+        : `${distanceRaw.toFixed(1)} ${dict.unit_km}`)
+    : null;
+
+  const categoryBadge = getCategoryBadge(category, dict);
+  const categoryIcon = getCategoryIcon(category);
+  const pinned = isFavorite(place);
+  const cardIndex = String(index + 1).padStart(2, &#039;0&#039;);
+
+  const card = document.createElement(&#039;div&#039;);
+  card.className = `result-card ${cardClassName}`.trim();
+  card.style.animationDelay = `${index * 0.06}s`;
+  card.innerHTML = `
+    &lt;div class=&quot;card-visual&quot;&gt;
+      &lt;div class=&quot;card-visual-overlay&quot;&gt;
+        &lt;div class=&quot;card-topline&quot;&gt;
+          &lt;span class=&quot;card-index&quot;&gt;#${cardIndex}&lt;/span&gt;
+          ${pinned ? &#039;&lt;span class=&quot;card-favorite-flag&quot;&gt;Saved&lt;/span&gt;&#039; : &#039;&#039;}
+        &lt;/div&gt;
+        &lt;div class=&quot;card-visual-meta&quot;&gt;
+          ${categoryBadge}
+          ${distanceText ? `&lt;span class=&quot;meta-pill meta-pill-on-image&quot;&gt;📍 ${distanceText}&lt;/span&gt;` : &#039;&#039;}
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;card-body&quot;&gt;
+      &lt;div class=&quot;card-content&quot;&gt;
+        &lt;div class=&quot;card-header&quot;&gt;
+          &lt;div class=&quot;card-heading&quot;&gt;
+            &lt;h3 class=&quot;card-title&quot;&gt;${escapeHtml(name)}&lt;/h3&gt;
+            ${place.address ? `&lt;p class=&quot;card-address&quot;&gt;${escapeHtml(place.address)}&lt;/p&gt;` : &#039;&#039;}
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;card-meta&quot;&gt;
+          ${place.rating ? `&lt;span class=&quot;meta-pill meta-pill-star&quot;&gt;⭐ ${place.rating}&lt;/span&gt;` : &#039;&#039;}
+          ${distanceText ? `&lt;span class=&quot;meta-pill&quot;&gt;📍 ${distanceText}&lt;/span&gt;` : &#039;&#039;}
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;card-actions&quot;&gt;
+      &lt;button class=&quot;card-btn card-btn-detail&quot;&gt;${dict.btn_detail}&lt;/button&gt;
+      &lt;button class=&quot;card-btn card-btn-trip&quot;&gt;${getAddToTripLabel()}&lt;/button&gt;
+      &lt;button class=&quot;card-btn card-btn-pin ${pinned ? &#039;pinned&#039; : &#039;&#039;}&quot;&gt;${pinned ? dict.btn_pinned : dict.btn_pin}&lt;/button&gt;
+    &lt;/div&gt;
+  `;
+
+  const visualShell = card.querySelector(&#039;.card-visual&#039;);
+  const detailBtn = card.querySelector(&#039;.card-btn-detail&#039;);
+  const tripBtn = card.querySelector(&#039;.card-btn-trip&#039;);
+  const pinBtn = card.querySelector(&#039;.card-btn-pin&#039;);
+
+  attachCardImage(visualShell, place, name, categoryIcon);
+
+  detailBtn.addEventListener(&#039;click&#039;, () =&gt; {
+    openDetailModal(place);
+  });
+
+  tripBtn.addEventListener(&#039;click&#039;, () =&gt; {
+    selectPlaceForTrip(place);
+  });
+
+  pinBtn.addEventListener(&#039;click&#039;, () =&gt; {
+    const nowPinned = toggleFavorite(place);
+    pinBtn.classList.toggle(&#039;pinned&#039;, nowPinned);
+    pinBtn.innerHTML = nowPinned ? dict.btn_pinned : dict.btn_pin;
+    showToast(
+      nowPinned
+        ? `⭐ ${dict.toast_pinned} &quot;${name}&quot;`
+        : `❌ ${dict.toast_unpinned} &quot;${name}&quot;`,
+      nowPinned ? &#039;success&#039; : &#039;warning&#039;
+    );
+    renderFavorites();
+    renderPlaces(currentResults);
+  });
+
+  return card;
+}
+
+function renderPlaces(places) {
+  const dict = getDict();
+  resultsCount.textContent = `${places.length} ${dict.toast_places}`;
+  resultsGrid.innerHTML = &#039;&#039;;
+
+  places.forEach((place, index) =&gt; {
+    resultsGrid.appendChild(createPlaceCard(place, dict, { index }));
+  });
+}
+
+function renderFavorites() {
+  const dict = getDict();
+  favoritesCount.textContent = `${favoritePlaces.length}`;
+  favoritesGrid.innerHTML = &#039;&#039;;
+
+  if (favoritePlaces.length === 0) {
+    favoritesEmptyState.style.display = &#039;flex&#039;;
+    return;
+  }
+
+  favoritesEmptyState.style.display = &#039;none&#039;;
+
+  favoritePlaces.forEach((place, index) =&gt; {
+    favoritesGrid.appendChild(createPlaceCard(place, dict, { index, cardClassName: &#039;favorite-card&#039; }));
+  });
+}
+
+function renderResults(data) {
+  const results = (Array.isArray(data) ? data : data.results || []).map(enrichPlace);
+  currentResults = results;
+  resultsContainer.classList.add(&#039;visible&#039;);
+  loadingState.style.display = &#039;none&#039;;
+  const dict = getDict();
+  setResultsStatusLabel(results.length ? dict.status_found.replace(&#039;{val}&#039;, results.length) : dict.status_no_match);
+
+  if (results.length === 0) {
+    resultsGrid.innerHTML = &#039;&#039;;
+    emptyState.style.display = &#039;flex&#039;;
+    emptyState.querySelector(&#039;.empty-title&#039;).textContent = getDict().empty_res_title;
+    emptyState.querySelector(&#039;.empty-desc&#039;).textContent = getDict().empty_res_desc;
+    resultsCount.textContent = `0 ${getDict().toast_places}`;
+    addPlaceMarkers([], getDict());
+    return;
+  }
+
+  emptyState.style.display = &#039;none&#039;;
+  renderPlaces(results);
+  addPlaceMarkers(results, getDict());
+}
+
+function loadModalImage(place, name) {
+  if (!place.thumbnail) {
+    modalImage.removeAttribute(&#039;src&#039;);
+    modalImageContainer.classList.add(&#039;hidden&#039;);
+    return;
+  }
+
+  modalImageContainer.classList.remove(&#039;hidden&#039;);
+  modalImage.removeAttribute(&#039;src&#039;);
+  modalImage.alt = name;
+
+  const img = new Image();
+  img.decoding = &#039;async&#039;;
+  img.referrerPolicy = &#039;no-referrer&#039;;
+  img.src = place.thumbnail;
+
+  img.onload = () =&gt; {
+    modalImage.src = place.thumbnail;
+  };
+
+  img.onerror = () =&gt; {
+    modalImage.removeAttribute(&#039;src&#039;);
+    modalImageContainer.classList.add(&#039;hidden&#039;);
+    showToast(getDict().toast_image_unavailable, &#039;warning&#039;);
+  };
+}
+
+function openDetailModal(place) {
+  const dict = getDict();
+  const normalizedPlace = enrichPlace(place);
+  const name = normalizedPlace.name || dict.unknown_name;
+  const category = normalizedPlace.category || &#039;other&#039;;
+
+  modalTitle.textContent = name;
+  modalCategoryBadge.innerHTML = getCategoryBadge(category, dict);
+  modalAddress.textContent = normalizedPlace.address || dict.modal_no_address;
+
+  if (normalizedPlace.rating) {
+    modalRatingContainer.style.display = &#039;flex&#039;;
+    modalRating.textContent = `${normalizedPlace.rating} / 5.0`;
+  } else {
+    modalRatingContainer.style.display = &#039;none&#039;;
+  }
+
+  loadModalImage(normalizedPlace, name);
+
+  detailModal.classList.remove(&#039;hidden&#039;);
+  detailModal.classList.add(&#039;flex&#039;);
+  requestAnimationFrame(() =&gt; {
+    modalContent.classList.remove(&#039;scale-95&#039;, &#039;opacity-0&#039;);
+    modalContent.classList.add(&#039;scale-100&#039;, &#039;opacity-100&#039;);
+  });
+
+  const placeLat = normalizedPlace.lat != null ? normalizedPlace.lat : normalizedPlace.latitude;
+  const placeLng = normalizedPlace.lng != null ? normalizedPlace.lng : normalizedPlace.longitude;
+  flyToPlaceAndOpenPopup(placeLat, placeLng);
+}
+
+function closeDetailModal() {
+  modalContent.classList.remove(&#039;scale-100&#039;, &#039;opacity-100&#039;);
+  modalContent.classList.add(&#039;scale-95&#039;, &#039;opacity-0&#039;);
+  setTimeout(() =&gt; {
+    detailModal.classList.add(&#039;hidden&#039;);
+    detailModal.classList.remove(&#039;flex&#039;);
+  }, 200);
+}
+
+function applyRadiusChange(value, { updateMap = true } = {}) {
+  selectedRadius = clampRadius(value);
+  refreshRadiusUi();
+
+  if (mapRadiusBadge) {
+    mapRadiusBadge.textContent = getDict().map_radius.replace(&#039;{val}&#039;, formatRadius(selectedRadius, false));
+  }
+
+  if (updateMap) {
+    updateRadiusCircleAndMap(selectedRadius, getDict(), mapRadiusBadge);
+  }
+}
+
+langToggleBtn.addEventListener(&#039;click&#039;, toggleLanguage);
+themeToggleBtn.addEventListener(&#039;click&#039;, toggleTheme);
+
+mapToggleBtn.addEventListener(&#039;click&#039;, () =&gt; {
+  const isCollapsed = mapWrapper.classList.toggle(&#039;collapsed&#039;);
+  mapToggleBtn.textContent = isCollapsed ? getDict().btn_show_map : getDict().btn_hide_map;
+  if (!isCollapsed) {
+    invalidateMapSize();
+  }
+});
+
+radiusSlider.addEventListener(&#039;input&#039;, () =&gt; {
+  applyRadiusChange(radiusSlider.value);
+});
+
+radiusInput.addEventListener(&#039;input&#039;, () =&gt; {
+  const nextValue = clampRadius(radiusInput.value);
+  selectedRadius = nextValue;
+  syncRadiusLabels();
+  syncRadiusInputs();
+});
+
+radiusInput.addEventListener(&#039;change&#039;, () =&gt; {
+  applyRadiusChange(radiusInput.value);
+});
+
+document.querySelectorAll(&#039;.radius-preset&#039;).forEach((preset) =&gt; {
+  preset.addEventListener(&#039;click&#039;, () =&gt; {
+    applyRadiusChange(preset.dataset.value);
+  });
+});
+
+document.querySelectorAll(&#039;.category-pill&#039;).forEach((pill) =&gt; {
+  pill.addEventListener(&#039;click&#039;, () =&gt; {
+    document.querySelectorAll(&#039;.category-pill&#039;).forEach((item) =&gt; item.classList.remove(&#039;active&#039;));
+    pill.classList.add(&#039;active&#039;);
+    selectedCategory = pill.dataset.value;
+    syncCategorySummary();
+  });
+});
+
+gpsBtn.addEventListener(&#039;click&#039;, () =&gt; {
+  const dict = getDict();
+  if (!navigator.geolocation) {
+    showToast(dict.toast_gps_fail, &#039;error&#039;);
+    return;
+  }
+
+  gpsBtn.classList.add(&#039;loading&#039;);
+  gpsBtn.querySelector(&#039;.gps-text&#039;).textContent = dict.toast_gps_wait;
+
+  navigator.geolocation.getCurrentPosition(
+    (position) =&gt; {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      latInput.value = lat.toFixed(6);
+      lngInput.value = lng.toFixed(6);
+      gpsBtn.classList.remove(&#039;loading&#039;);
+      gpsBtn.querySelector(&#039;.gps-text&#039;).textContent = dict.btn_gps;
+      showToast(dict.toast_gps_success, &#039;success&#039;);
+      updateMapState(lat, lng);
+    },
+    (error) =&gt; {
+      gpsBtn.classList.remove(&#039;loading&#039;);
+      gpsBtn.querySelector(&#039;.gps-text&#039;).textContent = dict.btn_gps;
+
+      const messages = {
+        1: dict.toast_gps_denied,
+        2: dict.toast_gps_unavail,
+        3: dict.toast_gps_timeout,
+      };
+      showToast(messages[error.code] || dict.toast_gps_fail, &#039;error&#039;);
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+});
+
+tripForm.addEventListener(&#039;submit&#039;, (event) =&gt; {
+  event.preventDefault();
+  const nameInput = tripActivityName.value.trim();
+  const startTime = tripStartTime.value;
+  const endTime = tripEndTime.value;
+
+  const success = addTripActivity(nameInput, startTime, endTime, tripTimeline, getDict(), pendingTripPlace ? {
+    category: pendingTripPlace.category || &#039;&#039;,
+    address: pendingTripPlace.address || &#039;&#039;,
+    distance: typeof pendingTripPlace.distance === &#039;number&#039; ? pendingTripPlace.distance : null,
+    source: getTripSourceLabel(),
+  } : {});
+  if (success) {
+    clearTripDraft();
+    tripStartTime.value = &#039;&#039;;
+    tripEndTime.value = &#039;&#039;;
+  }
+});
+
+tripDraftClearBtn.addEventListener(&#039;click&#039;, () =&gt; {
+  clearTripDraft();
+});
+
+searchForm.addEventListener(&#039;submit&#039;, async (event) =&gt; {
+  event.preventDefault();
+
+  const lat = parseFloat(latInput.value);
+  const lng = parseFloat(lngInput.value);
+  const dict = getDict();
+
+  if (Number.isNaN(lat) || Number.isNaN(lng)) {
+    showToast(dict.toast_fill_coords, &#039;warning&#039;);
+    return;
+  }
+
+  if (lat &lt; -90 || lat &gt; 90) {
+    showToast(dict.toast_lat_err, &#039;warning&#039;);
+    return;
+  }
+
+  if (lng &lt; -180 || lng &gt; 180) {
+    showToast(dict.toast_lng_err, &#039;warning&#039;);
+    return;
+  }
+
+  const requestBody = {
+    latitude: lat,
+    longitude: lng,
+    radius: selectedRadius,
+    category: selectedCategory,
+  };
+
+  updateMapState(lat, lng);
+  setLoadingState(true);
+
+  try {
+    const response = await fetch(API_ENDPOINT, {
+      method: &#039;POST&#039;,
+      headers: { &#039;Content-Type&#039;: &#039;application/json&#039; },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server Error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    renderResults(data);
+    showToast(`${dict.toast_found} ${data.results &amp;&amp; data.results.length ? data.results.length : 0} ${dict.toast_places}`, &#039;success&#039;);
+  } catch (error) {
+    console.error(&#039;Fetch Error:&#039;, error);
+    if (error.name === &#039;TypeError&#039; &amp;&amp; error.message === &#039;Failed to fetch&#039;) {
+      showToast(dict.toast_server_err, &#039;error&#039;);
+    } else {
+      showToast(`❌ ${error.message}`, &#039;error&#039;);
+    }
+
+    resultsContainer.classList.add(&#039;visible&#039;);
+    loadingState.style.display = &#039;none&#039;;
+    resultsGrid.innerHTML = &#039;&#039;;
+    emptyState.style.display = &#039;flex&#039;;
+    emptyState.querySelector(&#039;.empty-title&#039;).textContent = dict.toast_conn_fail;
+    emptyState.querySelector(&#039;.empty-desc&#039;).textContent = dict.toast_conn_fail_desc;
+    setResultsStatusLabel(getDict().status_offline);
+  } finally {
+    setLoadingState(false);
+  }
+});
+
+modalCloseBtnTop.addEventListener(&#039;click&#039;, closeDetailModal);
+modalCloseBtnBottom.addEventListener(&#039;click&#039;, closeDetailModal);
+modalBackdrop.addEventListener(&#039;click&#039;, closeDetailModal);
+document.addEventListener(&#039;keydown&#039;, (event) =&gt; {
+  if (event.key === &#039;Escape&#039; &amp;&amp; !detailModal.classList.contains(&#039;hidden&#039;)) {
+    closeDetailModal();
+  }
+});
+
+modalImage.addEventListener(&#039;error&#039;, () =&gt; {
+  modalImage.removeAttribute(&#039;src&#039;);
+  modalImageContainer.classList.add(&#039;hidden&#039;);
+  showToast(getDict().toast_image_unavailable, &#039;warning&#039;);
+});
+
+applyTheme();
+  applyTranslations();
+  syncCategorySummary();
+  applyRadiusChange(selectedRadius, { updateMap: false });
+  renderTripDraft();
+
+(function showDemoData() {
+  const defaultLat = 13.7367;
+  const defaultLng = 100.5232;
+
+  latInput.value = defaultLat;
+  lngInput.value = defaultLng;
+
+  updateMapState(defaultLat, defaultLng);
+  renderTripPlan(tripTimeline, getDict());
+  renderFavorites();
+
+  const demoPlaces = MOCK_PLACES.map(enrichPlace);
+  currentResults = demoPlaces;
+  resultsContainer.classList.add(&#039;visible&#039;);
+  emptyState.style.display = &#039;none&#039;;
+  renderPlaces(demoPlaces);
+  addPlaceMarkers(demoPlaces, getDict());
+  setResultsStatusLabel(getDict().status_found.replace(&#039;{val}&#039;, demoPlaces.length));
+})();</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

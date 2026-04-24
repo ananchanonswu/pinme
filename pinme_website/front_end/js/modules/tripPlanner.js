@@ -11,7 +11,7 @@ function loadTripPlan() {
   try {
     const saved = JSON.parse(localStorage.getItem(TRIP_STORAGE_KEY) || '[]');
     return Array.isArray(saved) ? saved : [];
-  } catch {
+  } catch (err) {
     return [];
   }
 }
