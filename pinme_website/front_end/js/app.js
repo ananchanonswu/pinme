@@ -15,8 +15,8 @@ import {
 } from './modules/map.js';
 import { renderTripPlan, addTripActivity } from './modules/tripPlanner.js';
 
-const API_ENDPOINT = '/scan';
-const IMAGE_PROXY_ENDPOINT = '/image';
+const API_ENDPOINT = '/api/scan';
+const IMAGE_PROXY_ENDPOINT = '/api/image';
 const FAVORITES_STORAGE_KEY = 'pinme_favorites';
 const MIN_RADIUS = 0.5;
 const MAX_RADIUS = 30;

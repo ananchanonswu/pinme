@@ -15,18 +15,18 @@ const path = require('path');
 const Place = require('./models/Place');
 const SearchQuery = require('./models/SearchQuery');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const FRONTEND_DIR = path.join(__dirname, '..', 'front_end');
 const envPath = path.join(__dirname, '.env.local');
 const SERPAPI_BASE = 'https://serpapi.com/search.json';
 
-let SERPAPI_KEY = '';
+let SERPAPI_KEY = process.env.SERPAPI_KEY || '';
 try {
-  if (fs.existsSync(envPath)) {
+  if (!SERPAPI_KEY && fs.existsSync(envPath)) {
     const envContent = fs.readFileSync(envPath, 'utf-8');
     const match = envContent.match(/SERPAPI_KEY=(.+)/);
     if (match) SERPAPI_KEY = match[1].trim();
-  } else {
+  } else if (!SERPAPI_KEY) {
     console.warn('[startup] .env.local not found; SerpAPI key missing');
   }
 } catch (err) {
@@ -197,6 +197,18 @@ function setCorsHeaders(res) {
 }
 
 function readBody(req) {
+  if (req.body && typeof req.body === 'object') {
+    return Promise.resolve(req.body);
+  }
+
+  if (typeof req.body === 'string') {
+    try {
+      return Promise.resolve(req.body ? JSON.parse(req.body) : {});
+    } catch {
+      return Promise.reject(new Error('Invalid JSON body'));
+    }
+  }
+
   return new Promise((resolve, reject) => {
     let body = '';
     req.on('data', (chunk) => {
@@ -374,7 +386,7 @@ async function handleImageProxy(req, res) {
   }
 }
 
-const server = http.createServer(async (req, res) => {
+async function handleRequest(req, res) {
   setCorsHeaders(res);
 
   if (req.method === 'OPTIONS') {
@@ -386,11 +398,11 @@ const server = http.createServer(async (req, res) => {
   const parsed = url.parse(req.url, true);
   let pathname = parsed.pathname;
 
-  if (pathname === '/scan') {
+  if (pathname === '/scan' || pathname === '/api/scan') {
     return handleScan(req, res);
   }
 
-  if (pathname === '/image') {
+  if (pathname === '/image' || pathname === '/api/image') {
     return handleImageProxy(req, res);
   }
 
@@ -413,14 +425,24 @@ const server = http.createServer(async (req, res) => {
     });
     fs.createReadStream(filePath).pipe(res);
   });
-});
+}
 
-server.listen(PORT, () => {
-  console.log('');
-  console.log('==========================================');
-  console.log(`  PinMe server running on http://localhost:${PORT}/`);
-  console.log(`  Scan API: http://localhost:${PORT}/scan`);
-  console.log(`  SerpAPI:  ${SERPAPI_KEY ? 'loaded' : 'missing -> fallback mode'}`);
-  console.log('==========================================');
-  console.log('');
-});
+if (require.main === module) {
+  const server = http.createServer(handleRequest);
+  server.listen(PORT, () => {
+    console.log('');
+    console.log('==========================================');
+    console.log(`  PinMe server running on http://localhost:${PORT}/`);
+    console.log(`  Scan API: http://localhost:${PORT}/api/scan`);
+    console.log(`  SerpAPI:  ${SERPAPI_KEY ? 'loaded' : 'missing -> fallback mode'}`);
+    console.log('==========================================');
+    console.log('');
+  });
+}
+
+module.exports = {
+  handleRequest,
+  handleScan,
+  handleImageProxy,
+  setCorsHeaders,
+};

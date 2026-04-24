@@ -4,6 +4,7 @@
   "description": "PinMe - Location Scanner Application",
   "main": "back_end/server.js",
   "scripts": {
+    "build": "node scripts/build-static.js",
     "start": "node back_end/server.js",
     "test": "jest --verbose",
     "test:coverage": "jest --coverage --verbose",

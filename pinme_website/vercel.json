@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/scan",
+      "destination": "/api/scan"
+    },
+    {
+      "source": "/image",
+      "destination": "/api/image"
+    }
+  ]
+}
