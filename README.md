@@ -152,40 +152,7 @@ flowchart TB
   user --> uc8
   user --> uc9
 ```
-
-
-
-## 7) process, methods, and tools 
-
-1) Process (กระบวนการทำงาน)
-  
-ทีมงานใช้การพัฒนาแบบ Incremental + Iterative คือทำงานทีละส่วน และปรับปรุงแก้ไขไปเรื่อย ๆ โดยมีขั้นตอนหลักดังนี้
-- Phase 1: เก็บและวิเคราะห์ Requirement ของระบบ กำหนดขอบเขตโครงงาน และสรุปฟังก์ชันที่ต้องทำ
-- Phase 2: ออกแบบระบบและหน้าจอการใช้งาน โดยใช้ Figma ช่วยออกแบบ UI และสร้าง Website เบื้องต้น
-- Phase 3: พัฒนา Website ให้เกือบสมบูรณ์ เพิ่มการทดสอบระบบ และตรวจสอบประสิทธิภาพของโปรแกรม
-- Phase 4: ปรับปรุง Website ให้สมบูรณ์ เพิ่มการทดสอบเพิ่มเติม และทำระบบ CI/CD
-- การทำงานเป็นรอบ ๆ ช่วยให้สามารถตรวจสอบงานและแก้ไขปัญหาได้ตลอดการพัฒนา
-
-2) Methods (วิธีการทำงาน)
-
-ในการทำงาน ทีมใช้วิธีการดังนี้
-- พูดคุยและสรุป requirement ร่วมกัน
-- แบ่งงานตามความถนัดของสมาชิกในทีม
-- วางแผนงานในแต่ละช่วง และติดตามความคืบหน้า
-- ประชุมสรุปผลและทำ Retrospective หลังจบแต่ละ Phase
-- จากการทำ Retrospective พบว่าช่วงแรกทีมมีความเข้าใจในขอบเขตโครงงานไม่ตรงกัน จึงแก้ไขโดยการสร้าง Prototype เพื่อช่วยให้เห็นภาพระบบชัดเจนมากขึ้น และทำให้ทุกคนเข้าใจตรงกัน
-
-3) Tools (เครื่องมือที่ใช้)
-
-ทีมงานใช้เครื่องมือต่าง ๆ เพื่อช่วยในการพัฒนาโครงงาน ได้แก่
-- Azure DevOps Boards สำหรับจัดการงานและติดตามความคืบหน้า
-- Azure Repos (Git) สำหรับเก็บและจัดการซอร์สโค้ด
-- Figma สำหรับออกแบบหน้าจอการใช้งาน
-- Mermaid สำหรับสร้างแผนภาพ Use Case
-- เครื่องมือทดสอบ สำหรับตรวจสอบความถูกต้องของระบบ
-- LINE / Discord / Zoom สำหรับการสื่อสารและประชุมทีม
-
-## 8) Summary Requirement
+## 7) Summary Requirement
 
 [Requirement Video](https://youtu.be/yf1TyKvzm6Q)
 
@@ -203,13 +170,13 @@ flowchart TB
 9) กำหนดช่วงเวลาในแผนการเดินทาง
 10) ตรวจสอบความซ้ำซ้อนของเวลา
   
-## 9) Summary Retrospective
+## 8) Summary Retrospective
 
 [Retrospective Video](https://youtu.be/FMwXFTwsZNE)
 
 -  ปัญหาเริ่มมาจากการมองภาพของ Project นี้และ Scope ไม่ตรงกัน ทำให้เกิดปัญหาความขัดแย้ง ดังนั้นจึงแก้ปัญหาด้วยการสร้าง Prototype เพื่อปรับความเข้าใจกันทำให้มุมมองตรงกันและช่วยกันแก้ไขจนได้ Version ในปัจจุบัน และอีกปัญหาคือการไม่คุ้นชินกับเครื่องมือที่ใช้เกี่ยวกับการทำงาน
 
-## 10) Product backlog
+## 9) Product backlog
 
 ![Product Backlog](docs/sprint/sprint_1.png)
 
@@ -221,7 +188,7 @@ flowchart TB
 
 ---
 
-## 11) Sprint backlog
+## 10) Sprint backlog
 
 ![Sprint Backlog](docs/sprint/milestone_sprint_1-4.png)
 
@@ -240,7 +207,7 @@ Issue ที่อยู่ใน Sprint 1 :
  ![Sprint Backlog](docs/sprint/sprint_1.png)
 
 ---
-## 12) New functional/non-functional requirement
+## 11) New functional/non-functional requirement
 
 ### Functional Requirements (FR)
 
@@ -284,7 +251,7 @@ Issue ที่อยู่ใน Sprint 1 :
 - **NFR-08: Compatibility**
   ระบบควรใช้งานได้บนเว็บเบราว์เซอร์ทั่วไป เช่น Chrome, Edge, Firefox และรองรับหน้าจอหลายขนาด
 
-## 13) Architectural design
+## 12) Architectural design
 ```mermaid
 flowchart LR
     User[User Browser]
