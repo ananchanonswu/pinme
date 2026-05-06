@@ -634,15 +634,6 @@ flowchart TD
 
 ![website_page](docs/screenshots/tripplanner.png)
 
-ตัวอย่าง :
-
-| Metric | ผลลัพธ์ |
-|---|---|
-| CI Pipeline Status | Passed |
-| Total Tests Run | 65 Unit Tests & 5 UI E2E Tests |
-| Code Coverage Range | 97.33% Statements / 90.79% Branches / 100% Functions |
-| UI Functionality | 100% Passed (Form, Maps, Validation, Favorites) |
-
 หลังจากที่เรากดบันทึกไว้ :
 
 ![website_page](docs/screenshots/tripplanner3.png)
